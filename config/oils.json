@@ -41,6 +41,14 @@
       "standard_pack": { "value": 5, "unit": "L" },
       "density_kg_per_l": 0.916,
       "notes": "Extra virgin olive oil. Standardised to the 5L cash & carry tin (not sold in 20L drums)."
+    },
+    "beef_dripping": {
+      "label": "Beef dripping (refined)",
+      "color": "#8C5A2B",
+      "basis": "mass",
+      "standard_pack": { "value": 12.5, "unit": "kg" },
+      "density_kg_per_l": null,
+      "notes": "Fully refined & deodorised beef dripping / tallow frying fat, sold by weight. 12.5kg is the most common single-block trade size (KTC, Henry Colbeck, Q Bronze); 20kg 4x5kg boxes and 10kg 2x5kg exist but 12.5kg is the modal purchase unit."
     }
   }
 }

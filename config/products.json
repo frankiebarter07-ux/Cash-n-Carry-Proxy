@@ -1,5 +1,5 @@
 {
-  "_comment": "Exact products aggregated per oil + daily scrape targets. All UK sellers, UK prices only (UK index). One fixed pack size per oil (sunflower/rapeseed/soybean 20L, palm 12.5kg, olive EV 5L). Prices are the single standalone pack price; \u00a3/tonne is computed downstream. 'scrapable' flags whether an automated daily fetch can read the price; gated sites are topped up via scripts/add_observation.py.",
+  "_comment": "Exact products aggregated per oil + daily scrape targets. Reliable/established UK sellers only (small shops & loss-leaders excluded). UK prices only. One fixed pack size per oil (sunflower/rapeseed/soybean 20L, palm & beef dripping 12.5kg, olive EV 5L). Prices are the single standalone pack price incl. any current discount (a reliable shop dropping price is the signal); GBP/tonne computed downstream.",
   "currency": "GBP",
   "country": "UK",
   "products": [
@@ -12,18 +12,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
-    },
-    {
-      "oil": "sunflower",
-      "channel": "cash_carry",
-      "source": "Everest Cash & Carry",
-      "product": "KTC Sunflower Oil 20L",
-      "url": "https://everestcashandcarryuk.com/product/ktc-sunflower-oil-4/",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -34,7 +23,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -45,7 +34,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -56,7 +45,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "soybean",
@@ -67,40 +56,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
-    },
-    {
-      "oil": "soybean",
-      "channel": "cash_carry",
-      "source": "YesDeal UK",
-      "product": "KTC Vegetable Oil 20L",
-      "url": "https://yesdealuk.com/products/ktc-vegetable-oil-20l-1",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
-    },
-    {
-      "oil": "soybean",
-      "channel": "cash_carry",
-      "source": "Surulere Foods",
-      "product": "KTC Vegetable Oil 20 Litres",
-      "url": "https://www.surulerefoods.com/products/ktc-vegetable-oil-20-litres",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
-    },
-    {
-      "oil": "soybean",
-      "channel": "cash_carry",
-      "source": "Bakers Street",
-      "product": "KTC Vegetable Oil Bottle in Box (Can) 20L",
-      "url": "https://bakersstreet.co.uk/product/ktc-vegetable-oil-bottle-in-box-can-20l/",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "soybean",
@@ -111,7 +67,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
+      "note": "Reliable seller; price readable from page -> daily auto-scrape."
     },
     {
       "oil": "palm",
@@ -122,7 +78,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -133,7 +89,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -144,29 +100,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "Asetena Pa",
-      "product": "SG Palm Oil 12.5kg",
-      "url": "https://www.asetenapa.co.uk/en-us/products/sg-palm-oil-12-5kg",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "Asetena Pa",
-      "product": "Palmax SG Palm Oil 12.5kg",
-      "url": "https://www.asetenapa.co.uk/en-us/products/palmax-sg-palm-oil-12-5kg",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -177,7 +111,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "olive_ev",
@@ -188,7 +122,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "olive_ev",
@@ -199,7 +133,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "olive_ev",
@@ -210,7 +144,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "olive_ev",
@@ -221,7 +155,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Bot-protection / trade login -> manual/assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "olive_ev",
@@ -232,18 +166,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "PJ Martinelli",
-      "product": "Filippo Berio Extra Virgin Olive Oil 5L",
-      "url": "https://www.pjmartinelli.co.uk/Cold-Pressed-Extra-Virgin-Olive-Oil-5L-in-plastic-bottle",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
+      "note": "Reliable seller; price readable from page -> daily auto-scrape."
     },
     {
       "oil": "olive_ev",
@@ -254,7 +177,29 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": true,
-      "note": "Price readable from page (JSON-LD / listed \u00a3) -> daily auto-scrape."
+      "note": "Reliable seller; price readable from page -> daily auto-scrape."
+    },
+    {
+      "oil": "beef_dripping",
+      "channel": "cash_carry",
+      "source": "JJ Foodservice",
+      "product": "KTC Halal Beef Dripping 1x12.5kg",
+      "url": "https://www.jjfoodservice.com/product/england/OIL135",
+      "pack_value": 12.5,
+      "pack_unit": "kg",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+    },
+    {
+      "oil": "beef_dripping",
+      "channel": "cash_carry",
+      "source": "Cater-Choice",
+      "product": "KTC Halal Beef Dripping 12.5kg",
+      "url": "https://sale.cater-choice.com/product-detail/ktc-halal-beef-dripping-x-125kg",
+      "pack_value": 12.5,
+      "pack_unit": "kg",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     }
   ]
 }

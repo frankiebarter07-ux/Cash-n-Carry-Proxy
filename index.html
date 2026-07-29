@@ -88,7 +88,7 @@
   <header>
     <button class="themebtn" id="themeToggle" title="Toggle theme">◐ theme</button>
     <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
-    <p>UK B2B index &mdash; single-source cooking oils, aggregated across wholesale &amp; cash-and-carry sites. No blends, no supermarket retail.</p>
+    <p>UK B2B index &mdash; single-source cooking oils &amp; refined frying fats, aggregated across reliable wholesale / cash-and-carry sellers. No blends, no supermarket retail, no small-shop loss-leaders.</p>
   </header>
 
   <div class="card">
@@ -374,11 +374,11 @@
   }
 
   document.getElementById("foot").innerHTML =
-    "UK prices only, one fixed pack size per oil. Aggregated across UK cash &amp; carry / B2B sellers: " +
-    "JJ Foodservice, Brakes (Sysco), Costco UK, Marfast, YesDeal, Surulere Foods, Bakers Street, " +
-    "CK Fast Foods, Asetena Pa, Everest Cash &amp; Carry, PJ Martinelli and the Foodomarket UK index. " +
-    "Prices are the single standalone pack price as listed; £/tonne is computed here using published oil densities. " +
-    "This is a movement proxy, not a trading price. See <code>data/sources.md</code> and <code>config/products.json</code> for the exact products.";
+    "UK prices only, one fixed pack size per oil, reliable/established sellers only. Aggregated across: " +
+    "JJ Foodservice, Brakes (Sysco), Costco UK, Marfast, CK Fast Foods, Cater-Choice and the Foodomarket UK index. " +
+    "Prices are the single pack price including any current discount (a reliable shop dropping price is the signal). " +
+    "£/tonne is computed here using published oil densities. This is a movement proxy, not a trading price. " +
+    "See <code>data/sources.md</code> and <code>config/products.json</code> for the exact products.";
 
   renderLegend(); renderChannels(); buildUnitTable(); updateBanner(); draw();
   window.addEventListener("resize", draw);

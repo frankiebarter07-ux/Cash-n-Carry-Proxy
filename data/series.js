@@ -3,7 +3,7 @@ window.OIL_SERIES = {
   "generated": "2026-07-29",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 23,
+  "raw_count": 18,
   "oils": {
     "sunflower": {
       "label": "Sunflower",
@@ -18,13 +18,12 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 35.91,
-            "price_per_tonne": 1951.36,
-            "n_obs": 2,
-            "n_used": 2,
+            "price_per_unit": 44.0,
+            "price_per_tonne": 2391.3,
+            "n_obs": 1,
+            "n_used": 1,
             "n_excluded": 0,
             "sources": [
-              "Everest Cash & Carry",
               "JJ Foodservice"
             ],
             "excluded": []
@@ -73,17 +72,14 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 27.17,
-            "price_per_tonne": 1481.68,
-            "n_obs": 5,
-            "n_used": 5,
+            "price_per_unit": 27.2,
+            "price_per_tonne": 1482.82,
+            "n_obs": 2,
+            "n_used": 2,
             "n_excluded": 0,
             "sources": [
-              "Bakers Street",
               "CK Fast Foods",
-              "JJ Foodservice",
-              "Surulere Foods",
-              "YesDeal UK"
+              "JJ Foodservice"
             ],
             "excluded": []
           }
@@ -103,13 +99,12 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 30.06,
-            "price_per_tonne": 2405.07,
-            "n_obs": 6,
-            "n_used": 6,
+            "price_per_unit": 29.26,
+            "price_per_tonne": 2340.8,
+            "n_obs": 4,
+            "n_used": 4,
             "n_excluded": 0,
             "sources": [
-              "Asetena Pa",
               "Brakes (Sysco)",
               "JJ Foodservice"
             ],
@@ -131,17 +126,43 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 32.56,
-            "price_per_tonne": 7108.23,
-            "n_obs": 7,
-            "n_used": 7,
+            "price_per_unit": 33.06,
+            "price_per_tonne": 7219.43,
+            "n_obs": 6,
+            "n_used": 6,
             "n_excluded": 0,
             "sources": [
               "Brakes (Sysco)",
               "Costco UK",
               "Foodomarket",
-              "JJ Foodservice",
-              "PJ Martinelli"
+              "JJ Foodservice"
+            ],
+            "excluded": []
+          }
+        ]
+      }
+    },
+    "beef_dripping": {
+      "label": "Beef dripping (refined)",
+      "color": "#8C5A2B",
+      "basis": "mass",
+      "standard_pack": {
+        "value": 12.5,
+        "unit": "kg"
+      },
+      "notes": "Fully refined & deodorised beef dripping / tallow frying fat, sold by weight. 12.5kg is the most common single-block trade size (KTC, Henry Colbeck, Q Bronze); 20kg 4x5kg boxes and 10kg 2x5kg exist but 12.5kg is the modal purchase unit.",
+      "channels": {
+        "cash_carry": [
+          {
+            "date": "2026-07-29",
+            "price_per_unit": 27.5,
+            "price_per_tonne": 2199.6,
+            "n_obs": 2,
+            "n_used": 2,
+            "n_excluded": 0,
+            "sources": [
+              "Cater-Choice",
+              "JJ Foodservice"
             ],
             "excluded": []
           }
