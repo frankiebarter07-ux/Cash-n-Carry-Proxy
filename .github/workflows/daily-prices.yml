@@ -1,0 +1,41 @@
+name: Daily oil prices
+
+# Re-gathers prices once per day and commits the refreshed series.
+# Daily (not real-time) is deliberate: UK cash & carry / wholesale sellers have no
+# public price API or push feed, sit behind bot-protection, and move prices over
+# days/weeks -- so a daily pass captures all real movement. See scripts/scrape.py.
+
+on:
+  schedule:
+    - cron: "0 6 * * *"      # 06:00 UTC every day
+  workflow_dispatch: {}        # allow manual "Run workflow"
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Scrape today's prices (best-effort) and rebuild series
+        run: |
+          python3 scripts/scrape.py || true
+          python3 scripts/process.py
+
+      - name: Commit refreshed data if anything changed
+        run: |
+          git config user.name  "oil-price-bot"
+          git config user.email "actions@github.com"
+          git add data/observations.csv data/series.js data/series.json
+          if git diff --cached --quiet; then
+            echo "No price changes today."
+          else
+            git commit -m "Daily oil prices: $(date -u +%Y-%m-%d)"
+            git push
+          fi

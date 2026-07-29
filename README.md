@@ -1,47 +1,43 @@
 # Cash & Carry Cooking Oil Price Proxy
 
-A lightweight indicator that tracks the price of **single-source cooking oils** at UK
-cash & carry / wholesale outlets (with a retail comparison), aggregated **across
-multiple websites**, so you can watch when these oils move. No oil blends.
+A lightweight **UK** indicator that tracks the price of **single-source cooking oils**
+at UK **B2B / cash & carry** outlets (foodservice wholesalers + warehouse clubs),
+aggregated **across multiple websites**, so you can watch when these oils move. No oil
+blends. No supermarket retail (this is a B2B index, not a D2C one).
 
 Open **[`index.html`](index.html)** in a browser for the interactive chart:
 
 - **A line per oil** on one axis — toggle each on/off from the legend.
 - **Unit switch:** *£ per unit* (the standard pack for that oil) ↔ *£ per metric tonne*.
-- **Channel switch:** cash & carry / retail / both.
 - Hover any point to see the price, how many sites fed it, and how many anomalies
   were dropped.
 
-![units: £/unit or £/tonne · lines per oil · channel toggle]
-
 ## Oils tracked & their standard unit
 
-| Oil | Standard unit | Basis |
-|-----|---------------|-------|
-| Sunflower | 20 L drum | volume |
-| Rapeseed | 20 L drum | volume |
-| Soybean (pure veg, 100% soya) | 20 L drum | volume |
-| Palm | 12.5 kg block | weight |
-| Olive (extra virgin) | 5 L tin | volume |
+| Oil | Standard unit | Basis | Sites feeding it |
+|-----|---------------|-------|------------------|
+| Sunflower | 20 L drum | volume | JJ Foodservice, Costco UK |
+| Rapeseed | 20 L drum | volume | JJ Foodservice, Brakes (Sysco) |
+| Soybean (pure veg, 100% soya) | 20 L drum | volume | JJ Foodservice, YesDeal, Surulere Foods |
+| Palm | 12.5 kg block | weight | JJ Foodservice (SG + Palmax) |
+| Olive (extra virgin) | 5 L tin | volume | JJ Foodservice, Brakes (Sysco), Costco UK, Foodomarket |
 
+The exact product per site is in **[`config/products.json`](config/products.json)**.
 *Palm* is priced by weight, so its per-kg price scales straight to per-tonne. The
-volume oils convert £/L → £/tonne using published densities (see `config/oils.json`).
-*"Price per unit"* means the price of that oil's standard pack; *"price per metric
-tonne"* normalises every oil to 1,000 kg so they sit on a comparable scale.
+volume oils convert £/L → £/tonne using published densities (`config/oils.json`).
+*"Price per unit"* = the price of that oil's standard pack; *"price per metric tonne"*
+normalises every oil to 1,000 kg so they sit on a comparable scale.
 
 ## Methodology
 
-1. **Collect** — each row in `data/observations.csv` is one product seen on one site
+1. **Collect** — each row in `data/observations.csv` is one product seen on one UK site
    on one day, recorded as the **single standalone pack price** (e.g. one 20 L drum).
 2. **Standardise** — every observation is scaled to the oil's standard unit.
 3. **Convert** — every observation is also expressed in £/metric tonne.
-4. **Drop anomalies** — for each oil × channel × date, any observation more than
-   **2 standard deviations** from the cross-site mean (in £/tonne) is excluded.
-   *(Applied only when a group has ≥ 3 sites; with fewer, there is nothing to
-   compare against.)*
+4. **Drop anomalies** — for each oil × date, any observation more than **2 standard
+   deviations** from the cross-site mean (in £/tonne) is excluded. *(Applied only when a
+   group has ≥ 3 sites; with fewer there is nothing to compare against.)*
 5. **Aggregate** — the surviving observations are averaged into one point.
-
-Run it:
 
 ```bash
 python3 scripts/process.py      # rebuilds data/series.js + data/series.json
@@ -49,41 +45,53 @@ python3 scripts/process.py      # rebuilds data/series.js + data/series.json
 
 No third-party dependencies — Python 3 standard library only.
 
-## Sources
+## Daily updates (automated) — why daily, not real-time
 
-Aggregated across **JJ Foodservice, Brakes, YesDeal, Surulere Foods, Foodomarket**
-(cash & carry / wholesale) and **Tesco** (retail). Full details, reliability notes,
-and candidate sites to add are in **[`data/sources.md`](data/sources.md)**.
+The GitHub Action **[`.github/workflows/daily-prices.yml`](.github/workflows/daily-prices.yml)**
+runs every day at 06:00 UTC: it re-scrapes the sites it can, rebuilds the series, and
+commits the result. Trigger it by hand any time from the Actions tab ("Run workflow").
 
-> Wholesalers block automated scraping (HTTP 403) and several hide prices behind a
-> trade login, so this collects data **seed-now + manual/assisted top-ups** rather
-> than via a live scraper. It's a *movement proxy*, not a live trading price.
+**We picked a daily revisit, not constant/instant monitoring — on purpose:**
 
-## Adding new prices (building the history)
+- UK cash & carry / wholesale sellers publish **no price API and no push feed**, and
+  most (JJ Foodservice, Brakes/Sysco) sit behind **bot-protection or a trade login**.
+  "Instant" monitoring would mean continuously polling pages that actively block bots —
+  unreliable and liable to get IP-blocked.
+- Wholesale oil prices move on a **days-to-weeks** cadence, not by the second. A daily
+  pass captures all real movement with none of the fragility.
 
-The seed is a single snapshot. Each time you add prices for a new date, the lines
-grow and movement becomes visible. Add a point with:
+So collection is **daily best-effort scrape + assisted top-up**:
+
+- **Auto** (Costco, YesDeal, Surulere, Foodomarket): `scripts/scrape.py` reads the price
+  from each page's JSON-LD / £-figure and appends today's observation.
+- **Assisted** (JJ Foodservice, Brakes/Sysco — gated): topped up with the helper below.
+
+It's a *movement proxy*, not a live trading price.
+
+## Adding / refreshing a gated price
 
 ```bash
 python3 scripts/add_observation.py \
   --oil rapeseed --channel cash_carry \
-  --source "Bestway" --product "Consumer's Pride Rapeseed 20L" \
-  --url "https://www.bestwaywholesale.co.uk/product/388027-1" \
-  --pack 20 --unit L --price 34.50 \
+  --source "JJ Foodservice" --product "Pride Rapeseed Oil Drum 1x20L" \
+  --url "https://www.jjfoodservice.com/product/england/OIL055" \
+  --pack 20 --unit L --price 33.99 \
   --date 2026-08-05 --note "collection price"
 ```
 
-That appends to `data/observations.csv` and rebuilds the series automatically. You can
-also edit the CSV by hand and re-run `process.py`.
+That appends to `data/observations.csv` and rebuilds the series automatically.
 
 ## Files
 
 ```
 config/oils.json          oil registry: standard unit, density, colour (edit to add an oil)
-data/observations.csv     raw price observations (the ground truth you top up)
-data/sources.md           every website used, with reliability notes
+config/products.json      exact products per site + daily scrape targets
+data/observations.csv     raw price observations (the ground truth)
+data/sources.md           every UK site used, exact products, reliability notes
 data/series.js / .json    generated aggregate series (do not edit by hand)
+scripts/scrape.py         daily best-effort re-scrape of the auto sites
 scripts/process.py        standardise + convert + anomaly-filter + aggregate
 scripts/add_observation.py append one price and rebuild
 index.html                self-contained dashboard (no external libraries)
+.github/workflows/daily-prices.yml   the daily cron that runs it all
 ```

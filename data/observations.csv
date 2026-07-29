@@ -1,15 +1,15 @@
 date,oil,channel,source,product,url,pack_value,pack_unit,price_gbp,notes
-2026-07-29,sunflower,cash_carry,JJ Foodservice,KTC High Oleic Sunflower Oil BIB 1x20L,https://www.jjfoodservice.com/category/england/Oil/Sunflower%20Oil/,20,L,44.99,collection price
-2026-07-29,sunflower,retail,Tesco,Tesco Pure Sunflower Oil 5L,https://www.tesco.com/groceries/en-GB/products/271168790,5,L,9.75,shelf price (approx £1.95/L)
+2026-07-29,sunflower,cash_carry,JJ Foodservice,KTC High Oleic Sunflower Oil BIB 1x20L,https://www.jjfoodservice.com/category/england/Oil/Sunflower%20Oil/,20,L,44.99,collection price (high-oleic)
+2026-07-29,sunflower,cash_carry,Costco UK,Pura Sunflower Oil 5L,https://www.costco.co.uk/Grocery-Household/Food-Cupboard/Oils-Vinegars-Dressings/c/cos_6.3.10,5,L,8.49,warehouse price
 2026-07-29,rapeseed,cash_carry,JJ Foodservice,Pride Rapeseed Oil Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL055,20,L,33.99,collection price
-2026-07-29,rapeseed,retail,Tesco,Tesco Vegetable Oil 5L (rapeseed),https://www.tesco.com/groceries/en-GB/products/272515844,5,L,8.50,regular shelf price
+2026-07-29,rapeseed,cash_carry,Brakes (Sysco),Sysco Classic Extended Life Rapeseed Oil 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/9802,20,L,33.99,listed price (£1.70/L)
 2026-07-29,soybean,cash_carry,JJ Foodservice,KTC Pure Vegetable Oil (100% soya) Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL013,20,L,29.00,collection price (£1.45/L)
 2026-07-29,soybean,cash_carry,YesDeal UK,KTC Vegetable Oil 20L,https://yesdealuk.com/collections/groceries,20,L,27.99,listed price
 2026-07-29,soybean,cash_carry,Surulere Foods,KTC Vegetable Oil 20 Litres,https://www.surulerefoods.com/products/ktc-vegetable-oil-20-litres,20,L,30.99,listed price
 2026-07-29,palm,cash_carry,JJ Foodservice,JJ SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL124,12.5,kg,21.79,collection price (£1.74/kg)
 2026-07-29,palm,cash_carry,JJ Foodservice,Palmax SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL011,12.5,kg,22.25,collection price (£1.78/kg)
 2026-07-29,olive_ev,cash_carry,JJ Foodservice,Antica Tradizione Extra Virgin Olive Oil 5L,https://www.jjfoodservice.com/product/england/OIL062,5,L,31.00,collection price (£6.20/L)
-2026-07-29,olive_ev,cash_carry,Brakes,Barbera Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/olive-oil,5,L,25.22,listed price
-2026-07-29,olive_ev,cash_carry,Brakes,Sysco Classic Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/olive-oil,5,L,27.05,listed price
+2026-07-29,olive_ev,cash_carry,Brakes (Sysco),Barbera Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/olive-oil,5,L,25.22,listed price
+2026-07-29,olive_ev,cash_carry,Brakes (Sysco),Sysco Classic Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extra-virgin-olive-oil-5ltr/p/5002323,5,L,27.05,listed price
+2026-07-29,olive_ev,cash_carry,Costco UK,Filippo Berio Extra Virgin Olive Oil 5L,https://www.costco.co.uk/Grocery-Household/Filippo-Berio-Extra-Virgin-Olive-Oil-5L/p/28218,5,L,31.99,warehouse price
 2026-07-29,olive_ev,cash_carry,Foodomarket,UK extra virgin olive oil 5L wholesale index,https://www.foodomarket.com/en-gb/products/condiments/extra-virgin-olive-oil-5l,5,L,35.43,UK market index 03/07/2026
-2026-07-29,olive_ev,retail,Tesco,Tesco olive oil (per-litre reference),https://www.tesco.com/groceries/en-GB/shop/food-cupboard/cooking-ingredients/oils-and-fats,1,L,11.50,approx shelf price

@@ -18,27 +18,14 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 44.99,
-            "price_per_tonne": 2445.11,
-            "n_obs": 1,
-            "n_used": 1,
+            "price_per_unit": 39.48,
+            "price_per_tonne": 2145.38,
+            "n_obs": 2,
+            "n_used": 2,
             "n_excluded": 0,
             "sources": [
+              "Costco UK",
               "JJ Foodservice"
-            ],
-            "excluded": []
-          }
-        ],
-        "retail": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 39.0,
-            "price_per_tonne": 2119.57,
-            "n_obs": 1,
-            "n_used": 1,
-            "n_excluded": 0,
-            "sources": [
-              "Tesco"
             ],
             "excluded": []
           }
@@ -60,25 +47,12 @@ window.OIL_SERIES = {
             "date": "2026-07-29",
             "price_per_unit": 33.99,
             "price_per_tonne": 1857.38,
-            "n_obs": 1,
-            "n_used": 1,
+            "n_obs": 2,
+            "n_used": 2,
             "n_excluded": 0,
             "sources": [
+              "Brakes (Sysco)",
               "JJ Foodservice"
-            ],
-            "excluded": []
-          }
-        ],
-        "retail": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 34.0,
-            "price_per_tonne": 1857.92,
-            "n_obs": 1,
-            "n_used": 1,
-            "n_excluded": 0,
-            "sources": [
-              "Tesco"
             ],
             "excluded": []
           }
@@ -152,29 +126,16 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 29.68,
-            "price_per_tonne": 6479.26,
-            "n_obs": 4,
-            "n_used": 4,
+            "price_per_unit": 30.14,
+            "price_per_tonne": 6580.35,
+            "n_obs": 5,
+            "n_used": 5,
             "n_excluded": 0,
             "sources": [
-              "Brakes",
+              "Brakes (Sysco)",
+              "Costco UK",
               "Foodomarket",
               "JJ Foodservice"
-            ],
-            "excluded": []
-          }
-        ],
-        "retail": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 57.5,
-            "price_per_tonne": 12554.59,
-            "n_obs": 1,
-            "n_used": 1,
-            "n_excluded": 0,
-            "sources": [
-              "Tesco"
             ],
             "excluded": []
           }

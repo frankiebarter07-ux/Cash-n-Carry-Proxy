@@ -88,7 +88,7 @@
   <header>
     <button class="themebtn" id="themeToggle" title="Toggle theme">◐ theme</button>
     <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
-    <p>UK single-source cooking oils &mdash; aggregated across multiple wholesale &amp; retail sites. No blends.</p>
+    <p>UK B2B index &mdash; single-source cooking oils, aggregated across wholesale &amp; cash-and-carry sites. No blends, no supermarket retail.</p>
   </header>
 
   <div class="card">
@@ -100,13 +100,9 @@
           <button data-v="price_per_tonne" aria-pressed="false">£ / metric tonne</button>
         </div>
       </div>
-      <div class="control-group">
+      <div class="control-group" id="chanGroup" hidden>
         <span class="lbl">Channel</span>
-        <div class="seg" id="chanSeg">
-          <button data-v="cash_carry" aria-pressed="true">Cash &amp; carry</button>
-          <button data-v="retail" aria-pressed="false">Retail</button>
-          <button data-v="both" aria-pressed="false">Both</button>
-        </div>
+        <div class="seg" id="chanSeg"></div>
       </div>
     </div>
 
@@ -207,7 +203,33 @@
     });
   }
   wireSeg("unitSeg", "unit");
-  wireSeg("chanSeg", "channel", updateBanner);
+
+  // ---- channel control (only shown when >1 channel has data) --------------
+  function renderChannels() {
+    const present = new Set();
+    Object.values(DATA.oils).forEach(o =>
+      Object.keys(o.channels || {}).forEach(ch => present.add(ch)));
+    const order = ["cash_carry", "retail"].filter(ch => present.has(ch));
+    state.channel = order[0] || "cash_carry";
+
+    const group = document.getElementById("chanGroup");
+    const seg = document.getElementById("chanSeg");
+    if (order.length <= 1) { group.hidden = true; return; }  // B2B-only: nothing to switch
+    group.hidden = false;
+    seg.innerHTML = "";
+    const opts = [...order.map(ch => [ch, CHANNEL_LABEL[ch]]), ["both", "Both"]];
+    opts.forEach(([v, label], i) => {
+      const b = document.createElement("button");
+      b.dataset.v = v; b.textContent = label;
+      b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+      b.addEventListener("click", () => {
+        seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
+        b.setAttribute("aria-pressed", "true");
+        state.channel = v; updateBanner(); draw();
+      });
+      seg.appendChild(b);
+    });
+  }
 
   // ---- chart --------------------------------------------------------------
   const canvas = document.getElementById("chart");
@@ -352,11 +374,12 @@
   }
 
   document.getElementById("foot").innerHTML =
-    "Aggregated across UK cash &amp; carry / wholesale sites (JJ Foodservice, Brakes, YesDeal, Surulere Foods, Foodomarket) and retail (Tesco). " +
+    "UK prices only. Aggregated across UK cash &amp; carry / B2B wholesale sites: " +
+    "JJ Foodservice, Brakes (Sysco), Costco UK, YesDeal, Surulere Foods and Foodomarket. " +
     "Prices are the single standalone pack price as listed; £/tonne is computed here using published oil densities. " +
-    "This is a movement proxy, not a trading price. See <code>data/sources.md</code> for the full list.";
+    "This is a movement proxy, not a trading price. See <code>data/sources.md</code> and <code>config/products.json</code> for the exact products.";
 
-  renderLegend(); buildUnitTable(); updateBanner(); draw();
+  renderLegend(); renderChannels(); buildUnitTable(); updateBanner(); draw();
   window.addEventListener("resize", draw);
 })();
 </script>
