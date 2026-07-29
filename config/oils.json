@@ -1,0 +1,46 @@
+{
+  "_comment": "Registry of tracked oils. Only pure, single-source oils (no blends). 'standard_pack' is the unit each oil is standardised to for the 'price per unit' view. 'density_kg_per_l' converts a volume price to a mass price for the 'price per metric tonne' view. Palm is sold by weight, so its density is null and its per-kg price scales straight to per-tonne.",
+  "metric_tonne_kg": 1000,
+  "oils": {
+    "sunflower": {
+      "label": "Sunflower",
+      "color": "#E8A600",
+      "basis": "volume",
+      "standard_pack": { "value": 20, "unit": "L" },
+      "density_kg_per_l": 0.920,
+      "notes": "Refined / high-oleic sunflower oil. Single source."
+    },
+    "rapeseed": {
+      "label": "Rapeseed",
+      "color": "#4C9A2A",
+      "basis": "volume",
+      "standard_pack": { "value": 20, "unit": "L" },
+      "density_kg_per_l": 0.915,
+      "notes": "Pure refined rapeseed (canola). Single source."
+    },
+    "soybean": {
+      "label": "Soybean (pure veg)",
+      "color": "#2D6CDF",
+      "basis": "volume",
+      "standard_pack": { "value": 20, "unit": "L" },
+      "density_kg_per_l": 0.917,
+      "notes": "Sold in the UK as 'pure vegetable oil' that is 100% soya bean oil (e.g. KTC Pure Vegetable). Single source, NOT a rapeseed/palm blend."
+    },
+    "palm": {
+      "label": "Palm",
+      "color": "#C0392B",
+      "basis": "mass",
+      "standard_pack": { "value": 12.5, "unit": "kg" },
+      "density_kg_per_l": null,
+      "notes": "100% palm frying fat block. Sold by weight."
+    },
+    "olive_ev": {
+      "label": "Olive (extra virgin)",
+      "color": "#7D8C1F",
+      "basis": "volume",
+      "standard_pack": { "value": 5, "unit": "L" },
+      "density_kg_per_l": 0.916,
+      "notes": "Extra virgin olive oil. Standardised to the 5L cash & carry tin (not sold in 20L drums)."
+    }
+  }
+}

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cash &amp; Carry Cooking Oil Price Proxy</title>
+<style>
+  :root {
+    --bg: #f7f7f5;
+    --panel: #ffffff;
+    --ink: #1c1c1e;
+    --muted: #6b6b70;
+    --line: #e3e3e0;
+    --grid: #ececea;
+    --accent: #1c1c1e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16171a;
+      --panel: #1f2126;
+      --ink: #f2f2f4;
+      --muted: #9a9ba1;
+      --line: #2e3138;
+      --grid: #262930;
+      --accent: #f2f2f4;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f7f5; --panel: #ffffff; --ink: #1c1c1e; --muted: #6b6b70;
+    --line: #e3e3e0; --grid: #ececea; --accent: #1c1c1e;
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171a; --panel: #1f2126; --ink: #f2f2f4; --muted: #9a9ba1;
+    --line: #2e3138; --grid: #262930; --accent: #f2f2f4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+  header h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 18px; margin-top: 18px;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; }
+  .control-group { display: flex; flex-direction: column; gap: 7px; }
+  .control-group .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    appearance: none; border: 0; background: transparent; color: var(--ink);
+    padding: 7px 13px; font-size: 13px; cursor: pointer; border-right: 1px solid var(--line);
+  }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
+  .chart-wrap { position: relative; margin-top: 6px; }
+  canvas { width: 100%; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;
+    border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 10px; font-size: 13px;
+    background: var(--panel); transition: opacity .15s;
+  }
+  .chip[aria-pressed="false"] { opacity: 0.4; }
+  .chip .dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+  .tip {
+    position: absolute; pointer-events: none; opacity: 0; transition: opacity .1s;
+    background: var(--accent); color: var(--bg); padding: 8px 10px; border-radius: 8px;
+    font-size: 12px; line-height: 1.45; max-width: 240px; z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  }
+  .tip b { font-weight: 600; }
+  .foot { color: var(--muted); font-size: 12.5px; margin-top: 16px; }
+  .foot a { color: inherit; }
+  .banner {
+    font-size: 12.5px; color: var(--muted); margin-top: 10px; padding: 9px 12px;
+    border: 1px dashed var(--line); border-radius: 9px;
+  }
+  table.src { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12.5px; }
+  table.src th, table.src td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  table.src th { color: var(--muted); font-weight: 500; }
+  .themebtn { float: right; font-size: 12px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <button class="themebtn" id="themeToggle" title="Toggle theme">◐ theme</button>
+    <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
+    <p>UK single-source cooking oils &mdash; aggregated across multiple wholesale &amp; retail sites. No blends.</p>
+  </header>
+
+  <div class="card">
+    <div class="controls">
+      <div class="control-group">
+        <span class="lbl">Units</span>
+        <div class="seg" id="unitSeg">
+          <button data-v="price_per_unit" aria-pressed="true">£ / unit</button>
+          <button data-v="price_per_tonne" aria-pressed="false">£ / metric tonne</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="lbl">Channel</span>
+        <div class="seg" id="chanSeg">
+          <button data-v="cash_carry" aria-pressed="true">Cash &amp; carry</button>
+          <button data-v="retail" aria-pressed="false">Retail</button>
+          <button data-v="both" aria-pressed="false">Both</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chart" height="440"></canvas>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="banner" id="banner"></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Standard unit per oil</div>
+    <table class="src" id="unitTable"></table>
+    <p class="foot" id="foot"></p>
+  </div>
+</div>
+
+<script src="data/series.js"></script>
+<script>
+(function () {
+  const DATA = window.OIL_SERIES;
+  if (!DATA) { document.body.innerHTML = "<p style='padding:40px'>No data. Run <code>python3 scripts/process.py</code> first.</p>"; return; }
+
+  const CHANNEL_LABEL = { cash_carry: "Cash & carry", retail: "Retail" };
+  const state = {
+    unit: "price_per_unit",
+    channel: "cash_carry",
+    off: new Set(),          // oil keys switched off
+  };
+
+  // ---- theme toggle -------------------------------------------------------
+  document.getElementById("themeToggle").addEventListener("click", () => {
+    const root = document.documentElement;
+    const cur = root.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+    draw();
+  });
+
+  // ---- which oils have data for the current channel -----------------------
+  function activeChannels() {
+    return state.channel === "both" ? ["cash_carry", "retail"] : [state.channel];
+  }
+  // A "series" = one oil in one channel.
+  function buildSeries() {
+    const out = [];
+    for (const [oil, o] of Object.entries(DATA.oils)) {
+      if (state.off.has(oil)) continue;
+      for (const ch of activeChannels()) {
+        const pts = (o.channels && o.channels[ch]) || [];
+        if (!pts.length) continue;
+        out.push({
+          key: oil + "|" + ch, oil, ch,
+          label: o.label + (state.channel === "both" ? " · " + CHANNEL_LABEL[ch] : ""),
+          color: o.color,
+          dashed: ch === "retail" && state.channel === "both",
+          points: pts.map(p => ({
+            date: p.date, t: Date.parse(p.date),
+            v: p[state.unit], n_used: p.n_used, n_obs: p.n_obs,
+            n_excluded: p.n_excluded, sources: p.sources,
+          })),
+        });
+      }
+    }
+    return out;
+  }
+
+  // ---- legend -------------------------------------------------------------
+  const legendEl = document.getElementById("legend");
+  function renderLegend() {
+    legendEl.innerHTML = "";
+    for (const [oil, o] of Object.entries(DATA.oils)) {
+      const on = !state.off.has(oil);
+      const chip = document.createElement("button");
+      chip.className = "chip";
+      chip.setAttribute("aria-pressed", on ? "true" : "false");
+      chip.innerHTML = `<span class="dot" style="background:${o.color}"></span>${o.label}`;
+      chip.addEventListener("click", () => {
+        if (state.off.has(oil)) state.off.delete(oil); else state.off.add(oil);
+        renderLegend(); draw();
+      });
+      legendEl.appendChild(chip);
+    }
+  }
+
+  // ---- segmented controls -------------------------------------------------
+  function wireSeg(id, key, after) {
+    const seg = document.getElementById(id);
+    seg.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", "false"));
+        btn.setAttribute("aria-pressed", "true");
+        state[key] = btn.dataset.v;
+        if (after) after();
+        draw();
+      });
+    });
+  }
+  wireSeg("unitSeg", "unit");
+  wireSeg("chanSeg", "channel", updateBanner);
+
+  // ---- chart --------------------------------------------------------------
+  const canvas = document.getElementById("chart");
+  const ctx = canvas.getContext("2d");
+  const tip = document.getElementById("tip");
+  let hot = [];  // hover hit-targets: {x,y,series,pt}
+
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function fmtMoney(v) {
+    return "£" + v.toLocaleString("en-GB", { minimumFractionDigits: v < 100 ? 2 : 0, maximumFractionDigits: v < 100 ? 2 : 0 });
+  }
+
+  function draw() {
+    const series = buildSeries();
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const W = canvas.clientWidth, H = 440;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    hot = [];
+
+    const inkMuted = css("--muted"), grid = css("--grid"), ink = css("--ink"), panel = css("--panel");
+    const pad = { l: 74, r: 18, t: 16, b: 42 };
+    const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b;
+
+    // domains
+    let vals = [], times = [];
+    series.forEach(s => s.points.forEach(p => { vals.push(p.v); times.push(p.t); }));
+    if (!vals.length) {
+      ctx.fillStyle = inkMuted; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("No series selected for this channel.", W / 2, H / 2);
+      return;
+    }
+    let vmin = Math.min(...vals), vmax = Math.max(...vals);
+    if (vmin === vmax) { vmin *= 0.9; vmax *= 1.1; }
+    const vpad = (vmax - vmin) * 0.12; vmin -= vpad; vmax += vpad;
+    vmin = Math.max(0, vmin);
+    let tmin = Math.min(...times), tmax = Math.max(...times);
+    const singleDay = tmin === tmax;
+    if (singleDay) { tmin -= 86400000; tmax += 86400000; }
+
+    const X = t => pad.l + (plotW) * (t - tmin) / (tmax - tmin);
+    const Y = v => pad.t + plotH * (1 - (v - vmin) / (vmax - vmin));
+
+    // y grid + labels
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.font = "12px sans-serif";
+    const ticks = 5;
+    for (let i = 0; i <= ticks; i++) {
+      const v = vmin + (vmax - vmin) * i / ticks;
+      const y = Y(v);
+      ctx.strokeStyle = grid; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+      ctx.fillStyle = inkMuted; ctx.fillText(fmtMoney(v), pad.l - 10, y);
+    }
+
+    // x labels (dates)
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    const uniqTimes = [...new Set(times)].sort((a, b) => a - b);
+    const xlabels = singleDay ? [(tmin + tmax) / 2] : uniqTimes;
+    xlabels.forEach(t => {
+      const showT = singleDay ? uniqTimes[0] : t;
+      const d = new Date(showT);
+      const lab = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" });
+      ctx.fillStyle = inkMuted;
+      ctx.fillText(lab, X(showT), H - pad.b + 10);
+    });
+
+    // unit caption
+    ctx.save();
+    ctx.translate(16, pad.t + plotH / 2); ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = "center"; ctx.fillStyle = inkMuted; ctx.font = "12px sans-serif";
+    ctx.fillText(state.unit === "price_per_unit" ? "£ per standard unit" : "£ per metric tonne", 0, 0);
+    ctx.restore();
+
+    // series
+    series.forEach(s => {
+      const pts = s.points.slice().sort((a, b) => a.t - b.t);
+      ctx.strokeStyle = s.color; ctx.lineWidth = 2.2;
+      ctx.setLineDash(s.dashed ? [5, 4] : []);
+      ctx.beginPath();
+      pts.forEach((p, i) => {
+        const x = singleDay ? X((tmin + tmax) / 2) : X(p.t), y = Y(p.v);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // markers
+      pts.forEach(p => {
+        const x = singleDay ? X((tmin + tmax) / 2) : X(p.t), y = Y(p.v);
+        ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = s.color; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = panel; ctx.stroke();
+        hot.push({ x, y, series: s, pt: p });
+      });
+    });
+  }
+
+  // ---- hover tooltip ------------------------------------------------------
+  canvas.addEventListener("mousemove", ev => {
+    const r = canvas.getBoundingClientRect();
+    const mx = ev.clientX - r.left, my = ev.clientY - r.top;
+    let best = null, bd = 20 * 20;
+    for (const h of hot) {
+      const d = (h.x - mx) ** 2 + (h.y - my) ** 2;
+      if (d < bd) { bd = d; best = h; }
+    }
+    if (!best) { tip.style.opacity = 0; return; }
+    const p = best.pt, s = best.series;
+    const excl = p.n_excluded ? ` · <b>${p.n_excluded}</b> outlier${p.n_excluded > 1 ? "s" : ""} dropped` : "";
+    tip.innerHTML =
+      `<b>${s.label}</b><br>${p.date}<br>${fmtMoney(p.v)}` +
+      `<br><span style="opacity:.85">${p.n_used}/${p.n_obs} site${p.n_obs > 1 ? "s" : ""}${excl}</span>` +
+      `<br><span style="opacity:.7;font-size:11px">${p.sources.join(", ")}</span>`;
+    tip.style.opacity = 1;
+    let tx = best.x + 14, ty = best.y - 10;
+    if (tx + 240 > canvas.clientWidth) tx = best.x - 254;
+    tip.style.left = tx + "px"; tip.style.top = ty + "px";
+  });
+  canvas.addEventListener("mouseleave", () => { tip.style.opacity = 0; });
+
+  // ---- banner + unit table ------------------------------------------------
+  function updateBanner() {
+    const b = document.getElementById("banner");
+    const dates = new Set();
+    Object.values(DATA.oils).forEach(o =>
+      Object.values(o.channels || {}).forEach(pts => pts.forEach(p => dates.add(p.date))));
+    const nd = dates.size;
+    b.innerHTML = nd <= 1
+      ? `Seeded with a single snapshot (<b>${DATA.generated}</b>). Each point is the cross-site mean after dropping anomalies beyond ${DATA.std_dev_threshold} SD. Lines appear as you add later dates &mdash; see the README to top up prices.`
+      : `${nd} dates &middot; generated ${DATA.generated}. Points beyond ${DATA.std_dev_threshold} SD from the cross-site mean are excluded.`;
+  }
+
+  function buildUnitTable() {
+    const t = document.getElementById("unitTable");
+    let html = "<tr><th>Oil</th><th>Standard unit</th><th>Basis</th><th>Note</th></tr>";
+    for (const o of Object.values(DATA.oils)) {
+      const sp = o.standard_pack;
+      html += `<tr><td>${o.label}</td><td>${sp.value} ${sp.unit}</td><td>${o.basis === "mass" ? "by weight" : "by volume"}</td><td style="color:var(--muted)">${o.notes || ""}</td></tr>`;
+    }
+    t.innerHTML = html;
+  }
+
+  document.getElementById("foot").innerHTML =
+    "Aggregated across UK cash &amp; carry / wholesale sites (JJ Foodservice, Brakes, YesDeal, Surulere Foods, Foodomarket) and retail (Tesco). " +
+    "Prices are the single standalone pack price as listed; £/tonne is computed here using published oil densities. " +
+    "This is a movement proxy, not a trading price. See <code>data/sources.md</code> for the full list.";
+
+  renderLegend(); buildUnitTable(); updateBanner(); draw();
+  window.addEventListener("resize", draw);
+})();
+</script>
+</body>
+</html>
