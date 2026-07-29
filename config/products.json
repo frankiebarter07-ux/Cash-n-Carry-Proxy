@@ -1,5 +1,5 @@
 {
-  "_comment": "Exact products aggregated per oil + daily scrape targets. Reliable/established UK sellers only (small shops & loss-leaders excluded). UK prices only. One fixed pack size per oil (sunflower/rapeseed/soybean 20L, palm & beef dripping 12.5kg, olive EV 5L). Prices are the single standalone pack price incl. any current discount (a reliable shop dropping price is the signal); GBP/tonne computed downstream.",
+  "_comment": "Exact products aggregated per oil + daily scrape targets. Reliable/established UK sellers only (small shops & loss-leaders excluded). UK prices only. One fixed pack size per oil (sunflower/rapeseed/soybean 20L, palm & beef dripping 12.5kg, olive EV 5L). Prices are the single pack price incl. any current discount (a reliable shop dropping price is the signal); GBP/tonne computed downstream.",
   "currency": "GBP",
   "country": "UK",
   "products": [
@@ -68,6 +68,17 @@
       "pack_unit": "L",
       "scrapable": true,
       "note": "Reliable seller; price readable from page -> daily auto-scrape."
+    },
+    {
+      "oil": "soybean",
+      "channel": "cash_carry",
+      "source": "Brakes (Sysco)",
+      "product": "KTC Vegetable Oil (Bottle in Box) 20L",
+      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",

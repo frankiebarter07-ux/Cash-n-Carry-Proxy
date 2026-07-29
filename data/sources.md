@@ -34,9 +34,10 @@ mean is taken (only applied when a group has ≥ 3 sellers).
 - Brakes (Sysco) — *Sysco Classic Extended Life Rapeseed 20L* — £31.99
 - Marfast — *KTC Chef's Choice Rapeseed 20L* — £42.99
 
-### Soybean (pure veg, 100% soya) — 20 L  *(2)*
+### Soybean (pure veg, 100% soya) — 20 L  *(3)*
 - JJ Foodservice — *KTC Pure Vegetable Oil 20L* — £29.00
 - CK Fast Foods — *KTC Vegetable Oil 20L Drum* — £25.39
+- Brakes (Sysco) — *KTC Vegetable Oil (Bottle in Box) 20L* — £34.88
 
 ### Palm — 12.5 kg  *(4)*
 - JJ Foodservice — *JJ SG Palm Oil 12.5kg* — £21.79

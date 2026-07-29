@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+"""
+Render a fully static (NO JavaScript) dashboard from data/series.json.
+
+Why: some embedded HTML viewers (e.g. the Claude mobile app's preview) strip
+<script> tags, so the interactive index.html shows blank. This writes
+dashboard_static.html — an inline-SVG chart + table that renders anywhere,
+including those viewers. It's theme-aware via CSS only (no JS).
+
+Run after process.py:  python3 scripts/render_static.py
+"""
+
+import json
+import os
+from datetime import date, datetime, timedelta
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SERIES = os.path.join(ROOT, "data", "series.json")
+OUT = os.path.join(ROOT, "dashboard_static.html")
+
+VW, VH = 1000, 440
+PAD = {"l": 88, "r": 30, "t": 20, "b": 48}
+PW, PH = VW - PAD["l"] - PAD["r"], VH - PAD["t"] - PAD["b"]
+DAY = timedelta(days=1)
+
+
+def esc(s):
+    return (str(s).replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;").replace('"', "&quot;"))
+
+
+def money(v):
+    return "£" + (f"{v:,.2f}" if v < 100 else f"{v:,.0f}")
+
+
+def build_chart(oils, metric):
+    """Return an inline SVG string for the given metric across all oils (cash_carry)."""
+    lines = []  # (color, label, [(t, v), ...])
+    for key, o in oils.items():
+        pts = (o.get("channels", {}) or {}).get("cash_carry", [])
+        if not pts:
+            continue
+        series = [(datetime.fromisoformat(p["date"]), p[metric]) for p in pts]
+        if len(series) == 1:  # flat line back one day so it's visible
+            t, v = series[0]
+            series = [(t - DAY, v), (t, v)]
+        lines.append((o["color"], o["label"], series))
+    if not lines:
+        return "<p>No data.</p>"
+
+    vals = [v for _, _, s in lines for _, v in s]
+    times = [t for _, _, s in lines for t, _ in s]
+    vmin, vmax = min(vals), max(vals)
+    if vmin == vmax:
+        vmin, vmax = vmin * 0.9, vmax * 1.1
+    vpad = (vmax - vmin) * 0.12
+    vmin, vmax = max(0, vmin - vpad), vmax + vpad
+    tmin, tmax = min(times), max(times)
+    if tmin == tmax:
+        tmin, tmax = tmin - DAY, tmax + DAY
+    span = (tmax - tmin).total_seconds() or 1
+
+    def X(t):
+        return PAD["l"] + PW * (t - tmin).total_seconds() / span
+
+    def Y(v):
+        return PAD["t"] + PH * (1 - (v - vmin) / (vmax - vmin))
+
+    svg = [f'<svg viewBox="0 0 {VW} {VH}" preserveAspectRatio="xMidYMid meet" '
+           f'xmlns="http://www.w3.org/2000/svg" role="img">']
+    # y grid + labels
+    for i in range(6):
+        v = vmin + (vmax - vmin) * i / 5
+        y = round(Y(v), 1)
+        svg.append(f'<line class="grid" x1="{PAD["l"]}" y1="{y}" x2="{VW-PAD["r"]}" y2="{y}"/>')
+        svg.append(f'<text class="ax" x="{PAD["l"]-10}" y="{y}" text-anchor="end" '
+                   f'dominant-baseline="middle">{esc(money(v))}</text>')
+    # x labels
+    for t in sorted(set(times)):
+        svg.append(f'<text class="ax" x="{round(X(t),1)}" y="{VH-PAD["b"]+22}" '
+                   f'text-anchor="middle">{t.strftime("%d %b %y")}</text>')
+    # caption
+    cy = PAD["t"] + PH / 2
+    cap = "£ per standard unit" if metric == "price_per_unit" else "£ per metric tonne"
+    svg.append(f'<text class="ax" x="20" y="{cy}" text-anchor="middle" '
+               f'transform="rotate(-90 20 {cy})">{cap}</text>')
+    # series
+    for color, label, series in lines:
+        pts = " ".join(f"{round(X(t),1)},{round(Y(v),1)}" for t, v in series)
+        svg.append(f'<polyline points="{pts}" fill="none" stroke="{color}" '
+                   f'stroke-width="2.6" stroke-linejoin="round"/>')
+        t, v = series[-1]
+        svg.append(f'<circle class="mk" cx="{round(X(t),1)}" cy="{round(Y(v),1)}" '
+                   f'r="5.5" fill="{color}"/>')
+    svg.append("</svg>")
+    return "\n".join(svg)
+
+
+def build():
+    with open(SERIES, encoding="utf-8") as fh:
+        data = json.load(fh)
+    oils = data["oils"]
+
+    legend = "".join(
+        f'<span class="chip"><span class="dot" style="background:{o["color"]}"></span>{esc(o["label"])}</span>'
+        for o in oils.values()
+        if (o.get("channels", {}) or {}).get("cash_carry")
+    )
+
+    rows = ""
+    for o in oils.values():
+        pts = (o.get("channels", {}) or {}).get("cash_carry", [])
+        if not pts:
+            continue
+        p = pts[-1]
+        sp = o["standard_pack"]
+        rows += (f'<tr><td><span class="dot" style="background:{o["color"]}"></span>{esc(o["label"])}</td>'
+                 f'<td>{sp["value"]} {sp["unit"]}</td>'
+                 f'<td>{esc(money(p["price_per_unit"]))}</td>'
+                 f'<td>{esc(money(p["price_per_tonne"]))}</td>'
+                 f'<td>{p["n_used"]}</td></tr>')
+
+    chart = build_chart(oils, "price_per_unit")
+
+    html = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cash &amp; Carry Cooking Oil Price Proxy — static</title>
+<style>
+  :root {{ --bg:#f7f7f5; --panel:#fff; --ink:#1c1c1e; --muted:#6b6b70; --grid:#e6e6e3; --line:#e3e3e0; }}
+  @media (prefers-color-scheme: dark) {{
+    :root {{ --bg:#16171a; --panel:#1f2126; --ink:#f2f2f4; --muted:#9a9ba1; --grid:#2b2e35; --line:#2e3138; }}
+  }}
+  * {{ box-sizing:border-box; }}
+  body {{ margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }}
+  .wrap {{ max-width:1000px; margin:0 auto; padding:26px 20px 60px; }}
+  h1 {{ font-size:22px; margin:0 0 4px; }}
+  .sub {{ color:var(--muted); font-size:14px; margin:0 0 18px; }}
+  .card {{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; margin-top:16px; }}
+  svg {{ width:100%; height:auto; display:block; }}
+  svg .grid {{ stroke:var(--grid); stroke-width:1; }}
+  svg .ax {{ fill:var(--muted); font-size:13px; font-family:inherit; }}
+  svg .mk {{ stroke:var(--panel); stroke-width:2; }}
+  .legend {{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }}
+  .chip {{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line);
+    border-radius:999px; padding:6px 12px; font-size:13px; }}
+  .dot {{ width:11px; height:11px; border-radius:50%; display:inline-block; }}
+  table {{ width:100%; border-collapse:collapse; font-size:13.5px; margin-top:4px; }}
+  th,td {{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }}
+  th {{ color:var(--muted); font-weight:500; }}
+  td .dot {{ margin-right:8px; }}
+  .note {{ color:var(--muted); font-size:12.5px; margin-top:14px; }}
+</style></head>
+<body><div class="wrap">
+  <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
+  <p class="sub">UK B2B index — reliable wholesale / cash-and-carry sellers, one fixed pack size per oil. Static view (no JavaScript) generated {esc(data["generated"])}.</p>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Price per standard unit</div>
+    {chart}
+    <div class="legend">{legend}</div>
+    <p class="note">Single snapshot so far, drawn as a flat line from the previous day so every line is visible. Each point is the cross-seller mean after dropping anomalies beyond {data["std_dev_threshold"]} SD.</p>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Both units &amp; seller counts</div>
+    <table>
+      <tr><th>Oil / fat</th><th>Unit</th><th>£ / unit</th><th>£ / tonne</th><th>Sellers</th></tr>
+      {rows}
+    </table>
+    <p class="note">For the interactive £/unit ↔ £/tonne toggle, per-oil on/off, and tap-for-details, open <code>index.html</code> on desktop (needs JavaScript).</p>
+  </div>
+</div></body></html>"""
+
+    with open(OUT, "w", encoding="utf-8") as fh:
+        fh.write(html)
+    print(f"Wrote {OUT}")
+
+
+if __name__ == "__main__":
+    build()

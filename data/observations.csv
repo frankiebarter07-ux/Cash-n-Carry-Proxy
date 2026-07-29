@@ -5,6 +5,7 @@ date,oil,channel,source,product,url,pack_value,pack_unit,price_gbp,notes
 2026-07-29,rapeseed,cash_carry,Marfast,KTC Chef's Choice Rapeseed Oil 20L Drum,https://marfast.co.uk/ambient-food-products/oils/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html,20,L,42.99,collection price
 2026-07-29,soybean,cash_carry,JJ Foodservice,KTC Pure Vegetable Oil (100% soya) Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL013,20,L,29.00,collection price (£1.45/L)
 2026-07-29,soybean,cash_carry,CK Fast Foods,KTC Vegetable Oil 20L Yellow Drum,https://www.ckfastfoods.com/product/ktc-vegetable-oil-20ltr-yellow-drum,20,L,25.39,delivery price
+2026-07-29,soybean,cash_carry,Brakes (Sysco),KTC Vegetable Oil (Bottle in Box) 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753,20,L,34.88,listed price (£1.74/L)
 2026-07-29,palm,cash_carry,JJ Foodservice,JJ SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL124,12.5,kg,21.79,collection price (£1.74/kg)
 2026-07-29,palm,cash_carry,JJ Foodservice,Palmax SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL011,12.5,kg,22.25,collection price (£1.78/kg)
 2026-07-29,palm,cash_carry,JJ Foodservice,Frymax Solid Palm Frying Oil 12.5kg,https://www.jjfoodservice.com/product/england/OIL010,12.5,kg,29.99,collection price (100% palm)

@@ -2,7 +2,7 @@
   "generated": "2026-07-29",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 18,
+  "raw_count": 19,
   "oils": {
     "sunflower": {
       "label": "Sunflower",
@@ -71,12 +71,13 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 27.2,
-            "price_per_tonne": 1482.82,
-            "n_obs": 2,
-            "n_used": 2,
+            "price_per_unit": 29.76,
+            "price_per_tonne": 1622.5,
+            "n_obs": 3,
+            "n_used": 3,
             "n_excluded": 0,
             "sources": [
+              "Brakes (Sysco)",
               "CK Fast Foods",
               "JJ Foodservice"
             ],
