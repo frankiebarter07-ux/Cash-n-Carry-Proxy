@@ -2,7 +2,7 @@
   "generated": "2026-07-29",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 14,
+  "raw_count": 23,
   "oils": {
     "sunflower": {
       "label": "Sunflower",
@@ -17,13 +17,13 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 39.48,
-            "price_per_tonne": 2145.38,
+            "price_per_unit": 35.91,
+            "price_per_tonne": 1951.36,
             "n_obs": 2,
             "n_used": 2,
             "n_excluded": 0,
             "sources": [
-              "Costco UK",
+              "Everest Cash & Carry",
               "JJ Foodservice"
             ],
             "excluded": []
@@ -44,14 +44,15 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 33.99,
-            "price_per_tonne": 1857.38,
-            "n_obs": 2,
-            "n_used": 2,
+            "price_per_unit": 36.32,
+            "price_per_tonne": 1984.88,
+            "n_obs": 3,
+            "n_used": 3,
             "n_excluded": 0,
             "sources": [
               "Brakes (Sysco)",
-              "JJ Foodservice"
+              "JJ Foodservice",
+              "Marfast"
             ],
             "excluded": []
           }
@@ -71,12 +72,14 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 29.33,
-            "price_per_tonne": 1599.05,
-            "n_obs": 3,
-            "n_used": 3,
+            "price_per_unit": 27.17,
+            "price_per_tonne": 1481.68,
+            "n_obs": 5,
+            "n_used": 5,
             "n_excluded": 0,
             "sources": [
+              "Bakers Street",
+              "CK Fast Foods",
               "JJ Foodservice",
               "Surulere Foods",
               "YesDeal UK"
@@ -99,12 +102,14 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 22.02,
-            "price_per_tonne": 1761.6,
-            "n_obs": 2,
-            "n_used": 2,
+            "price_per_unit": 30.06,
+            "price_per_tonne": 2405.07,
+            "n_obs": 6,
+            "n_used": 6,
             "n_excluded": 0,
             "sources": [
+              "Asetena Pa",
+              "Brakes (Sysco)",
               "JJ Foodservice"
             ],
             "excluded": []
@@ -125,16 +130,17 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 30.14,
-            "price_per_tonne": 6580.35,
-            "n_obs": 5,
-            "n_used": 5,
+            "price_per_unit": 32.56,
+            "price_per_tonne": 7108.23,
+            "n_obs": 7,
+            "n_used": 7,
             "n_excluded": 0,
             "sources": [
               "Brakes (Sysco)",
               "Costco UK",
               "Foodomarket",
-              "JJ Foodservice"
+              "JJ Foodservice",
+              "PJ Martinelli"
             ],
             "excluded": []
           }

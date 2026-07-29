@@ -101,6 +101,13 @@ def build():
         if oil not in oils_cfg:
             print(f"  ! skipping unknown oil {oil!r}")
             continue
+        # Enforce one pack size per oil: every observation for an oil must be at that
+        # oil's standard pack (e.g. sunflower is 20L only, never 5L + 20L mixed).
+        pack = oils_cfg[oil]["standard_pack"]
+        if r["pack_value"] != pack["value"] or r["pack_unit"] != pack["unit"]:
+            print(f"  ! {oil} {r['source']}: pack {r['pack_value']}{r['pack_unit']} "
+                  f"!= standard {pack['value']}{pack['unit']} -- skipped (size mismatch)")
+            continue
         per_unit, per_tonne = normalise(r, oils_cfg[oil], tonne_kg)
         groups[(oil, r["channel"], r["date"])].append(
             {

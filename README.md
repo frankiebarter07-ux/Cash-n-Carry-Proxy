@@ -14,15 +14,18 @@ Open **[`index.html`](index.html)** in a browser for the interactive chart:
 
 ## Oils tracked & their standard unit
 
-| Oil | Standard unit | Basis | Sites feeding it |
-|-----|---------------|-------|------------------|
-| Sunflower | 20 L drum | volume | JJ Foodservice, Costco UK |
-| Rapeseed | 20 L drum | volume | JJ Foodservice, Brakes (Sysco) |
-| Soybean (pure veg, 100% soya) | 20 L drum | volume | JJ Foodservice, YesDeal, Surulere Foods |
-| Palm | 12.5 kg block | weight | JJ Foodservice (SG + Palmax) |
-| Olive (extra virgin) | 5 L tin | volume | JJ Foodservice, Brakes (Sysco), Costco UK, Foodomarket |
+| Oil | Standard unit | Basis | # UK sellers |
+|-----|---------------|-------|--------------|
+| Sunflower | 20 L drum | volume | 2 (20L sunflower is mostly login-gated) |
+| Rapeseed | 20 L drum | volume | 3 |
+| Soybean (pure veg, 100% soya) | 20 L drum | volume | 5 |
+| Palm | 12.5 kg block | weight | 6 |
+| Olive (extra virgin) | 5 L tin | volume | 7 |
 
-The exact product per site is in **[`config/products.json`](config/products.json)**.
+Every observation for an oil must be at that oil's **one fixed pack size** — `process.py`
+rejects a size mismatch (so sunflower is 20L only, never 5L + 20L mixed). The exact
+product and price per seller is in **[`data/sources.md`](data/sources.md)** and
+**[`config/products.json`](config/products.json)**.
 *Palm* is priced by weight, so its per-kg price scales straight to per-tonne. The
 volume oils convert £/L → £/tonne using published densities (`config/oils.json`).
 *"Price per unit"* = the price of that oil's standard pack; *"price per metric tonne"*
