@@ -55,8 +55,9 @@
   }
   .seg button:last-child { border-right: 0; }
   .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
-  .chart-wrap { position: relative; margin-top: 6px; }
-  canvas { width: 100%; display: block; }
+  [hidden] { display: none !important; }
+  .chart-wrap { position: relative; margin-top: 6px; min-height: 440px; }
+  canvas { width: 100%; height: 440px; display: block; }
   .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
   .chip {
     display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;
@@ -246,6 +247,7 @@
     const series = buildSeries();
     const dpr = Math.max(1, window.devicePixelRatio || 1);
     const W = canvas.clientWidth, H = 440;
+    if (W <= 0) { requestAnimationFrame(draw); return; }  // wait for layout (e.g. panel still sizing)
     canvas.width = W * dpr; canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
@@ -391,6 +393,9 @@
 
   renderLegend(); renderChannels(); buildUnitTable(); updateBanner(); draw();
   window.addEventListener("resize", draw);
+  // Redraw once the panel/container settles its size (fixes blank chart on first paint).
+  if (window.ResizeObserver) new ResizeObserver(() => draw()).observe(canvas);
+  window.addEventListener("load", draw);
 })();
 </script>
 </body>
