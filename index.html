@@ -255,9 +255,18 @@
     const pad = { l: 74, r: 18, t: 16, b: 42 };
     const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b;
 
+    // Give any single-point series a flat line back to the previous day so every line
+    // is visible until real daily history builds up (markers/hover stay on real points).
+    const DAY = 86400000;
+    series.forEach(s => {
+      s.linePts = (s.points.length === 1)
+        ? [{ t: s.points[0].t - DAY, v: s.points[0].v, synthetic: true }, s.points[0]]
+        : s.points;
+    });
+
     // domains
     let vals = [], times = [];
-    series.forEach(s => s.points.forEach(p => { vals.push(p.v); times.push(p.t); }));
+    series.forEach(s => s.linePts.forEach(p => { vals.push(p.v); times.push(p.t); }));
     if (!vals.length) {
       ctx.fillStyle = inkMuted; ctx.font = "14px sans-serif"; ctx.textAlign = "center";
       ctx.fillText("No series selected for this channel.", W / 2, H / 2);
@@ -307,19 +316,19 @@
 
     // series
     series.forEach(s => {
-      const pts = s.points.slice().sort((a, b) => a.t - b.t);
+      const line = s.linePts.slice().sort((a, b) => a.t - b.t);
       ctx.strokeStyle = s.color; ctx.lineWidth = 2.2;
       ctx.setLineDash(s.dashed ? [5, 4] : []);
       ctx.beginPath();
-      pts.forEach((p, i) => {
-        const x = singleDay ? X((tmin + tmax) / 2) : X(p.t), y = Y(p.v);
+      line.forEach((p, i) => {
+        const x = X(p.t), y = Y(p.v);
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       });
       ctx.stroke();
       ctx.setLineDash([]);
-      // markers
-      pts.forEach(p => {
-        const x = singleDay ? X((tmin + tmax) / 2) : X(p.t), y = Y(p.v);
+      // markers + hover on real points only
+      s.points.forEach(p => {
+        const x = X(p.t), y = Y(p.v);
         ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2);
         ctx.fillStyle = s.color; ctx.fill();
         ctx.lineWidth = 2; ctx.strokeStyle = panel; ctx.stroke();
@@ -359,8 +368,8 @@
       Object.values(o.channels || {}).forEach(pts => pts.forEach(p => dates.add(p.date))));
     const nd = dates.size;
     b.innerHTML = nd <= 1
-      ? `Seeded with a single snapshot (<b>${DATA.generated}</b>). Each point is the cross-site mean after dropping anomalies beyond ${DATA.std_dev_threshold} SD. Lines appear as you add later dates &mdash; see the README to top up prices.`
-      : `${nd} dates &middot; generated ${DATA.generated}. Points beyond ${DATA.std_dev_threshold} SD from the cross-site mean are excluded.`;
+      ? `Single snapshot so far (<b>${DATA.generated}</b>), drawn as a flat line from the previous day so every oil is visible. Each marker is the cross-seller mean after dropping anomalies beyond ${DATA.std_dev_threshold} SD. The line takes real shape as the daily job adds dates.`
+      : `${nd} dates &middot; generated ${DATA.generated}. Points beyond ${DATA.std_dev_threshold} SD from the cross-seller mean are excluded.`;
   }
 
   function buildUnitTable() {
