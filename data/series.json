@@ -1,8 +1,8 @@
 {
-  "generated": "2026-07-29",
+  "generated": "2026-07-30",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 19,
+  "raw_count": 22,
   "oils": {
     "sunflower": {
       "label": "Sunflower",
@@ -82,6 +82,18 @@
               "JJ Foodservice"
             ],
             "excluded": []
+          },
+          {
+            "date": "2026-07-30",
+            "price_per_unit": 25.49,
+            "price_per_tonne": 1389.86,
+            "n_obs": 1,
+            "n_used": 1,
+            "n_excluded": 0,
+            "sources": [
+              "CK Fast Foods"
+            ],
+            "excluded": []
           }
         ]
       }
@@ -136,6 +148,19 @@
               "Costco UK",
               "Foodomarket",
               "JJ Foodservice"
+            ],
+            "excluded": []
+          },
+          {
+            "date": "2026-07-30",
+            "price_per_unit": 33.66,
+            "price_per_tonne": 7349.34,
+            "n_obs": 2,
+            "n_used": 2,
+            "n_excluded": 0,
+            "sources": [
+              "Costco UK",
+              "Foodomarket"
             ],
             "excluded": []
           }
