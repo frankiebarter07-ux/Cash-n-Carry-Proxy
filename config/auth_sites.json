@@ -35,33 +35,24 @@
       ]
     },
     "Booker": {
-      "enabled": false,
-      "_todo": "Log in to booker.co.uk, open each product, copy its URL into 'url' below and its price-element selector into price_selectors, then set enabled=true. Booker requires login even to view product pages, so these URLs can't be discovered anonymously.",
-      "cred_env": { "user": "BOOKER_USER", "pass": "BOOKER_PASS" },
-      "login_url": "https://www.booker.co.uk/login",
-      "username_selectors": [
-        "#username", "input[name='username']", "input[name='j_username']",
-        "input[type='email']", "input[autocomplete='username']"
-      ],
-      "password_selectors": [
-        "#password", "input[name='password']", "input[name='j_password']",
-        "input[type='password']", "input[autocomplete='current-password']"
-      ],
-      "submit_selectors": [
-        "button[type='submit']", "button:has-text('Sign in')", "button:has-text('Log in')"
-      ],
-      "price_selectors": [
-        "[itemprop='price']", ".product-price", ".price", "[data-testid='price']"
+      "enabled": true,
+      "no_login": true,
+      "_note": "Prices are public on Booker's category listing (no login). The scraper renders list_url with Playwright and matches product tiles by keyword. Verify tile parsing on the first CI run and adjust 'match'/'tile_selectors' if needed.",
+      "list_url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
+      "tile_selectors": [
+        "[class*='product']", "[class*='tile']", "[class*='card']", "li"
       ],
       "products": [
         {
           "oil": "rapeseed", "product": "Chef's Larder Rapeseed Cooking Oil 20L",
-          "url": "FILL_ME_FROM_LOGGED_IN_BOOKER",
+          "match": ["chef's larder", "rapeseed", "20 lit"],
+          "exclude": ["premium", "5 lit", "litho"],
           "pack_value": 20, "pack_unit": "L"
         },
         {
-          "oil": "soybean", "product": "Chef's Larder Vegetable Cooking Oil 20L",
-          "url": "FILL_ME_FROM_LOGGED_IN_BOOKER",
+          "oil": "soybean", "product": "KTC Vegetable Cooking Oil 20L (Booker)",
+          "match": ["ktc", "vegetable", "20 lit"],
+          "exclude": ["rapeseed", "blend", "5 lit"],
           "pack_value": 20, "pack_unit": "L"
         }
       ]

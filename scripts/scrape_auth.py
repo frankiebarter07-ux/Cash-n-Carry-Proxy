@@ -123,6 +123,7 @@ def login(page, site, user, pw):
 
 
 def read_price(page, site, prod):
+    """Read a price from a single product page (prod['url'])."""
     page.goto(prod["url"], wait_until="domcontentloaded", timeout=NAV_TIMEOUT)
     page.wait_for_timeout(1500)
     for sel in site.get("price_selectors", []):
@@ -139,6 +140,37 @@ def read_price(page, site, prod):
         except Exception:
             continue
     return parse_price(page.content())  # last resort: whole-page scan
+
+
+def read_price_from_listing(page, site, prod):
+    """Find a product on a category/listing page by keyword and read its price.
+
+    Used for sellers (e.g. Booker) that show prices publicly on a listing rather
+    than on per-product URLs. 'match'/'exclude' are lowercase keyword lists.
+    """
+    page.goto(site["list_url"], wait_until="networkidle", timeout=NAV_TIMEOUT)
+    page.wait_for_timeout(2500)
+    kws = [k.lower() for k in prod.get("match", [])]
+    exc = [k.lower() for k in prod.get("exclude", [])]
+    selectors = site.get("tile_selectors",
+                         ["[class*='product']", "[class*='tile']", "[class*='card']", "li"])
+    for sel in selectors:
+        try:
+            tiles = page.locator(sel)
+            n = tiles.count()
+        except Exception:
+            continue
+        for i in range(min(n, 250)):
+            try:
+                txt = tiles.nth(i).inner_text(timeout=1200)
+            except Exception:
+                continue
+            low = txt.lower()
+            if kws and all(k in low for k in kws) and not any(e in low for e in exc):
+                price = parse_price(txt)
+                if price:
+                    return price
+    return None
 
 
 def run():
@@ -160,31 +192,38 @@ def run():
             if not site.get("enabled", True):
                 print(f"·  {name}: disabled -- skip")
                 continue
-            cu, cp = site["cred_env"]["user"], site["cred_env"]["pass"]
-            user, passwd = os.environ.get(cu), os.environ.get(cp)
-            if not user or not passwd:
-                print(f"·  {name}: no credentials in env ({cu}/{cp}) -- skip")
-                continue
+            no_login = site.get("no_login", False)
+            user = passwd = None
+            if not no_login:
+                cu, cp = site["cred_env"]["user"], site["cred_env"]["pass"]
+                user, passwd = os.environ.get(cu), os.environ.get(cp)
+                if not user or not passwd:
+                    print(f"·  {name}: no credentials in env ({cu}/{cp}) -- skip")
+                    continue
             ctx = browser.new_context(user_agent=UA, locale="en-GB",
                                       viewport={"width": 1366, "height": 900})
             page = ctx.new_page()
-            try:
-                login(page, site, user, passwd)
-                print(f"✓  {name}: logged in")
-            except Exception as e:
-                fail += 1
-                print(f"✗  {name}: login failed ({type(e).__name__}: {e})")
-                ctx.close()
-                continue
+            if not no_login:
+                try:
+                    login(page, site, user, passwd)
+                    print(f"✓  {name}: logged in")
+                except Exception as e:
+                    fail += 1
+                    print(f"✗  {name}: login failed ({type(e).__name__}: {e})")
+                    ctx.close()
+                    continue
             for prod in site.get("products", []):
-                if str(prod.get("url", "")).startswith("FILL_"):
+                url = str(prod.get("url", ""))
+                use_listing = (not url or url.startswith("FILL_")) and site.get("list_url") and prod.get("match")
+                if (not url or url.startswith("FILL_")) and not use_listing:
                     print(f"   {name}: {prod['product']} -- URL not filled, skip")
                     continue
                 if (today, name, prod["product"]) in seen:
                     print(f"=  {name}: {prod['product']} already recorded today")
                     continue
                 try:
-                    price = read_price(page, site, prod)
+                    price = read_price_from_listing(page, site, prod) if use_listing \
+                        else read_price(page, site, prod)
                 except Exception as e:
                     fail += 1
                     print(f"?  {name}: {prod['product']} error ({type(e).__name__})")
@@ -195,7 +234,8 @@ def run():
                     continue
                 new.append({
                     "date": today, "oil": prod["oil"], "channel": "cash_carry",
-                    "source": name, "product": prod["product"], "url": prod["url"],
+                    "source": name, "product": prod["product"],
+                    "url": prod.get("url") or site.get("list_url", ""),
                     "pack_value": prod["pack_value"], "pack_unit": prod["pack_unit"],
                     "price_gbp": round(price, 2), "notes": "auth-scraped",
                 })

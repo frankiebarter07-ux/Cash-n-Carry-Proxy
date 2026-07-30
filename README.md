@@ -90,11 +90,14 @@ daily job. Setup:
 
 1. **Add credentials as GitHub Secrets** (repo → Settings → Secrets and variables →
    Actions). Supported pairs: `COSTCO_USER/PASS`, `BESTWAY_USER/PASS`,
-   `BOOKER_USER/PASS`, `BIDFOOD_USER/PASS`. They are encrypted, injected only at
-   runtime, and never stored in the repo. The auth step is skipped entirely when no
-   secrets are set. **Costco and Bestway are pre-configured with real product URLs**
-   (just add credentials); **Booker and Bidfood** need you to paste logged-in
-   product URLs first, then set `"enabled": true`.
+   `BIDFOOD_USER/PASS`. They are encrypted, injected only at runtime, and never
+   stored in the repo. **Costco and Bestway are pre-configured with real product
+   URLs** (just add credentials); **Bidfood** needs you to paste logged-in product
+   URLs first, then set `"enabled": true`.
+   - **Booker needs no login** — its prices are public, so it is scraped by
+     rendering the category listing (`no_login: true`, `list_url` + keyword
+     `match`), and runs every day with no secret. Verify the tile parsing on the
+     first CI run.
 2. **Point it at the products** in `config/auth_sites.json` (login URL, candidate
    selectors, product URLs). Costco's product URLs are pre-filled; **Booker is
    disabled** until you log in once and paste each product's URL (Booker needs a
