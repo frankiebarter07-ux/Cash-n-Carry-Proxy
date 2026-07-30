@@ -65,6 +65,70 @@
           "pack_value": 20, "pack_unit": "L"
         }
       ]
+    },
+    "Bestway Wholesale": {
+      "enabled": true,
+      "_note": "Product URLs are public (price is login-gated), so this is ready once BESTWAY_USER/PASS Secrets are set. Verify the login/price selectors on first run.",
+      "cred_env": { "user": "BESTWAY_USER", "pass": "BESTWAY_PASS" },
+      "login_url": "https://www.bestwaywholesale.co.uk/login",
+      "username_selectors": [
+        "#email", "input[name='email']", "input[name='username']",
+        "input[type='email']", "input[autocomplete='username']"
+      ],
+      "password_selectors": [
+        "#password", "input[name='password']", "input[type='password']",
+        "input[autocomplete='current-password']"
+      ],
+      "submit_selectors": [
+        "button[type='submit']", "button:has-text('Sign in')", "button:has-text('Login')"
+      ],
+      "price_selectors": [
+        "[itemprop='price']", ".price", ".product-price", ".pdp-price"
+      ],
+      "products": [
+        {
+          "oil": "rapeseed", "product": "Consumer's Pride Rapeseed Cooking Oil 20L",
+          "url": "https://www.bestwaywholesale.co.uk/product/388027-1",
+          "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "rapeseed", "product": "White Pearl Rapeseed Oil 20L",
+          "url": "https://www.bestwaywholesale.co.uk/product/778644-1",
+          "pack_value": 20, "pack_unit": "L"
+        }
+      ]
+    },
+    "Bidfood": {
+      "enabled": false,
+      "_todo": "Log in to bidfood.co.uk, open each product, paste its URL into 'url' below and set enabled=true. Bidfood needs a login to view product pages.",
+      "cred_env": { "user": "BIDFOOD_USER", "pass": "BIDFOOD_PASS" },
+      "login_url": "https://www.bidfood.co.uk/login/",
+      "username_selectors": [
+        "#username", "input[name='username']", "input[type='email']",
+        "input[autocomplete='username']"
+      ],
+      "password_selectors": [
+        "#password", "input[name='password']", "input[type='password']",
+        "input[autocomplete='current-password']"
+      ],
+      "submit_selectors": [
+        "button[type='submit']", "button:has-text('Sign in')", "button:has-text('Log in')"
+      ],
+      "price_selectors": [
+        "[itemprop='price']", ".price", ".product-price", "[data-testid='price']"
+      ],
+      "products": [
+        {
+          "oil": "rapeseed", "product": "Rapeseed Oil 20L (Bidfood)",
+          "url": "FILL_ME_FROM_LOGGED_IN_BIDFOOD",
+          "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "soybean", "product": "Vegetable (soya) Oil 20L (Bidfood)",
+          "url": "FILL_ME_FROM_LOGGED_IN_BIDFOOD",
+          "pack_value": 20, "pack_unit": "L"
+        }
+      ]
     }
   }
 }

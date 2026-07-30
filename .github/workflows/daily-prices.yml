@@ -24,6 +24,10 @@ jobs:
       COSTCO_PASS: ${{ secrets.COSTCO_PASS }}
       BOOKER_USER: ${{ secrets.BOOKER_USER }}
       BOOKER_PASS: ${{ secrets.BOOKER_PASS }}
+      BESTWAY_USER: ${{ secrets.BESTWAY_USER }}
+      BESTWAY_PASS: ${{ secrets.BESTWAY_PASS }}
+      BIDFOOD_USER: ${{ secrets.BIDFOOD_USER }}
+      BIDFOOD_PASS: ${{ secrets.BIDFOOD_PASS }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +42,7 @@ jobs:
           python3 scripts/render_static.py
 
       - name: Authenticated scrape (only when login Secrets are set)
-        if: ${{ env.COSTCO_USER != '' || env.BOOKER_USER != '' }}
+        if: ${{ env.COSTCO_USER != '' || env.BOOKER_USER != '' || env.BESTWAY_USER != '' || env.BIDFOOD_USER != '' }}
         run: |
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium

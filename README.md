@@ -89,9 +89,12 @@ logs in with **Playwright** (a real headless browser) and reads those prices in 
 daily job. Setup:
 
 1. **Add credentials as GitHub Secrets** (repo → Settings → Secrets and variables →
-   Actions): `COSTCO_USER`, `COSTCO_PASS`, and/or `BOOKER_USER`, `BOOKER_PASS`.
-   They are encrypted, injected only at runtime, and never stored in the repo. The
-   auth step is skipped entirely when no secrets are set.
+   Actions). Supported pairs: `COSTCO_USER/PASS`, `BESTWAY_USER/PASS`,
+   `BOOKER_USER/PASS`, `BIDFOOD_USER/PASS`. They are encrypted, injected only at
+   runtime, and never stored in the repo. The auth step is skipped entirely when no
+   secrets are set. **Costco and Bestway are pre-configured with real product URLs**
+   (just add credentials); **Booker and Bidfood** need you to paste logged-in
+   product URLs first, then set `"enabled": true`.
 2. **Point it at the products** in `config/auth_sites.json` (login URL, candidate
    selectors, product URLs). Costco's product URLs are pre-filled; **Booker is
    disabled** until you log in once and paste each product's URL (Booker needs a
