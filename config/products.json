@@ -1,5 +1,5 @@
 {
-  "_comment": "Exact products aggregated per oil + daily scrape targets. Reliable/established UK sellers only (small shops & loss-leaders excluded). UK prices only. One fixed pack size per oil (sunflower/rapeseed/soybean 20L, palm & beef dripping 12.5kg, olive EV 5L). Prices are the single pack price incl. any current discount (a reliable shop dropping price is the signal); GBP/tonne computed downstream.",
+  "_comment": "Exact products aggregated per oil (all UK, reliable sellers, one fixed pack size per oil). A seller's multiple products are averaged into one seller-price in process.py, then aggregated across sellers with a 2-SD outlier filter. Prices are single-pack incl. any discount; UK cooking oils/fats are zero-rated so inc-VAT = ex-VAT. GBP/tonne computed downstream.",
   "currency": "GBP",
   "country": "UK",
   "products": [
@@ -12,7 +12,29 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "rapeseed",
+      "channel": "cash_carry",
+      "source": "JJ Foodservice",
+      "product": "JJ Extended Life Rapeseed Oil Drum 1x20L",
+      "url": "https://www.jjfoodservice.com/product/england/OIL115",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "rapeseed",
+      "channel": "cash_carry",
+      "source": "JJ Foodservice",
+      "product": "JJ Extended Life Rapeseed Oil BIB 1x20L",
+      "url": "https://www.jjfoodservice.com/product/england/OIL116",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "rapeseed",
@@ -23,18 +45,40 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "rapeseed",
+      "channel": "cash_carry",
+      "source": "JJ Foodservice",
+      "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
+      "url": "https://www.jjfoodservice.com/product/england/OIL068",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "rapeseed",
       "channel": "cash_carry",
       "source": "Brakes (Sysco)",
-      "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
+      "product": "Sysco Classic Extended Life Rapeseed Oil Drum 20L",
       "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/9802",
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "rapeseed",
+      "channel": "cash_carry",
+      "source": "Brakes (Sysco)",
+      "product": "Sysco Classic Rapeseed Oil Bottle in Box 20L",
+      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "rapeseed",
@@ -45,18 +89,40 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "rapeseed",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "Chef's Larder Rapeseed Cooking Oil 20L",
+      "url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "soybean",
       "channel": "cash_carry",
       "source": "JJ Foodservice",
-      "product": "KTC Pure Vegetable Oil (100% soya) Drum 1x20L",
+      "product": "KTC Vegetable Cooking Oil Drum 1x20L",
       "url": "https://www.jjfoodservice.com/product/england/OIL013",
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "soybean",
+      "channel": "cash_carry",
+      "source": "JJ Foodservice",
+      "product": "KTC Vegetable Cooking Oil BIB 1x20L",
+      "url": "https://www.jjfoodservice.com/product/england/OIL072",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "soybean",
@@ -78,7 +144,18 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "soybean",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "KTC Vegetable Cooking Oil 20L",
+      "url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "palm",
@@ -89,7 +166,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "palm",
@@ -100,7 +177,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "palm",
@@ -111,7 +188,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "palm",
@@ -122,7 +199,18 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+    },
+    {
+      "oil": "palm",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "Palmax SG Palm Oil 12.5kg",
+      "url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
+      "pack_value": 12.5,
+      "pack_unit": "kg",
+      "scrapable": false,
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "olive_ev",
@@ -133,7 +221,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "olive_ev",
@@ -144,7 +232,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "olive_ev",
@@ -155,7 +243,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "olive_ev",
@@ -166,7 +254,7 @@
       "pack_value": 5.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "olive_ev",
@@ -199,7 +287,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     },
     {
       "oil": "beef_dripping",
@@ -210,7 +298,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
     }
   ]
 }

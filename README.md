@@ -23,15 +23,18 @@ Open **[`index.html`](index.html)** in a browser for the interactive chart:
 | Oil / fat | Standard unit | Basis | # reliable sellers |
 |-----------|---------------|-------|--------------------|
 | Sunflower | 20 L drum | volume | 1 (20L sunflower is mostly login-gated) |
-| Rapeseed | 20 L drum | volume | 3 |
-| Soybean (pure veg, 100% soya) | 20 L drum | volume | 3 |
-| Palm | 12.5 kg block | weight | 4 |
-| Olive (extra virgin) | 5 L tin | volume | 6 |
+| Rapeseed | 20 L drum | volume | 4 |
+| Soybean (pure veg, 100% soya) | 20 L drum | volume | 4 |
+| Palm | 12.5 kg block | weight | 3 |
+| Olive (extra virgin) | 5 L tin | volume | 4 |
 | Beef dripping (refined) | 12.5 kg block | weight | 2 |
 
 Only **reliable / established** sellers are aggregated — small shops and loss-leaders are
 excluded. Prices include any current discount (a reliable shop cutting its price is the
-signal). Beef dripping = refined beef tallow, tracked as one line.
+signal). A seller's multiple products for an oil are **averaged into one seller-price
+first**, then aggregated across sellers, so no single shop is over-weighted. UK cooking
+oils/fats are **zero-rated (0% VAT)**, so inc-VAT and ex-VAT prices are used as-is. Beef
+dripping = refined beef tallow, tracked as one line.
 
 Every observation for an oil must be at that oil's **one fixed pack size** — `process.py`
 rejects a size mismatch (so sunflower is 20L only, never 5L + 20L mixed). The exact

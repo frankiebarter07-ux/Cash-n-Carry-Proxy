@@ -1,20 +1,28 @@
 date,oil,channel,source,product,url,pack_value,pack_unit,price_gbp,notes
-2026-07-29,sunflower,cash_carry,JJ Foodservice,KTC High Oleic Sunflower Oil BIB 1x20L,https://www.jjfoodservice.com/product/england/OIL112,20,L,44.00,collection price (high-oleic; £2.20/L)
-2026-07-29,rapeseed,cash_carry,JJ Foodservice,Pride Rapeseed Oil Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL055,20,L,33.99,collection price (£1.70/L)
-2026-07-29,rapeseed,cash_carry,Brakes (Sysco),Sysco Classic Extended Life Rapeseed Oil 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/9802,20,L,31.99,listed price (£1.60/L)
-2026-07-29,rapeseed,cash_carry,Marfast,KTC Chef's Choice Rapeseed Oil 20L Drum,https://marfast.co.uk/ambient-food-products/oils/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html,20,L,42.99,collection price
-2026-07-29,soybean,cash_carry,JJ Foodservice,KTC Pure Vegetable Oil (100% soya) Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL013,20,L,29.00,collection price (£1.45/L)
+2026-07-29,sunflower,cash_carry,JJ Foodservice,KTC High Oleic Sunflower Oil BIB 1x20L,https://www.jjfoodservice.com/product/england/OIL112,20,L,44.00,collection ex-VAT (high-oleic)
+2026-07-29,rapeseed,cash_carry,JJ Foodservice,JJ Extended Life Rapeseed Oil Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL115,20,L,32.99,collection ex-VAT
+2026-07-29,rapeseed,cash_carry,JJ Foodservice,JJ Extended Life Rapeseed Oil BIB 1x20L,https://www.jjfoodservice.com/product/england/OIL116,20,L,32.49,collection ex-VAT
+2026-07-29,rapeseed,cash_carry,JJ Foodservice,Pride Rapeseed Oil Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL055,20,L,33.99,collection ex-VAT
+2026-07-29,rapeseed,cash_carry,JJ Foodservice,KTC Chef's Choice Rapeseed Oil Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL068,20,L,33.49,collection ex-VAT
+2026-07-29,rapeseed,cash_carry,Brakes (Sysco),Sysco Classic Extended Life Rapeseed Oil Drum 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/9802,20,L,33.99,listed ex-VAT
+2026-07-29,rapeseed,cash_carry,Brakes (Sysco),Sysco Classic Rapeseed Oil Bottle in Box 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil,20,L,39.51,listed ex-VAT
+2026-07-29,rapeseed,cash_carry,Marfast,KTC Chef's Choice Rapeseed Oil 20L Drum,https://marfast.co.uk/ambient-food-products/oils/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html,20,L,42.99,collection
+2026-07-29,rapeseed,cash_carry,Booker,Chef's Larder Rapeseed Cooking Oil 20L,https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients,20,L,33.99,listed inc-VAT (zero-rated food = ex)
+2026-07-29,soybean,cash_carry,JJ Foodservice,KTC Vegetable Cooking Oil Drum 1x20L,https://www.jjfoodservice.com/product/england/OIL013,20,L,30.49,collection ex-VAT (100% soya)
+2026-07-29,soybean,cash_carry,JJ Foodservice,KTC Vegetable Cooking Oil BIB 1x20L,https://www.jjfoodservice.com/product/england/OIL072,20,L,29.99,collection ex-VAT (100% soya)
 2026-07-29,soybean,cash_carry,CK Fast Foods,KTC Vegetable Oil 20L Yellow Drum,https://www.ckfastfoods.com/product/ktc-vegetable-oil-20ltr-yellow-drum,20,L,25.39,delivery price
-2026-07-29,soybean,cash_carry,Brakes (Sysco),KTC Vegetable Oil (Bottle in Box) 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753,20,L,34.88,listed price (£1.74/L)
-2026-07-29,palm,cash_carry,JJ Foodservice,JJ SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL124,12.5,kg,21.79,collection price (£1.74/kg)
-2026-07-29,palm,cash_carry,JJ Foodservice,Palmax SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL011,12.5,kg,22.25,collection price (£1.78/kg)
-2026-07-29,palm,cash_carry,JJ Foodservice,Frymax Solid Palm Frying Oil 12.5kg,https://www.jjfoodservice.com/product/england/OIL010,12.5,kg,29.99,collection price (100% palm)
-2026-07-29,palm,cash_carry,Brakes (Sysco),Palmax Refined Palm Oil 12.5kg,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/palmax-refined-palm-oil/p/29545,12.5,kg,43.01,listed price (£3.44/kg)
-2026-07-29,olive_ev,cash_carry,JJ Foodservice,Antica Tradizione Extra Virgin Olive Oil 5L,https://www.jjfoodservice.com/product/england/OIL062,5,L,30.99,collection price (£6.20/L)
-2026-07-29,olive_ev,cash_carry,JJ Foodservice,Filippo Berio Extra Virgin Olive Oil 5L,https://www.jjfoodservice.com/category/england/oil/olive%20oil/extra%20virgin%20oil/,5,L,36.99,collection price (£7.40/L)
-2026-07-29,olive_ev,cash_carry,Brakes (Sysco),Barbera Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/olive-oil,5,L,35.94,listed price (£7.19/L)
-2026-07-29,olive_ev,cash_carry,Brakes (Sysco),Sysco Classic Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extra-virgin-olive-oil-5ltr/p/5002323,5,L,27.05,listed price
+2026-07-29,soybean,cash_carry,Brakes (Sysco),KTC Vegetable Oil (Bottle in Box) 20L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753,20,L,35.33,listed ex-VAT
+2026-07-29,soybean,cash_carry,Booker,KTC Vegetable Cooking Oil 20L,https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients,20,L,30.69,listed inc-VAT (zero-rated food = ex)
+2026-07-29,palm,cash_carry,JJ Foodservice,JJ SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL124,12.5,kg,21.49,collection ex-VAT
+2026-07-29,palm,cash_carry,JJ Foodservice,Palmax SG Palm Oil 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL011,12.5,kg,21.79,collection ex-VAT
+2026-07-29,palm,cash_carry,JJ Foodservice,Frymax Solid Palm Frying Oil 12.5kg,https://www.jjfoodservice.com/product/england/OIL010,12.5,kg,29.99,collection ex-VAT (100% palm)
+2026-07-29,palm,cash_carry,Brakes (Sysco),Palmax Refined Palm Oil 12.5kg,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/palmax-refined-palm-oil/p/29545,12.5,kg,43.54,listed ex-VAT (refined grade)
+2026-07-29,palm,cash_carry,Booker,Palmax SG Palm Oil 12.5kg,https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients,12.5,kg,24.49,listed inc-VAT (zero-rated food = ex)
+2026-07-29,olive_ev,cash_carry,JJ Foodservice,Antica Tradizione Extra Virgin Olive Oil 5L,https://www.jjfoodservice.com/product/england/OIL062,5,L,30.99,collection ex-VAT
+2026-07-29,olive_ev,cash_carry,JJ Foodservice,Filippo Berio Extra Virgin Olive Oil 5L,https://www.jjfoodservice.com/category/england/oil/olive%20oil/extra%20virgin%20oil/,5,L,36.99,collection ex-VAT
+2026-07-29,olive_ev,cash_carry,Brakes (Sysco),Barbera Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/olive-oil,5,L,35.94,listed ex-VAT
+2026-07-29,olive_ev,cash_carry,Brakes (Sysco),Sysco Classic Extra Virgin Olive Oil 5L,https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extra-virgin-olive-oil-5ltr/p/5002323,5,L,27.05,listed ex-VAT
 2026-07-29,olive_ev,cash_carry,Costco UK,Filippo Berio Extra Virgin Olive Oil 5L,https://www.costco.co.uk/Grocery-Household/Filippo-Berio-Extra-Virgin-Olive-Oil-5L/p/28218,5,L,31.99,warehouse price
 2026-07-29,olive_ev,cash_carry,Foodomarket,UK extra virgin olive oil 5L wholesale index,https://www.foodomarket.com/en-gb/products/condiments/extra-virgin-olive-oil-5l,5,L,35.43,UK market index 03/07/2026
-2026-07-29,beef_dripping,cash_carry,JJ Foodservice,KTC Halal Beef Dripping 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL135,12.5,kg,28.00,collection price (£2.24/kg)
+2026-07-29,beef_dripping,cash_carry,JJ Foodservice,KTC Halal Beef Dripping 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL135,12.5,kg,28.00,collection ex-VAT
 2026-07-29,beef_dripping,cash_carry,Cater-Choice,KTC Halal Beef Dripping 12.5kg,https://sale.cater-choice.com/product-detail/ktc-halal-beef-dripping-x-125kg,12.5,kg,26.99,collection price

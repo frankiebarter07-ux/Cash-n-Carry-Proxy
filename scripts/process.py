@@ -70,6 +70,23 @@ def normalise(row, oil_cfg, tonne_kg):
     return per_unit, per_tonne
 
 
+def collapse_by_source(points):
+    """Average a seller's products into one seller-level price (equal weight per
+    seller), so a shop listing 4 rapeseed SKUs counts as one seller, not four."""
+    by = defaultdict(list)
+    for p in points:
+        by[p["source"]].append(p)
+    sellers = []
+    for src, ps in by.items():
+        sellers.append({
+            "source": src,
+            "price_per_unit": statistics.fmean(x["price_per_unit"] for x in ps),
+            "price_per_tonne": statistics.fmean(x["price_per_tonne"] for x in ps),
+            "n_products": len(ps),
+        })
+    return sellers
+
+
 def filter_anomalies(points):
     """Split points into (kept, excluded) using the 2-SD rule on £/tonne."""
     if len(points) < 3:
@@ -138,31 +155,32 @@ def build():
 
     print(f"Processing {len(rows)} observations into {len(groups)} oil/channel/date groups\n")
     for (oil, channel, day), points in sorted(groups.items()):
-        kept, excluded = filter_anomalies(points)
+        sellers = collapse_by_source(points)                 # stage 1: one price per seller
+        kept, excluded = filter_anomalies(sellers)           # stage 2: drop cross-seller outliers
         if not kept:  # everything excluded (shouldn't happen with the 2-SD rule) -> keep raw
-            kept = points
-        agg_unit = statistics.fmean(p["price_per_unit"] for p in kept)
-        agg_tonne = statistics.fmean(p["price_per_tonne"] for p in kept)
+            kept = sellers
+        agg_unit = statistics.fmean(s["price_per_unit"] for s in kept)
+        agg_tonne = statistics.fmean(s["price_per_tonne"] for s in kept)
         out["oils"][oil]["channels"][channel].append(
             {
                 "date": day,
                 "price_per_unit": round(agg_unit, 2),
                 "price_per_tonne": round(agg_tonne, 2),
-                "n_obs": len(points),
+                "n_obs": len(sellers),          # sellers contributing (post stage 1)
                 "n_used": len(kept),
                 "n_excluded": len(excluded),
-                "sources": sorted({p["source"] for p in kept}),
+                "sources": sorted(s["source"] for s in kept),
                 "excluded": [
-                    {"source": p["source"], "price_per_tonne": round(p["price_per_tonne"], 2)}
-                    for p in excluded
+                    {"source": s["source"], "price_per_tonne": round(s["price_per_tonne"], 2)}
+                    for s in excluded
                 ],
             }
         )
-        flag = f"  [{len(excluded)} excluded]" if excluded else ""
+        flag = f"  [{len(excluded)} seller(s) excluded]" if excluded else ""
         print(
             f"  {oil:10s} {channel:10s} {day}  "
             f"£{agg_unit:8.2f}/unit  £{agg_tonne:8.2f}/tonne  "
-            f"(n={len(kept)}/{len(points)}){flag}"
+            f"(sellers={len(kept)}/{len(sellers)}, obs={len(points)}){flag}"
         )
 
     # sort each channel by date and drop empty channels

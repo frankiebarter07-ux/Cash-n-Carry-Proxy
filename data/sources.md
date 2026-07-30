@@ -20,50 +20,60 @@ different size is rejected):
 | Olive (extra virgin) | 5 L |
 | Beef dripping (refined) | 12.5 kg |
 
-Prices are aggregated **across multiple sellers per oil**; any observation more than
-**2 standard deviations** from the cross-seller mean (in £/tonne) is dropped before the
-mean is taken (only applied when a group has ≥ 3 sellers).
+**Two-stage aggregation:** (1) a seller's multiple products for an oil are averaged
+into one **seller price** (a shop listing 4 rapeseed SKUs counts as one seller, not
+four); (2) across sellers, any seller more than **2 standard deviations** from the
+cross-seller mean (in £/tonne) is dropped, then survivors are averaged (stage 2 applies
+with ≥ 3 sellers).
+
+**VAT:** UK cooking oils and fats are **zero-rated food (0% VAT)**, so a seller's
+inc-VAT price equals its ex-VAT price — confirmed by the identical KTC Vegetable Oil
+20L at £30.69 inc-VAT (Booker) vs £30.49 ex-VAT (JJ). Prices are used as listed, no VAT
+adjustment.
 
 ## Exact products in the aggregate (as of 2026-07-29)
 
-### Sunflower — 20 L  *(1 reliable seller — needs more; 20L sunflower is mostly trade-login gated)*
+Prices are per single pack. Where a seller lists several products for an oil, they are
+averaged into the one seller-price shown in brackets.
+
+### Sunflower — 20 L  *(1 seller — needs more; 20L sunflower is mostly trade-login gated)*
 - JJ Foodservice — *KTC High Oleic Sunflower BIB 20L* — £44.00
 
-### Rapeseed — 20 L  *(3)*
-- JJ Foodservice — *Pride Rapeseed Oil Drum 20L* — £33.99
-- Brakes (Sysco) — *Sysco Classic Extended Life Rapeseed 20L* — £31.99
-- Marfast — *KTC Chef's Choice Rapeseed 20L* — £42.99
+### Rapeseed — 20 L  *(4 sellers)*
+- JJ Foodservice *(£33.24 avg)* — Ext Life Drum £32.99 · Ext Life BIB £32.49 · Pride £33.99 · KTC Chef's Choice £33.49
+- Brakes (Sysco) *(£36.75 avg)* — Sysco Classic Ext Life Drum £33.99 · Sysco Classic BIB £39.51
+- Booker — Chef's Larder Rapeseed 20L — £33.99
+- Marfast — KTC Chef's Choice Rapeseed 20L — £42.99
 
-### Soybean (pure veg, 100% soya) — 20 L  *(3)*
-- JJ Foodservice — *KTC Pure Vegetable Oil 20L* — £29.00
-- CK Fast Foods — *KTC Vegetable Oil 20L Drum* — £25.39
-- Brakes (Sysco) — *KTC Vegetable Oil (Bottle in Box) 20L* — £34.88
+### Soybean (pure veg, 100% soya = KTC Vegetable) — 20 L  *(4 sellers)*
+- JJ Foodservice *(£30.24 avg)* — KTC Veg Drum £30.49 · KTC Veg BIB £29.99
+- Booker — KTC Vegetable Oil 20L — £30.69
+- Brakes (Sysco) — KTC Vegetable Oil BIB 20L — £35.33
+- CK Fast Foods — KTC Vegetable Oil 20L — £25.39
 
-### Palm — 12.5 kg  *(4)*
-- JJ Foodservice — *JJ SG Palm Oil 12.5kg* — £21.79
-- JJ Foodservice — *Palmax SG Palm Oil 12.5kg* — £22.25
-- JJ Foodservice — *Frymax Solid Palm Frying Oil 12.5kg* — £29.99
-- Brakes (Sysco) — *Palmax Refined Palm Oil 12.5kg* — £43.01
+### Palm — 12.5 kg  *(3 sellers)*
+- JJ Foodservice *(£24.42 avg)* — JJ SG Palm £21.49 · Palmax SG £21.79 · Frymax £29.99
+- Booker — Palmax SG Palm Oil 12.5kg — £24.49
+- Brakes (Sysco) — Palmax Refined Palm Oil 12.5kg — £43.54 *(refined grade; runs high)*
 
-### Olive (extra virgin) — 5 L  *(6)*
-- JJ Foodservice — *Antica Tradizione EVOO 5L* — £30.99
-- JJ Foodservice — *Filippo Berio EVOO 5L* — £36.99
-- Brakes (Sysco) — *Barbera EVOO 5L* — £35.94
-- Brakes (Sysco) — *Sysco Classic EVOO 5L* — £27.05
-- Costco UK — *Filippo Berio EVOO 5L* — £31.99
-- Foodomarket — *UK EVOO 5L wholesale index* — £35.43
+### Olive (extra virgin) — 5 L  *(4 sellers)*
+- JJ Foodservice *(£33.99 avg)* — Antica £30.99 · Filippo Berio £36.99
+- Brakes (Sysco) *(£31.50 avg)* — Barbera £35.94 · Sysco Classic £27.05
+- Costco UK — Filippo Berio EVOO 5L — £31.99
+- Foodomarket — UK EVOO 5L wholesale index — £35.43
 
-### Beef dripping (refined & deodorised) — 12.5 kg  *(2)*
+### Beef dripping (refined & deodorised) — 12.5 kg  *(2 sellers)*
 - JJ Foodservice — *KTC Halal Beef Dripping 12.5kg* — £28.00
 - Cater-Choice — *KTC Halal Beef Dripping 12.5kg* — £26.99
+- *Excluded: Nortech Superior Beef Dripping is 20 kg — wrong size for the 12.5 kg line.*
 
 *Beef dripping = refined beef tallow (same trade product), tracked as one line. 12.5kg is
 the most common single-block size (KTC, Henry Colbeck, Q Bronze) vs 20kg 4×5kg boxes.*
 
 ## Reliable sellers used
 
-JJ Foodservice, Brakes (Sysco UK), Costco UK, Marfast, CK Fast Foods, Cater-Choice, and
-the Foodomarket UK wholesale index.
+JJ Foodservice, Brakes (Sysco UK), Booker, Costco UK, Marfast, CK Fast Foods,
+Cater-Choice, and the Foodomarket UK wholesale index.
 
 ## Excluded — small shops / loss-leaders (not in the aggregate)
 

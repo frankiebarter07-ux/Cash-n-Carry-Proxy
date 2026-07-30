@@ -1,8 +1,8 @@
 {
-  "generated": "2026-07-29",
+  "generated": "2026-07-30",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 19,
+  "raw_count": 27,
   "oils": {
     "sunflower": {
       "label": "Sunflower",
@@ -43,12 +43,13 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 36.32,
-            "price_per_tonne": 1984.88,
-            "n_obs": 3,
-            "n_used": 3,
+            "price_per_unit": 36.74,
+            "price_per_tonne": 2007.79,
+            "n_obs": 4,
+            "n_used": 4,
             "n_excluded": 0,
             "sources": [
+              "Booker",
               "Brakes (Sysco)",
               "JJ Foodservice",
               "Marfast"
@@ -71,12 +72,13 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 29.76,
-            "price_per_tonne": 1622.5,
-            "n_obs": 3,
-            "n_used": 3,
+            "price_per_unit": 30.41,
+            "price_per_tonne": 1658.26,
+            "n_obs": 4,
+            "n_used": 4,
             "n_excluded": 0,
             "sources": [
+              "Booker",
               "Brakes (Sysco)",
               "CK Fast Foods",
               "JJ Foodservice"
@@ -99,12 +101,13 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 29.26,
-            "price_per_tonne": 2340.8,
-            "n_obs": 4,
-            "n_used": 4,
+            "price_per_unit": 30.82,
+            "price_per_tonne": 2465.42,
+            "n_obs": 3,
+            "n_used": 3,
             "n_excluded": 0,
             "sources": [
+              "Booker",
               "Brakes (Sysco)",
               "JJ Foodservice"
             ],
@@ -126,10 +129,10 @@
         "cash_carry": [
           {
             "date": "2026-07-29",
-            "price_per_unit": 33.06,
-            "price_per_tonne": 7219.43,
-            "n_obs": 6,
-            "n_used": 6,
+            "price_per_unit": 33.23,
+            "price_per_tonne": 7254.64,
+            "n_obs": 4,
+            "n_used": 4,
             "n_excluded": 0,
             "sources": [
               "Brakes (Sysco)",
