@@ -1,0 +1,70 @@
+{
+  "_comment": "Login-gated sellers scraped by scripts/scrape_auth.py using Playwright. Credentials come ONLY from environment variables (GitHub Actions Secrets) named in cred_env -- never store passwords here. Selectors are candidate lists tried in order (first match wins), so login-form/price markup changes don't need code edits. VERIFY the selectors and product URLs against the live logged-in site once; where unknown they're marked and the site is disabled until filled.",
+  "sites": {
+    "Costco UK": {
+      "enabled": true,
+      "cred_env": { "user": "COSTCO_USER", "pass": "COSTCO_PASS" },
+      "login_url": "https://www.costco.co.uk/login",
+      "username_selectors": [
+        "#logonId", "input[name='logonId']", "input[name='j_username']",
+        "input[type='email']", "input[autocomplete='username']"
+      ],
+      "password_selectors": [
+        "#logonPassword", "input[name='logonPassword']", "input[name='j_password']",
+        "input[type='password']", "input[autocomplete='current-password']"
+      ],
+      "submit_selectors": [
+        "button[type='submit']", "#sign-in-button",
+        "button:has-text('Sign In')", "button:has-text('Sign in')"
+      ],
+      "price_selectors": [
+        "[itemprop='price']", ".product-price .notranslate", ".your-price .value",
+        ".price-wrapper .notranslate", ".product-details-pricing__value", ".price"
+      ],
+      "products": [
+        {
+          "oil": "soybean", "product": "KTC Vegetable Oil 20L Box",
+          "url": "https://www.costco.co.uk/Business-Delivery/Business-Delivery/KTC-Vegetable-Oil-20L-Box/p/76584_BD",
+          "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "soybean", "product": "KTC Super Hi-Fry Extra Long Life Vegetable Oil 20L",
+          "url": "https://www.costco.co.uk/Business-Delivery/Business-Delivery/Oils-Salad-Dressing/KTC-Super-Hi-Fry-Extra-Long-Life-Vegetable-Oil-20L/p/507868_BD",
+          "pack_value": 20, "pack_unit": "L"
+        }
+      ]
+    },
+    "Booker": {
+      "enabled": false,
+      "_todo": "Log in to booker.co.uk, open each product, copy its URL into 'url' below and its price-element selector into price_selectors, then set enabled=true. Booker requires login even to view product pages, so these URLs can't be discovered anonymously.",
+      "cred_env": { "user": "BOOKER_USER", "pass": "BOOKER_PASS" },
+      "login_url": "https://www.booker.co.uk/login",
+      "username_selectors": [
+        "#username", "input[name='username']", "input[name='j_username']",
+        "input[type='email']", "input[autocomplete='username']"
+      ],
+      "password_selectors": [
+        "#password", "input[name='password']", "input[name='j_password']",
+        "input[type='password']", "input[autocomplete='current-password']"
+      ],
+      "submit_selectors": [
+        "button[type='submit']", "button:has-text('Sign in')", "button:has-text('Log in')"
+      ],
+      "price_selectors": [
+        "[itemprop='price']", ".product-price", ".price", "[data-testid='price']"
+      ],
+      "products": [
+        {
+          "oil": "rapeseed", "product": "Chef's Larder Rapeseed Cooking Oil 20L",
+          "url": "FILL_ME_FROM_LOGGED_IN_BOOKER",
+          "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "soybean", "product": "Chef's Larder Vegetable Cooking Oil 20L",
+          "url": "FILL_ME_FROM_LOGGED_IN_BOOKER",
+          "pack_value": 20, "pack_unit": "L"
+        }
+      ]
+    }
+  }
+}

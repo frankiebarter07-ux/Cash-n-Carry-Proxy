@@ -82,6 +82,35 @@ So collection is **daily best-effort scrape + assisted top-up**:
 
 It's a *movement proxy*, not a live trading price.
 
+## Automated login-gated scraping (Costco, Booker, …)
+
+Some reliable sellers hide prices behind a trade login. `scripts/scrape_auth.py`
+logs in with **Playwright** (a real headless browser) and reads those prices in the
+daily job. Setup:
+
+1. **Add credentials as GitHub Secrets** (repo → Settings → Secrets and variables →
+   Actions): `COSTCO_USER`, `COSTCO_PASS`, and/or `BOOKER_USER`, `BOOKER_PASS`.
+   They are encrypted, injected only at runtime, and never stored in the repo. The
+   auth step is skipped entirely when no secrets are set.
+2. **Point it at the products** in `config/auth_sites.json` (login URL, candidate
+   selectors, product URLs). Costco's product URLs are pre-filled; **Booker is
+   disabled** until you log in once and paste each product's URL (Booker needs a
+   login even to view a product page). Selectors are candidate *lists* tried in
+   order, so markup changes rarely need code edits.
+3. Validate config any time with `python3 scripts/scrape_auth.py --check`.
+
+**Honest limits** (why this is best-effort, not guaranteed):
+- Cloudflare/Akamai sites (JJ, Brakes) may still challenge a headless browser with a
+  CAPTCHA *even with a valid login* — those stay on manual top-up.
+- **2FA** on an account breaks automated login.
+- Scraping a **trade account may be against that seller's terms** — check yours; the
+  downside is account suspension.
+- Selectors/URLs may need a one-time verification against the live logged-in site.
+
+I can't test this end-to-end here (no credentials, sandboxed network), so treat the
+first CI run as the real test and adjust selectors in `config/auth_sites.json` if a
+login or price read fails.
+
 ## Adding / refreshing a gated price
 
 ```bash
@@ -100,6 +129,9 @@ That appends to `data/observations.csv` and rebuilds the series automatically.
 ```
 config/oils.json          oil registry: standard unit, density, colour (edit to add an oil)
 config/products.json      exact products per site + daily scrape targets
+config/auth_sites.json    login flow + products for the authenticated scraper
+scripts/scrape_auth.py    Playwright login-scrape for gated sellers (Costco/Booker)
+requirements.txt          Playwright (only needed by scrape_auth.py)
 data/observations.csv     raw price observations (the ground truth)
 data/sources.md           every UK site used, exact products, reliability notes
 data/series.js / .json    generated aggregate series (do not edit by hand)

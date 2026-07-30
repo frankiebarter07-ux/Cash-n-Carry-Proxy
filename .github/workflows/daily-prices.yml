@@ -16,6 +16,14 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Credentials for the login-gated scraper come from repo Secrets (Settings ->
+    # Secrets and variables -> Actions). Absent secrets resolve to "" and that
+    # step is skipped. Never commit passwords.
+    env:
+      COSTCO_USER: ${{ secrets.COSTCO_USER }}
+      COSTCO_PASS: ${{ secrets.COSTCO_PASS }}
+      BOOKER_USER: ${{ secrets.BOOKER_USER }}
+      BOOKER_PASS: ${{ secrets.BOOKER_PASS }}
     steps:
       - uses: actions/checkout@v4
 
@@ -23,9 +31,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Scrape today's prices (best-effort) and rebuild series
+      - name: Scrape open prices (best-effort) and rebuild series
         run: |
           python3 scripts/scrape.py || true
+          python3 scripts/process.py
+          python3 scripts/render_static.py
+
+      - name: Authenticated scrape (only when login Secrets are set)
+        if: ${{ env.COSTCO_USER != '' || env.BOOKER_USER != '' }}
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+          python3 scripts/scrape_auth.py || true
           python3 scripts/process.py
           python3 scripts/render_static.py
 
