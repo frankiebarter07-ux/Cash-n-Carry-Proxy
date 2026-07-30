@@ -111,8 +111,8 @@ def build():
     oils_cfg = config["oils"]
     rows = load_observations()
 
-    # group[(oil, channel, date)] = [normalised point, ...]
-    groups = defaultdict(list)
+    # panel[(oil, channel)][source][date] = [normalised product point, ...]
+    panel = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     for r in rows:
         oil = r["oil"]
         if oil not in oils_cfg:
@@ -126,13 +126,8 @@ def build():
                   f"!= standard {pack['value']}{pack['unit']} -- skipped (size mismatch)")
             continue
         per_unit, per_tonne = normalise(r, oils_cfg[oil], tonne_kg)
-        groups[(oil, r["channel"], r["date"])].append(
-            {
-                "source": r["source"],
-                "product": r["product"],
-                "price_per_unit": per_unit,
-                "price_per_tonne": per_tonne,
-            }
+        panel[(oil, r["channel"])][r["source"]][r["date"]].append(
+            {"price_per_unit": per_unit, "price_per_tonne": per_tonne}
         )
 
     out = {
@@ -153,35 +148,61 @@ def build():
             "channels": defaultdict(list),
         }
 
-    print(f"Processing {len(rows)} observations into {len(groups)} oil/channel/date groups\n")
-    for (oil, channel, day), points in sorted(groups.items()):
-        sellers = collapse_by_source(points)                 # stage 1: one price per seller
-        kept, excluded = filter_anomalies(sellers)           # stage 2: drop cross-seller outliers
-        if not kept:  # everything excluded (shouldn't happen with the 2-SD rule) -> keep raw
-            kept = sellers
-        agg_unit = statistics.fmean(s["price_per_unit"] for s in kept)
-        agg_tonne = statistics.fmean(s["price_per_tonne"] for s in kept)
-        out["oils"][oil]["channels"][channel].append(
-            {
-                "date": day,
-                "price_per_unit": round(agg_unit, 2),
-                "price_per_tonne": round(agg_tonne, 2),
-                "n_obs": len(sellers),          # sellers contributing (post stage 1)
-                "n_used": len(kept),
-                "n_excluded": len(excluded),
-                "sources": sorted(s["source"] for s in kept),
-                "excluded": [
-                    {"source": s["source"], "price_per_tonne": round(s["price_per_tonne"], 2)}
-                    for s in excluded
-                ],
-            }
-        )
-        flag = f"  [{len(excluded)} seller(s) excluded]" if excluded else ""
-        print(
-            f"  {oil:10s} {channel:10s} {day}  "
-            f"£{agg_unit:8.2f}/unit  £{agg_tonne:8.2f}/tonne  "
-            f"(sellers={len(kept)}/{len(sellers)}, obs={len(points)}){flag}"
-        )
+    print(f"Processing {len(rows)} observations (last price carried forward per seller)\n")
+    for (oil, channel), sources in sorted(panel.items()):
+        # stage 1: one price per seller per date (average that seller's products)
+        seller_series, all_dates = {}, set()
+        for source, datemap in sources.items():
+            series = []
+            for d, pts in datemap.items():
+                series.append((d,
+                               statistics.fmean(p["price_per_unit"] for p in pts),
+                               statistics.fmean(p["price_per_tonne"] for p in pts)))
+                all_dates.add(d)
+            seller_series[source] = sorted(series)
+
+        for day in sorted(all_dates):
+            # LOCF: each seller's most recent price on or before `day` (keeps the
+            # seller set comparable when only some sellers report on a given day)
+            sellers = []
+            for source, series in seller_series.items():
+                latest = None
+                for entry in series:
+                    if entry[0] <= day:
+                        latest = entry
+                    else:
+                        break
+                if latest is not None:
+                    sellers.append({"source": source,
+                                    "price_per_unit": latest[1],
+                                    "price_per_tonne": latest[2],
+                                    "stale": latest[0] != day})
+            kept, excluded = filter_anomalies(sellers)   # stage 2: drop cross-seller outliers
+            if not kept:
+                kept = sellers
+            agg_unit = statistics.fmean(s["price_per_unit"] for s in kept)
+            agg_tonne = statistics.fmean(s["price_per_tonne"] for s in kept)
+            n_fresh = sum(1 for s in kept if not s["stale"])
+            out["oils"][oil]["channels"][channel].append(
+                {
+                    "date": day,
+                    "price_per_unit": round(agg_unit, 2),
+                    "price_per_tonne": round(agg_tonne, 2),
+                    "n_obs": len(sellers),
+                    "n_used": len(kept),
+                    "n_excluded": len(excluded),
+                    "n_fresh": n_fresh,          # sellers that actually reported this day
+                    "sources": sorted(s["source"] for s in kept),
+                    "excluded": [
+                        {"source": s["source"], "price_per_tonne": round(s["price_per_tonne"], 2)}
+                        for s in excluded
+                    ],
+                }
+            )
+            flag = f"  [{len(excluded)} excl]" if excluded else ""
+            cf = f", {len(kept) - n_fresh} carried" if n_fresh < len(kept) else ""
+            print(f"  {oil:12s} {channel:10s} {day}  £{agg_unit:8.2f}/unit  "
+                  f"£{agg_tonne:8.2f}/tonne  (sellers={len(kept)}{cf}){flag}")
 
     # sort each channel by date and drop empty channels
     for oil in out["oils"].values():

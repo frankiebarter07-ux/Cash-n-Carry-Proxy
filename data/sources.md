@@ -24,7 +24,9 @@ different size is rejected):
 into one **seller price** (a shop listing 4 rapeseed SKUs counts as one seller, not
 four); (2) across sellers, any seller more than **2 standard deviations** from the
 cross-seller mean (in £/tonne) is dropped, then survivors are averaged (stage 2 applies
-with ≥ 3 sellers).
+with ≥ 3 sellers). On days when only some sellers report (e.g. only the auto-scraped
+ones), each other seller's **last known price is carried forward**, so the seller set
+stays comparable and the index moves only when a seller's price actually changes.
 
 **VAT:** UK cooking oils and fats are **zero-rated food (0% VAT)**, so a seller's
 inc-VAT price equals its ex-VAT price — confirmed by the identical KTC Vegetable Oil

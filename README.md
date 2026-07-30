@@ -32,9 +32,11 @@ Open **[`index.html`](index.html)** in a browser for the interactive chart:
 Only **reliable / established** sellers are aggregated — small shops and loss-leaders are
 excluded. Prices include any current discount (a reliable shop cutting its price is the
 signal). A seller's multiple products for an oil are **averaged into one seller-price
-first**, then aggregated across sellers, so no single shop is over-weighted. UK cooking
-oils/fats are **zero-rated (0% VAT)**, so inc-VAT and ex-VAT prices are used as-is. Beef
-dripping = refined beef tallow, tracked as one line.
+first**, then aggregated across sellers, so no single shop is over-weighted. On a day
+when only some sellers report (e.g. just the auto-scraped ones), each other seller's
+**last known price is carried forward** so the index stays comparable and moves only on
+real price changes. UK cooking oils/fats are **zero-rated (0% VAT)**, so inc-VAT and
+ex-VAT prices are used as-is. Beef dripping = refined beef tallow, tracked as one line.
 
 Every observation for an oil must be at that oil's **one fixed pack size** — `process.py`
 rejects a size mismatch (so sunflower is 20L only, never 5L + 20L mixed). The exact

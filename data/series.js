@@ -3,7 +3,7 @@ window.OIL_SERIES = {
   "generated": "2026-07-30",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 27,
+  "raw_count": 30,
   "oils": {
     "sunflower": {
       "label": "Sunflower",
@@ -23,6 +23,7 @@ window.OIL_SERIES = {
             "n_obs": 1,
             "n_used": 1,
             "n_excluded": 0,
+            "n_fresh": 1,
             "sources": [
               "JJ Foodservice"
             ],
@@ -49,6 +50,7 @@ window.OIL_SERIES = {
             "n_obs": 4,
             "n_used": 4,
             "n_excluded": 0,
+            "n_fresh": 4,
             "sources": [
               "Booker",
               "Brakes (Sysco)",
@@ -78,6 +80,23 @@ window.OIL_SERIES = {
             "n_obs": 4,
             "n_used": 4,
             "n_excluded": 0,
+            "n_fresh": 4,
+            "sources": [
+              "Booker",
+              "Brakes (Sysco)",
+              "CK Fast Foods",
+              "JJ Foodservice"
+            ],
+            "excluded": []
+          },
+          {
+            "date": "2026-07-30",
+            "price_per_unit": 30.44,
+            "price_per_tonne": 1659.62,
+            "n_obs": 4,
+            "n_used": 4,
+            "n_excluded": 0,
+            "n_fresh": 1,
             "sources": [
               "Booker",
               "Brakes (Sysco)",
@@ -107,6 +126,7 @@ window.OIL_SERIES = {
             "n_obs": 3,
             "n_used": 3,
             "n_excluded": 0,
+            "n_fresh": 3,
             "sources": [
               "Booker",
               "Brakes (Sysco)",
@@ -135,6 +155,23 @@ window.OIL_SERIES = {
             "n_obs": 4,
             "n_used": 4,
             "n_excluded": 0,
+            "n_fresh": 4,
+            "sources": [
+              "Brakes (Sysco)",
+              "Costco UK",
+              "Foodomarket",
+              "JJ Foodservice"
+            ],
+            "excluded": []
+          },
+          {
+            "date": "2026-07-30",
+            "price_per_unit": 33.2,
+            "price_per_tonne": 7249.18,
+            "n_obs": 4,
+            "n_used": 4,
+            "n_excluded": 0,
+            "n_fresh": 2,
             "sources": [
               "Brakes (Sysco)",
               "Costco UK",
@@ -164,6 +201,7 @@ window.OIL_SERIES = {
             "n_obs": 2,
             "n_used": 2,
             "n_excluded": 0,
+            "n_fresh": 2,
             "sources": [
               "Cater-Choice",
               "JJ Foodservice"

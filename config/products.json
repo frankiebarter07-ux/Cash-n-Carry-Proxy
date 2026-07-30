@@ -1,5 +1,5 @@
 {
-  "_comment": "Exact products aggregated per oil (all UK, reliable sellers, one fixed pack size per oil). A seller's multiple products are averaged into one seller-price in process.py, then aggregated across sellers with a 2-SD outlier filter. Prices are single-pack incl. any discount; UK cooking oils/fats are zero-rated so inc-VAT = ex-VAT. GBP/tonne computed downstream.",
+  "_comment": "Exact products aggregated per oil (all UK, reliable sellers, one fixed pack size per oil). A seller's multiple products are averaged into one seller-price in process.py, then aggregated across sellers with a 2-SD outlier filter. Prices single-pack incl. any discount; UK oils/fats zero-rated so inc-VAT = ex-VAT. GBP/tonne computed downstream.",
   "currency": "GBP",
   "country": "UK",
   "products": [

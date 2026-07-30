@@ -26,3 +26,6 @@ date,oil,channel,source,product,url,pack_value,pack_unit,price_gbp,notes
 2026-07-29,olive_ev,cash_carry,Foodomarket,UK extra virgin olive oil 5L wholesale index,https://www.foodomarket.com/en-gb/products/condiments/extra-virgin-olive-oil-5l,5,L,35.43,UK market index 03/07/2026
 2026-07-29,beef_dripping,cash_carry,JJ Foodservice,KTC Halal Beef Dripping 1x12.5kg,https://www.jjfoodservice.com/product/england/OIL135,12.5,kg,28.00,collection ex-VAT
 2026-07-29,beef_dripping,cash_carry,Cater-Choice,KTC Halal Beef Dripping 12.5kg,https://sale.cater-choice.com/product-detail/ktc-halal-beef-dripping-x-125kg,12.5,kg,26.99,collection price
+2026-07-30,soybean,cash_carry,CK Fast Foods,KTC Vegetable Oil 20L Yellow Drum,https://www.ckfastfoods.com/product/ktc-vegetable-oil-20ltr-yellow-drum,20.0,L,25.49,auto-scraped
+2026-07-30,olive_ev,cash_carry,Costco UK,Filippo Berio Extra Virgin Olive Oil 5L,https://www.costco.co.uk/Grocery-Household/Filippo-Berio-Extra-Virgin-Olive-Oil-5L/p/28218,5.0,L,31.89,auto-scraped
+2026-07-30,olive_ev,cash_carry,Foodomarket,UK extra virgin olive oil 5L wholesale index,https://www.foodomarket.com/en-gb/products/condiments/extra-virgin-olive-oil-5l,5.0,L,35.43,auto-scraped
