@@ -16,16 +16,10 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    # Credentials for the login-gated scraper come from repo Secrets (Settings ->
-    # Secrets and variables -> Actions). Absent secrets resolve to "" and that
-    # step is skipped. Never commit passwords.
-    env:
-      COSTCO_USER: ${{ secrets.COSTCO_USER }}
-      COSTCO_PASS: ${{ secrets.COSTCO_PASS }}
-      BESTWAY_USER: ${{ secrets.BESTWAY_USER }}
-      BESTWAY_PASS: ${{ secrets.BESTWAY_PASS }}
-      BIDFOOD_USER: ${{ secrets.BIDFOOD_USER }}
-      BIDFOOD_PASS: ${{ secrets.BIDFOOD_PASS }}
+    # No login credentials are used -- the index runs on public, no-login sellers
+    # (Booker's public listing via Playwright, plus open JSON-LD sites). If you ever
+    # get a trade account, add its Secrets here and re-enable that site in
+    # config/auth_sites.json.
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +33,7 @@ jobs:
           python3 scripts/process.py
           python3 scripts/render_static.py
 
-      - name: Browser scrape (public no-login sites like Booker; plus any login Secrets)
+      - name: Browser scrape (public no-login sites like Booker)
         run: |
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium

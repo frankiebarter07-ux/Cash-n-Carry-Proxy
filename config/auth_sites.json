@@ -2,7 +2,8 @@
   "_comment": "Login-gated sellers scraped by scripts/scrape_auth.py using Playwright. Credentials come ONLY from environment variables (GitHub Actions Secrets) named in cred_env -- never store passwords here. Selectors are candidate lists tried in order (first match wins), so login-form/price markup changes don't need code edits. VERIFY the selectors and product URLs against the live logged-in site once; where unknown they're marked and the site is disabled until filled.",
   "sites": {
     "Costco UK": {
-      "enabled": true,
+      "enabled": false,
+      "_note": "Disabled: Costco bulk oils are behind a business membership login the user does not have. Re-enable only if you get a business account + set COSTCO_ Secrets.",
       "cred_env": { "user": "COSTCO_USER", "pass": "COSTCO_PASS" },
       "login_url": "https://www.costco.co.uk/login",
       "username_selectors": [
@@ -54,12 +55,18 @@
           "match": ["ktc", "vegetable", "20 lit"],
           "exclude": ["rapeseed", "blend", "5 lit"],
           "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "palm", "product": "Palmax SG Palm Oil 12.5kg (Booker)",
+          "match": ["palmax", "12.5"],
+          "exclude": ["refined"],
+          "pack_value": 12.5, "pack_unit": "kg"
         }
       ]
     },
     "Bestway Wholesale": {
-      "enabled": true,
-      "_note": "Product URLs are public (price is login-gated), so this is ready once BESTWAY_USER/PASS Secrets are set. Verify the login/price selectors on first run.",
+      "enabled": false,
+      "_note": "Disabled: Bestway prices need a trade login the user does not have. Re-enable with BESTWAY_ Secrets if you get an account.",
       "cred_env": { "user": "BESTWAY_USER", "pass": "BESTWAY_PASS" },
       "login_url": "https://www.bestwaywholesale.co.uk/login",
       "username_selectors": [

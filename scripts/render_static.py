@@ -122,6 +122,32 @@ def build():
 
     chart = build_chart(oils, "price_per_unit")
 
+    # Full per-SKU-per-website breakdown behind each aggregate line (latest date).
+    bd_sections = ""
+    for o in oils.values():
+        pts = (o.get("channels", {}) or {}).get("cash_carry", [])
+        if not pts:
+            continue
+        p = pts[-1]
+        rows_b = ""
+        for b in p.get("breakdown", []):
+            flags = []
+            if b.get("stale"):
+                flags.append(f"carried from {b['as_of'][5:]}")
+            if b.get("excluded"):
+                flags.append("outlier — excluded")
+            fl = f' <span class="flag">({" · ".join(flags)})</span>' if flags else ""
+            rows_b += (f'<tr><td>{esc(b["source"])}</td>'
+                       f'<td>{esc(b["product"])}{fl}</td>'
+                       f'<td>{esc(money(b["price_per_unit"]))}</td>'
+                       f'<td>{esc(money(b["price_per_tonne"]))}</td></tr>')
+        bd_sections += (
+            f'<div class="card"><div class="oilhead"><span class="dot" style="background:{o["color"]}"></span>'
+            f'{esc(o["label"])} &mdash; full price list ({esc(p["date"])}) &middot; '
+            f'aggregate {esc(money(p["price_per_unit"]))}/unit</div>'
+            f'<table><tr><th>Website</th><th>Product (SKU)</th><th>£/unit</th><th>£/tonne</th></tr>'
+            f'{rows_b}</table></div>')
+
     html = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -151,6 +177,9 @@ def build():
   th {{ color:var(--muted); font-weight:500; }}
   td .dot {{ margin-right:8px; }}
   .note {{ color:var(--muted); font-size:12.5px; margin-top:14px; }}
+  .oilhead {{ font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:14px; flex-wrap:wrap; }}
+  .flag {{ color:var(--muted); font-weight:400; font-size:12px; }}
+  .sechead {{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 4px 2px; }}
 </style></head>
 <body><div class="wrap">
   <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
@@ -169,8 +198,11 @@ def build():
       <tr><th>Oil / fat</th><th>Unit</th><th>£ / unit</th><th>£ / tonne</th><th>Sellers</th></tr>
       {rows}
     </table>
-    <p class="note">For the interactive £/unit ↔ £/tonne toggle, per-oil on/off, and tap-for-details, open <code>index.html</code> on desktop (needs JavaScript).</p>
+    <p class="note">Lines are the cross-seller aggregate per oil. The full list of every SKU at every website is below.</p>
   </div>
+
+  <h2 class="sechead">Full price list per oil — every SKU at every website</h2>
+  {bd_sections}
 </div></body></html>"""
 
     with open(OUT, "w", encoding="utf-8") as fh:

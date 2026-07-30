@@ -20,14 +20,17 @@ Open **[`index.html`](index.html)** in a browser for the interactive chart:
 
 ## Oils tracked & their standard unit
 
-| Oil / fat | Standard unit | Basis | # reliable sellers |
-|-----------|---------------|-------|--------------------|
-| Sunflower | 20 L drum | volume | 1 (20L sunflower is mostly login-gated) |
-| Rapeseed | 20 L drum | volume | 4 |
-| Soybean (pure veg, 100% soya) | 20 L drum | volume | 4 |
-| Palm | 12.5 kg block | weight | 3 |
-| Olive (extra virgin) | 5 L tin | volume | 4 |
-| Beef dripping (refined) | 12.5 kg block | weight | 2 |
+| Oil / fat | Standard unit | Basis | # reliable sellers | Auto-updating |
+|-----------|---------------|-------|--------------------|---------------|
+| Rapeseed | 20 L drum | volume | 4 | Booker |
+| Soybean (pure veg, 100% soya) | 20 L drum | volume | 4 | Booker, CK Fast Foods |
+| Palm | 12.5 kg block | weight | 3 | Booker |
+| Beef dripping (refined) | 12.5 kg block | weight | 2 | (none yet) |
+
+Each line is the **cross-seller aggregate**; in the dashboard, **tap a point** (or see the
+"full price list" tables in the static view) for **every SKU at every website** behind it.
+The index prioritises **no-login sellers** (Booker's public listing + open sites) so it
+updates automatically; login-only sellers are excluded/carried-forward.
 
 Only **reliable / established** sellers are aggregated — small shops and loss-leaders are
 excluded. Prices include any current discount (a reliable shop cutting its price is the

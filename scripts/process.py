@@ -127,7 +127,7 @@ def build():
             continue
         per_unit, per_tonne = normalise(r, oils_cfg[oil], tonne_kg)
         panel[(oil, r["channel"])][r["source"]][r["date"]].append(
-            {"price_per_unit": per_unit, "price_per_tonne": per_tonne}
+            {"product": r["product"], "price_per_unit": per_unit, "price_per_tonne": per_tonne}
         )
 
     out = {
@@ -157,9 +157,10 @@ def build():
             for d, pts in datemap.items():
                 series.append((d,
                                statistics.fmean(p["price_per_unit"] for p in pts),
-                               statistics.fmean(p["price_per_tonne"] for p in pts)))
+                               statistics.fmean(p["price_per_tonne"] for p in pts),
+                               list(pts)))          # keep the SKUs for the breakdown
                 all_dates.add(d)
-            seller_series[source] = sorted(series)
+            seller_series[source] = sorted(series, key=lambda e: e[0])
 
         for day in sorted(all_dates):
             # LOCF: each seller's most recent price on or before `day` (keeps the
@@ -174,8 +175,10 @@ def build():
                         break
                 if latest is not None:
                     sellers.append({"source": source,
+                                    "as_of": latest[0],
                                     "price_per_unit": latest[1],
                                     "price_per_tonne": latest[2],
+                                    "products": latest[3],
                                     "stale": latest[0] != day})
             kept, excluded = filter_anomalies(sellers)   # stage 2: drop cross-seller outliers
             if not kept:
@@ -183,6 +186,20 @@ def build():
             agg_unit = statistics.fmean(s["price_per_unit"] for s in kept)
             agg_tonne = statistics.fmean(s["price_per_tonne"] for s in kept)
             n_fresh = sum(1 for s in kept if not s["stale"])
+            # full per-SKU-per-website breakdown behind the aggregate (sorted cheapest first)
+            excluded_sources = {s["source"] for s in excluded}
+            breakdown = sorted(
+                ({
+                    "source": s["source"],
+                    "product": pr["product"],
+                    "price_per_unit": round(pr["price_per_unit"], 2),
+                    "price_per_tonne": round(pr["price_per_tonne"], 2),
+                    "as_of": s["as_of"],
+                    "stale": s["stale"],
+                    "excluded": s["source"] in excluded_sources,
+                } for s in sellers for pr in s["products"]),
+                key=lambda x: x["price_per_unit"],
+            )
             out["oils"][oil]["channels"][channel].append(
                 {
                     "date": day,
@@ -197,6 +214,7 @@ def build():
                         {"source": s["source"], "price_per_tonne": round(s["price_per_tonne"], 2)}
                         for s in excluded
                     ],
+                    "breakdown": breakdown,      # every SKU at every website behind the mean
                 }
             )
             flag = f"  [{len(excluded)} excl]" if excluded else ""

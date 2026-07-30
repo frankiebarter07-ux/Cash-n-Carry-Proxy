@@ -38,31 +38,24 @@ adjustment.
 Prices are per single pack. Where a seller lists several products for an oil, they are
 averaged into the one seller-price shown in brackets.
 
-### Sunflower — 20 L  *(1 seller — needs more; 20L sunflower is mostly trade-login gated)*
-- JJ Foodservice — *KTC High Oleic Sunflower BIB 20L* — £44.00
+*Auto-updating (no login) sellers are **bold**.*
 
 ### Rapeseed — 20 L  *(4 sellers)*
 - JJ Foodservice *(£33.24 avg)* — Ext Life Drum £32.99 · Ext Life BIB £32.49 · Pride £33.99 · KTC Chef's Choice £33.49
 - Brakes (Sysco) *(£36.75 avg)* — Sysco Classic Ext Life Drum £33.99 · Sysco Classic BIB £39.51
-- Booker — Chef's Larder Rapeseed 20L — £33.99
+- **Booker** — Chef's Larder Rapeseed 20L — £33.99
 - Marfast — KTC Chef's Choice Rapeseed 20L — £42.99
 
 ### Soybean (pure veg, 100% soya = KTC Vegetable) — 20 L  *(4 sellers)*
 - JJ Foodservice *(£30.24 avg)* — KTC Veg Drum £30.49 · KTC Veg BIB £29.99
-- Booker — KTC Vegetable Oil 20L — £30.69
+- **Booker** — KTC Vegetable Oil 20L — £30.69
+- **CK Fast Foods** — KTC Vegetable Oil 20L — £25.39
 - Brakes (Sysco) — KTC Vegetable Oil BIB 20L — £35.33
-- CK Fast Foods — KTC Vegetable Oil 20L — £25.39
 
 ### Palm — 12.5 kg  *(3 sellers)*
 - JJ Foodservice *(£24.42 avg)* — JJ SG Palm £21.49 · Palmax SG £21.79 · Frymax £29.99
-- Booker — Palmax SG Palm Oil 12.5kg — £24.49
+- **Booker** — Palmax SG Palm Oil 12.5kg — £24.49
 - Brakes (Sysco) — Palmax Refined Palm Oil 12.5kg — £43.54 *(refined grade; runs high)*
-
-### Olive (extra virgin) — 5 L  *(4 sellers)*
-- JJ Foodservice *(£33.99 avg)* — Antica £30.99 · Filippo Berio £36.99
-- Brakes (Sysco) *(£31.50 avg)* — Barbera £35.94 · Sysco Classic £27.05
-- Costco UK — Filippo Berio EVOO 5L — £31.99
-- Foodomarket — UK EVOO 5L wholesale index — £35.43
 
 ### Beef dripping (refined & deodorised) — 12.5 kg  *(2 sellers)*
 - JJ Foodservice — *KTC Halal Beef Dripping 12.5kg* — £28.00
@@ -74,8 +67,12 @@ the most common single-block size (KTC, Henry Colbeck, Q Bronze) vs 20kg 4×5kg 
 
 ## Reliable sellers used
 
-JJ Foodservice, Brakes (Sysco UK), Booker, Costco UK, Marfast, CK Fast Foods,
-Cater-Choice, and the Foodomarket UK wholesale index.
+JJ Foodservice, Brakes (Sysco UK), Booker, Marfast, CK Fast Foods, Cater-Choice.
+
+**Auto-updating (no login, scraped daily):** Booker (public listing) and CK Fast Foods.
+These drive the live movement; the login-gated sellers (JJ, Brakes, Marfast,
+Cater-Choice) carry their last price forward until refreshed. Costco/Bestway/Bidfood are
+disabled — they need a trade account/login the user does not have.
 
 ## Excluded — small shops / loss-leaders (not in the aggregate)
 

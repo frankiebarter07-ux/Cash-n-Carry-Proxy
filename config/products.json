@@ -1,19 +1,8 @@
 {
-  "_comment": "Exact products aggregated per oil (all UK, reliable sellers, one fixed pack size per oil). A seller's multiple products are averaged into one seller-price in process.py, then aggregated across sellers with a 2-SD outlier filter. Prices single-pack incl. any discount; UK oils/fats zero-rated so inc-VAT = ex-VAT. GBP/tonne computed downstream.",
+  "_comment": "Exact products aggregated per oil (UK, reliable sellers, one fixed pack size per oil). Prioritises no-login sellers (Booker public listing + open JSON-LD sites) for automatic daily updates; gated sellers carry forward until refreshed. A seller's products are averaged into one seller-price, then aggregated across sellers with a 2-SD filter. UK oils/fats zero-rated so inc-VAT = ex-VAT.",
   "currency": "GBP",
   "country": "UK",
   "products": [
-    {
-      "oil": "sunflower",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "KTC High Oleic Sunflower Oil BIB 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL112",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
-    },
     {
       "oil": "rapeseed",
       "channel": "cash_carry",
@@ -23,7 +12,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -34,7 +23,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -45,7 +34,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -56,7 +45,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -67,7 +56,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -78,7 +67,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -89,7 +78,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "rapeseed",
@@ -100,7 +89,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
     },
     {
       "oil": "soybean",
@@ -111,7 +100,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "soybean",
@@ -122,7 +111,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "soybean",
@@ -133,7 +122,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": true,
-      "note": "Reliable seller; price readable from page -> daily auto-scrape."
+      "note": "Reliable seller; price readable from open page -> daily auto-scrape."
     },
     {
       "oil": "soybean",
@@ -144,7 +133,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "soybean",
@@ -155,7 +144,7 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
     },
     {
       "oil": "palm",
@@ -166,7 +155,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -177,7 +166,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -188,7 +177,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -199,7 +188,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "palm",
@@ -210,73 +199,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "Antica Tradizione Extra Virgin Olive Oil 5L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL062",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "Filippo Berio Extra Virgin Olive Oil 5L",
-      "url": "https://www.jjfoodservice.com/category/england/oil/olive%20oil/extra%20virgin%20oil/",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "Brakes (Sysco)",
-      "product": "Barbera Extra Virgin Olive Oil 5L",
-      "url": "https://www.brake.co.uk/dry-store/oil/olive-oil",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "Brakes (Sysco)",
-      "product": "Sysco Classic Extra Virgin Olive Oil 5L",
-      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extra-virgin-olive-oil-5ltr/p/5002323",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "Costco UK",
-      "product": "Filippo Berio Extra Virgin Olive Oil 5L",
-      "url": "https://www.costco.co.uk/Grocery-Household/Filippo-Berio-Extra-Virgin-Olive-Oil-5L/p/28218",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Reliable seller; price readable from page -> daily auto-scrape."
-    },
-    {
-      "oil": "olive_ev",
-      "channel": "cash_carry",
-      "source": "Foodomarket",
-      "product": "UK extra virgin olive oil 5L wholesale index",
-      "url": "https://www.foodomarket.com/en-gb/products/condiments/extra-virgin-olive-oil-5l",
-      "pack_value": 5.0,
-      "pack_unit": "L",
-      "scrapable": true,
-      "note": "Reliable seller; price readable from page -> daily auto-scrape."
+      "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
     },
     {
       "oil": "beef_dripping",
@@ -287,7 +210,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     },
     {
       "oil": "beef_dripping",
@@ -298,7 +221,7 @@
       "pack_value": 12.5,
       "pack_unit": "kg",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up or authenticated scraper."
+      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     }
   ]
 }

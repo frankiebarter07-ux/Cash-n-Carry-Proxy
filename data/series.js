@@ -3,35 +3,8 @@ window.OIL_SERIES = {
   "generated": "2026-07-30",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 30,
+  "raw_count": 21,
   "oils": {
-    "sunflower": {
-      "label": "Sunflower",
-      "color": "#E8A600",
-      "basis": "volume",
-      "standard_pack": {
-        "value": 20,
-        "unit": "L"
-      },
-      "notes": "Refined / high-oleic sunflower oil. Single source.",
-      "channels": {
-        "cash_carry": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 44.0,
-            "price_per_tonne": 2391.3,
-            "n_obs": 1,
-            "n_used": 1,
-            "n_excluded": 0,
-            "n_fresh": 1,
-            "sources": [
-              "JJ Foodservice"
-            ],
-            "excluded": []
-          }
-        ]
-      }
-    },
     "rapeseed": {
       "label": "Rapeseed",
       "color": "#4C9A2A",
@@ -57,7 +30,81 @@ window.OIL_SERIES = {
               "JJ Foodservice",
               "Marfast"
             ],
-            "excluded": []
+            "excluded": [],
+            "breakdown": [
+              {
+                "source": "JJ Foodservice",
+                "product": "JJ Extended Life Rapeseed Oil BIB 1x20L",
+                "price_per_unit": 32.49,
+                "price_per_tonne": 1775.41,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "JJ Extended Life Rapeseed Oil Drum 1x20L",
+                "price_per_unit": 32.99,
+                "price_per_tonne": 1802.73,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
+                "price_per_unit": 33.49,
+                "price_per_tonne": 1830.05,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "Pride Rapeseed Oil Drum 1x20L",
+                "price_per_unit": 33.99,
+                "price_per_tonne": 1857.38,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Brakes (Sysco)",
+                "product": "Sysco Classic Extended Life Rapeseed Oil Drum 20L",
+                "price_per_unit": 33.99,
+                "price_per_tonne": 1857.38,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Booker",
+                "product": "Chef's Larder Rapeseed Cooking Oil 20L",
+                "price_per_unit": 33.99,
+                "price_per_tonne": 1857.38,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Brakes (Sysco)",
+                "product": "Sysco Classic Rapeseed Oil Bottle in Box 20L",
+                "price_per_unit": 39.51,
+                "price_per_tonne": 2159.02,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Marfast",
+                "product": "KTC Chef's Choice Rapeseed Oil 20L Drum",
+                "price_per_unit": 42.99,
+                "price_per_tonne": 2349.18,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              }
+            ]
           }
         ]
       }
@@ -70,7 +117,7 @@ window.OIL_SERIES = {
         "value": 20,
         "unit": "L"
       },
-      "notes": "Sold in the UK as 'pure vegetable oil' that is 100% soya bean oil (e.g. KTC Pure Vegetable). Single source, NOT a rapeseed/palm blend.",
+      "notes": "UK 'pure vegetable oil' that is 100% soya bean oil (KTC Vegetable). Single source, NOT a rapeseed/palm blend.",
       "channels": {
         "cash_carry": [
           {
@@ -87,7 +134,54 @@ window.OIL_SERIES = {
               "CK Fast Foods",
               "JJ Foodservice"
             ],
-            "excluded": []
+            "excluded": [],
+            "breakdown": [
+              {
+                "source": "CK Fast Foods",
+                "product": "KTC Vegetable Oil 20L Yellow Drum",
+                "price_per_unit": 25.39,
+                "price_per_tonne": 1384.41,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Vegetable Cooking Oil BIB 1x20L",
+                "price_per_unit": 29.99,
+                "price_per_tonne": 1635.22,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Vegetable Cooking Oil Drum 1x20L",
+                "price_per_unit": 30.49,
+                "price_per_tonne": 1662.49,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Booker",
+                "product": "KTC Vegetable Cooking Oil 20L",
+                "price_per_unit": 30.69,
+                "price_per_tonne": 1673.39,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Brakes (Sysco)",
+                "product": "KTC Vegetable Oil (Bottle in Box) 20L",
+                "price_per_unit": 35.33,
+                "price_per_tonne": 1926.39,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              }
+            ]
           },
           {
             "date": "2026-07-30",
@@ -103,7 +197,54 @@ window.OIL_SERIES = {
               "CK Fast Foods",
               "JJ Foodservice"
             ],
-            "excluded": []
+            "excluded": [],
+            "breakdown": [
+              {
+                "source": "CK Fast Foods",
+                "product": "KTC Vegetable Oil 20L Yellow Drum",
+                "price_per_unit": 25.49,
+                "price_per_tonne": 1389.86,
+                "as_of": "2026-07-30",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Vegetable Cooking Oil BIB 1x20L",
+                "price_per_unit": 29.99,
+                "price_per_tonne": 1635.22,
+                "as_of": "2026-07-29",
+                "stale": true,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Vegetable Cooking Oil Drum 1x20L",
+                "price_per_unit": 30.49,
+                "price_per_tonne": 1662.49,
+                "as_of": "2026-07-29",
+                "stale": true,
+                "excluded": false
+              },
+              {
+                "source": "Booker",
+                "product": "KTC Vegetable Cooking Oil 20L",
+                "price_per_unit": 30.69,
+                "price_per_tonne": 1673.39,
+                "as_of": "2026-07-29",
+                "stale": true,
+                "excluded": false
+              },
+              {
+                "source": "Brakes (Sysco)",
+                "product": "KTC Vegetable Oil (Bottle in Box) 20L",
+                "price_per_unit": 35.33,
+                "price_per_tonne": 1926.39,
+                "as_of": "2026-07-29",
+                "stale": true,
+                "excluded": false
+              }
+            ]
           }
         ]
       }
@@ -132,53 +273,54 @@ window.OIL_SERIES = {
               "Brakes (Sysco)",
               "JJ Foodservice"
             ],
-            "excluded": []
-          }
-        ]
-      }
-    },
-    "olive_ev": {
-      "label": "Olive (extra virgin)",
-      "color": "#7D8C1F",
-      "basis": "volume",
-      "standard_pack": {
-        "value": 5,
-        "unit": "L"
-      },
-      "notes": "Extra virgin olive oil. Standardised to the 5L cash & carry tin (not sold in 20L drums).",
-      "channels": {
-        "cash_carry": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 33.23,
-            "price_per_tonne": 7254.64,
-            "n_obs": 4,
-            "n_used": 4,
-            "n_excluded": 0,
-            "n_fresh": 4,
-            "sources": [
-              "Brakes (Sysco)",
-              "Costco UK",
-              "Foodomarket",
-              "JJ Foodservice"
-            ],
-            "excluded": []
-          },
-          {
-            "date": "2026-07-30",
-            "price_per_unit": 33.2,
-            "price_per_tonne": 7249.18,
-            "n_obs": 4,
-            "n_used": 4,
-            "n_excluded": 0,
-            "n_fresh": 2,
-            "sources": [
-              "Brakes (Sysco)",
-              "Costco UK",
-              "Foodomarket",
-              "JJ Foodservice"
-            ],
-            "excluded": []
+            "excluded": [],
+            "breakdown": [
+              {
+                "source": "JJ Foodservice",
+                "product": "JJ SG Palm Oil 1x12.5kg",
+                "price_per_unit": 21.49,
+                "price_per_tonne": 1719.2,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "Palmax SG Palm Oil 1x12.5kg",
+                "price_per_unit": 21.79,
+                "price_per_tonne": 1743.2,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Booker",
+                "product": "Palmax SG Palm Oil 12.5kg",
+                "price_per_unit": 24.49,
+                "price_per_tonne": 1959.2,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "Frymax Solid Palm Frying Oil 12.5kg",
+                "price_per_unit": 29.99,
+                "price_per_tonne": 2399.2,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Brakes (Sysco)",
+                "product": "Palmax Refined Palm Oil 12.5kg",
+                "price_per_unit": 43.54,
+                "price_per_tonne": 3483.2,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              }
+            ]
           }
         ]
       }
@@ -191,7 +333,7 @@ window.OIL_SERIES = {
         "value": 12.5,
         "unit": "kg"
       },
-      "notes": "Fully refined & deodorised beef dripping / tallow frying fat, sold by weight. 12.5kg is the most common single-block trade size (KTC, Henry Colbeck, Q Bronze); 20kg 4x5kg boxes and 10kg 2x5kg exist but 12.5kg is the modal purchase unit.",
+      "notes": "Fully refined & deodorised beef dripping / tallow frying fat, sold by weight. 12.5kg is the most common single-block trade size.",
       "channels": {
         "cash_carry": [
           {
@@ -206,7 +348,27 @@ window.OIL_SERIES = {
               "Cater-Choice",
               "JJ Foodservice"
             ],
-            "excluded": []
+            "excluded": [],
+            "breakdown": [
+              {
+                "source": "Cater-Choice",
+                "product": "KTC Halal Beef Dripping 12.5kg",
+                "price_per_unit": 26.99,
+                "price_per_tonne": 2159.2,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Halal Beef Dripping 1x12.5kg",
+                "price_per_unit": 28.0,
+                "price_per_tonne": 2240.0,
+                "as_of": "2026-07-29",
+                "stale": false,
+                "excluded": false
+              }
+            ]
           }
         ]
       }

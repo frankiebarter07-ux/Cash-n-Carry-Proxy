@@ -81,6 +81,13 @@
   table.src { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12.5px; }
   table.src th, table.src td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
   table.src th { color: var(--muted); font-weight: 500; }
+  .detail { display: none; margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .detail .dhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-bottom: 8px; }
+  table.dtab { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.dtab th, table.dtab td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  table.dtab th { color: var(--muted); font-weight: 500; }
+  table.dtab tr.ex td { opacity: .5; text-decoration: line-through; }
+  table.dtab .fl { color: var(--muted); }
   .themebtn { float: right; font-size: 12px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; cursor: pointer; }
 </style>
 </head>
@@ -89,7 +96,7 @@
   <header>
     <button class="themebtn" id="themeToggle" title="Toggle theme">◐ theme</button>
     <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
-    <p>UK B2B index &mdash; single-source cooking oils &amp; refined frying fats, aggregated across reliable wholesale / cash-and-carry sellers. No blends, no supermarket retail, no small-shop loss-leaders.</p>
+    <p>UK B2B index &mdash; single-source oils &amp; refined fats, aggregated across reliable cash-and-carry sellers. Tap a point for the full per-SKU price list. No blends, no supermarket retail.</p>
   </header>
 
   <div class="card">
@@ -113,6 +120,7 @@
     </div>
     <div class="legend" id="legend"></div>
     <div class="banner" id="banner"></div>
+    <div class="detail" id="detail"></div>
   </div>
 
   <div class="card">
@@ -301,7 +309,7 @@
       s.points.forEach(p => {
         const excl = p.n_excluded ? `, ${p.n_excluded} outlier${p.n_excluded > 1 ? "s" : ""} dropped` : "";
         const info = `${s.label} · ${p.date} · ${fmtMoney(p.v)} · ${p.n_used}/${p.n_obs} seller${p.n_obs > 1 ? "s" : ""}${excl}`;
-        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="5.5" fill="${s.color}" stroke="${panel}" stroke-width="2" data-info="${esc(info)}"><title>${esc(info)}</title></circle>`;
+        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="5.5" fill="${s.color}" stroke="${panel}" stroke-width="2" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
       });
     });
     host.innerHTML = svg + `</svg>`;
@@ -317,8 +325,31 @@
   }
   host.addEventListener("click", ev => {
     const c = ev.target.closest("circle[data-info]");
-    if (c) showTip(c); else tip.style.opacity = 0;
+    if (c) { showTip(c); renderDetail(c.dataset.oil, c.dataset.ch, c.dataset.date); }
+    else tip.style.opacity = 0;
   });
+
+  // ---- click-through: full per-SKU-per-website breakdown ------------------
+  const detail = document.getElementById("detail");
+  function renderDetail(oil, ch, date) {
+    const o = DATA.oils[oil]; if (!o) return;
+    const pt = (o.channels[ch] || []).find(p => p.date === date);
+    if (!pt || !pt.breakdown) return;
+    const rows = pt.breakdown.map(b => {
+      const flags = [];
+      if (b.stale) flags.push(`carried from ${b.as_of.slice(5)}`);
+      if (b.excluded) flags.push("outlier — excluded");
+      const fl = flags.length ? ` <span class="fl">(${flags.join(" · ")})</span>` : "";
+      return `<tr class="${b.excluded ? "ex" : ""}"><td>${b.source}</td><td>${b.product}${fl}</td>` +
+             `<td>${fmtMoney(b.price_per_unit)}</td><td>${fmtMoney(b.price_per_tonne)}</td></tr>`;
+    }).join("");
+    detail.innerHTML =
+      `<div class="dhead"><span class="dot" style="background:${o.color}"></span>` +
+      `<b>${o.label}</b> &mdash; ${date} &middot; aggregate ${fmtMoney(pt.price_per_unit)}/unit ` +
+      `(${pt.n_used} seller${pt.n_used > 1 ? "s" : ""})</div>` +
+      `<table class="dtab"><tr><th>Website</th><th>Product (SKU)</th><th>£/unit</th><th>£/tonne</th></tr>${rows}</table>`;
+    detail.style.display = "block";
+  }
   host.addEventListener("mouseover", ev => {
     const c = ev.target.closest("circle[data-info]");
     if (c) showTip(c);
