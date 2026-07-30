@@ -3,7 +3,7 @@ window.OIL_SERIES = {
   "generated": "2026-07-30",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 21,
+  "raw_count": 14,
   "oils": {
     "rapeseed": {
       "label": "Rapeseed",
@@ -242,130 +242,6 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1926.39,
                 "as_of": "2026-07-29",
                 "stale": true,
-                "excluded": false
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "palm": {
-      "label": "Palm",
-      "color": "#C0392B",
-      "basis": "mass",
-      "standard_pack": {
-        "value": 12.5,
-        "unit": "kg"
-      },
-      "notes": "100% palm frying fat block. Sold by weight.",
-      "channels": {
-        "cash_carry": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 30.82,
-            "price_per_tonne": 2465.42,
-            "n_obs": 3,
-            "n_used": 3,
-            "n_excluded": 0,
-            "n_fresh": 3,
-            "sources": [
-              "Booker",
-              "Brakes (Sysco)",
-              "JJ Foodservice"
-            ],
-            "excluded": [],
-            "breakdown": [
-              {
-                "source": "JJ Foodservice",
-                "product": "JJ SG Palm Oil 1x12.5kg",
-                "price_per_unit": 21.49,
-                "price_per_tonne": 1719.2,
-                "as_of": "2026-07-29",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "JJ Foodservice",
-                "product": "Palmax SG Palm Oil 1x12.5kg",
-                "price_per_unit": 21.79,
-                "price_per_tonne": 1743.2,
-                "as_of": "2026-07-29",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Booker",
-                "product": "Palmax SG Palm Oil 12.5kg",
-                "price_per_unit": 24.49,
-                "price_per_tonne": 1959.2,
-                "as_of": "2026-07-29",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "JJ Foodservice",
-                "product": "Frymax Solid Palm Frying Oil 12.5kg",
-                "price_per_unit": 29.99,
-                "price_per_tonne": 2399.2,
-                "as_of": "2026-07-29",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Brakes (Sysco)",
-                "product": "Palmax Refined Palm Oil 12.5kg",
-                "price_per_unit": 43.54,
-                "price_per_tonne": 3483.2,
-                "as_of": "2026-07-29",
-                "stale": false,
-                "excluded": false
-              }
-            ]
-          }
-        ]
-      }
-    },
-    "beef_dripping": {
-      "label": "Beef dripping (refined)",
-      "color": "#8C5A2B",
-      "basis": "mass",
-      "standard_pack": {
-        "value": 12.5,
-        "unit": "kg"
-      },
-      "notes": "Fully refined & deodorised beef dripping / tallow frying fat, sold by weight. 12.5kg is the most common single-block trade size.",
-      "channels": {
-        "cash_carry": [
-          {
-            "date": "2026-07-29",
-            "price_per_unit": 27.5,
-            "price_per_tonne": 2199.6,
-            "n_obs": 2,
-            "n_used": 2,
-            "n_excluded": 0,
-            "n_fresh": 2,
-            "sources": [
-              "Cater-Choice",
-              "JJ Foodservice"
-            ],
-            "excluded": [],
-            "breakdown": [
-              {
-                "source": "Cater-Choice",
-                "product": "KTC Halal Beef Dripping 12.5kg",
-                "price_per_unit": 26.99,
-                "price_per_tonne": 2159.2,
-                "as_of": "2026-07-29",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "JJ Foodservice",
-                "product": "KTC Halal Beef Dripping 1x12.5kg",
-                "price_per_unit": 28.0,
-                "price_per_tonne": 2240.0,
-                "as_of": "2026-07-29",
-                "stale": false,
                 "excluded": false
               }
             ]

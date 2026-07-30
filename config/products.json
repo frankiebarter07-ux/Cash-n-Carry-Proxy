@@ -1,5 +1,5 @@
 {
-  "_comment": "Exact products aggregated per oil (UK, reliable sellers, one fixed pack size per oil). Prioritises no-login sellers (Booker public listing + open JSON-LD sites) for automatic daily updates; gated sellers carry forward until refreshed. A seller's products are averaged into one seller-price, then aggregated across sellers with a 2-SD filter. UK oils/fats zero-rated so inc-VAT = ex-VAT.",
+  "_comment": "Exact products aggregated per oil (rapeseed & soybean only, UK, reliable sellers, 20L). Prioritises no-login sellers (Booker public listing + open JSON-LD) for automatic daily updates; gated sellers carry forward. Seller products averaged then aggregated across sellers with a 2-SD filter. UK oils zero-rated so inc-VAT = ex-VAT.",
   "currency": "GBP",
   "country": "UK",
   "products": [
@@ -145,83 +145,6 @@
       "pack_unit": "L",
       "scrapable": false,
       "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "JJ SG Palm Oil 1x12.5kg",
-      "url": "https://www.jjfoodservice.com/product/england/OIL124",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "Palmax SG Palm Oil 1x12.5kg",
-      "url": "https://www.jjfoodservice.com/product/england/OIL011",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "Frymax Solid Palm Frying Oil 12.5kg",
-      "url": "https://www.jjfoodservice.com/product/england/OIL010",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "Brakes (Sysco)",
-      "product": "Palmax Refined Palm Oil 12.5kg",
-      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/palmax-refined-palm-oil/p/29545",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "palm",
-      "channel": "cash_carry",
-      "source": "Booker",
-      "product": "Palmax SG Palm Oil 12.5kg",
-      "url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
-    },
-    {
-      "oil": "beef_dripping",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "KTC Halal Beef Dripping 1x12.5kg",
-      "url": "https://www.jjfoodservice.com/product/england/OIL135",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "beef_dripping",
-      "channel": "cash_carry",
-      "source": "Cater-Choice",
-      "product": "KTC Halal Beef Dripping 12.5kg",
-      "url": "https://sale.cater-choice.com/product-detail/ktc-halal-beef-dripping-x-125kg",
-      "pack_value": 12.5,
-      "pack_unit": "kg",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
     }
   ]
 }

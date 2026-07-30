@@ -11,14 +11,10 @@ from the aggregate (see the excluded list below). **No blends. No supermarket D2
 **One fixed pack size per oil** (enforced in `process.py` — any observation at a
 different size is rejected):
 
-| Oil / fat | Fixed size |
-|-----------|-----------|
-| Sunflower | 20 L |
+| Oil | Fixed size |
+|-----|-----------|
 | Rapeseed | 20 L |
 | Soybean (pure veg, 100% soya) | 20 L |
-| Palm | 12.5 kg |
-| Olive (extra virgin) | 5 L |
-| Beef dripping (refined) | 12.5 kg |
 
 **Two-stage aggregation:** (1) a seller's multiple products for an oil are averaged
 into one **seller price** (a shop listing 4 rapeseed SKUs counts as one seller, not
@@ -52,22 +48,9 @@ averaged into the one seller-price shown in brackets.
 - **CK Fast Foods** — KTC Vegetable Oil 20L — £25.39
 - Brakes (Sysco) — KTC Vegetable Oil BIB 20L — £35.33
 
-### Palm — 12.5 kg  *(3 sellers)*
-- JJ Foodservice *(£24.42 avg)* — JJ SG Palm £21.49 · Palmax SG £21.79 · Frymax £29.99
-- **Booker** — Palmax SG Palm Oil 12.5kg — £24.49
-- Brakes (Sysco) — Palmax Refined Palm Oil 12.5kg — £43.54 *(refined grade; runs high)*
-
-### Beef dripping (refined & deodorised) — 12.5 kg  *(2 sellers)*
-- JJ Foodservice — *KTC Halal Beef Dripping 12.5kg* — £28.00
-- Cater-Choice — *KTC Halal Beef Dripping 12.5kg* — £26.99
-- *Excluded: Nortech Superior Beef Dripping is 20 kg — wrong size for the 12.5 kg line.*
-
-*Beef dripping = refined beef tallow (same trade product), tracked as one line. 12.5kg is
-the most common single-block size (KTC, Henry Colbeck, Q Bronze) vs 20kg 4×5kg boxes.*
-
 ## Reliable sellers used
 
-JJ Foodservice, Brakes (Sysco UK), Booker, Marfast, CK Fast Foods, Cater-Choice.
+JJ Foodservice, Brakes (Sysco UK), Booker, Marfast, CK Fast Foods.
 
 **Auto-updating (no login, scraped daily):** Booker (public listing) and CK Fast Foods.
 These drive the live movement; the login-gated sellers (JJ, Brakes, Marfast,

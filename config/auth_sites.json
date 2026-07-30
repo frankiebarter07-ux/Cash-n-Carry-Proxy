@@ -55,12 +55,6 @@
           "match": ["ktc", "vegetable", "20 lit"],
           "exclude": ["rapeseed", "blend", "5 lit"],
           "pack_value": 20, "pack_unit": "L"
-        },
-        {
-          "oil": "palm", "product": "Palmax SG Palm Oil 12.5kg (Booker)",
-          "match": ["palmax", "12.5"],
-          "exclude": ["refined"],
-          "pack_value": 12.5, "pack_unit": "kg"
         }
       ]
     },

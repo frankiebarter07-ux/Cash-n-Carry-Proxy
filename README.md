@@ -20,12 +20,10 @@ Open **[`index.html`](index.html)** in a browser for the interactive chart:
 
 ## Oils tracked & their standard unit
 
-| Oil / fat | Standard unit | Basis | # reliable sellers | Auto-updating |
-|-----------|---------------|-------|--------------------|---------------|
+| Oil | Standard unit | Basis | # reliable sellers | Auto-updating |
+|-----|---------------|-------|--------------------|---------------|
 | Rapeseed | 20 L drum | volume | 4 | Booker |
 | Soybean (pure veg, 100% soya) | 20 L drum | volume | 4 | Booker, CK Fast Foods |
-| Palm | 12.5 kg block | weight | 3 | Booker |
-| Beef dripping (refined) | 12.5 kg block | weight | 2 | (none yet) |
 
 Each line is the **cross-seller aggregate**; in the dashboard, **tap a point** (or see the
 "full price list" tables in the static view) for **every SKU at every website** behind it.

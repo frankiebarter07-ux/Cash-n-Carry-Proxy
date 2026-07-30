@@ -1,5 +1,5 @@
 {
-  "_comment": "Registry of tracked oils/fats. Only pure, single-source products (no blends). 'standard_pack' is the unit each is standardised to for the 'price per unit' view. 'density_kg_per_l' converts a volume price to a mass price for the 'price per metric tonne' view; mass-based fats have null density (per-kg scales straight to per-tonne).",
+  "_comment": "Registry of tracked oils. Only pure, single-source products (no blends). 'standard_pack' is the unit each is standardised to for the 'price per unit' view. 'density_kg_per_l' converts a volume price to a mass price for the 'price per metric tonne' view.",
   "metric_tonne_kg": 1000,
   "oils": {
     "rapeseed": {
@@ -17,22 +17,6 @@
       "standard_pack": { "value": 20, "unit": "L" },
       "density_kg_per_l": 0.917,
       "notes": "UK 'pure vegetable oil' that is 100% soya bean oil (KTC Vegetable). Single source, NOT a rapeseed/palm blend."
-    },
-    "palm": {
-      "label": "Palm",
-      "color": "#C0392B",
-      "basis": "mass",
-      "standard_pack": { "value": 12.5, "unit": "kg" },
-      "density_kg_per_l": null,
-      "notes": "100% palm frying fat block. Sold by weight."
-    },
-    "beef_dripping": {
-      "label": "Beef dripping (refined)",
-      "color": "#8C5A2B",
-      "basis": "mass",
-      "standard_pack": { "value": 12.5, "unit": "kg" },
-      "density_kg_per_l": null,
-      "notes": "Fully refined & deodorised beef dripping / tallow frying fat, sold by weight. 12.5kg is the most common single-block trade size."
     }
   }
 }
