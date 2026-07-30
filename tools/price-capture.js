@@ -9,8 +9,16 @@
   var HREF = location.href;
   var found = [];
   var seen = {};
+  // Only collect this pack size. Change WANT to e.g. "12.5kg" or "5L" to reuse.
+  var WANT = "20L";
+  var wn = (WANT.match(/[0-9.]+/) || ["20"])[0];
+  var wu = WANT.replace(/[0-9.\s]/g, "").toLowerCase();
+  var sizeRe = wu === "kg"
+    ? new RegExp("(?:^|[^0-9])" + wn.replace(".", "\\.") + "\\s?kg\\b", "i")
+    : new RegExp("(?:^|[^0-9])" + wn + "\\s?(?:l|lt|ltr|litre|litres)\\b", "i");
   function add(name, price) {
     name = (name || "").replace(/\s+/g, " ").trim();
+    if (!sizeRe.test(name)) return;                    // wrong pack size -> skip
     price = parseFloat(String(price).replace(/[^0-9.]/g, ""));
     if (!name || !price || price < 1 || price > 2000) return;
     var key = name.toLowerCase() + "|" + price.toFixed(2);
@@ -67,7 +75,7 @@
   box.setAttribute("style", "position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif");
   box.innerHTML = '<div style="background:#fff;color:#111;max-width:560px;width:92%;border-radius:12px;padding:16px;box-shadow:0 12px 44px rgba(0,0,0,.45)"><div style="font-weight:600;margin-bottom:8px">Captured PRICE_N price(s) from SRC_NAME</div><textarea readonly style="width:100%;height:190px;font:12px/1.45 monospace;border:1px solid #ccc;border-radius:8px;padding:8px;box-sizing:border-box"></textarea><div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end"><button id="__pxcopy" style="padding:9px 15px;border:0;border-radius:8px;background:#2d6cdf;color:#fff;font-size:14px">Copy</button><button id="__pxclose" style="padding:9px 15px;border:1px solid #ccc;border-radius:8px;background:#fff;font-size:14px">Close</button></div></div>';
   document.body.appendChild(box);
-  box.querySelector("div>div").firstChild.textContent = "Captured " + found.length + " price(s) from " + SRC;
+  box.querySelector("div>div").firstChild.textContent = "Captured " + found.length + " " + WANT + " price(s) from " + SRC;
   var ta = box.querySelector("textarea"); ta.value = text;
   box.querySelector("#__pxclose").onclick = function () { box.remove(); };
   box.querySelector("#__pxcopy").onclick = function () {

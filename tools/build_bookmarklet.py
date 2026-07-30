@@ -12,11 +12,14 @@ OUT = os.path.join(ROOT, "tools", "bookmarklet.txt")
 
 lines = []
 for ln in open(SRC, encoding="utf-8").read().split("\n"):
-    s = ln.strip()
-    if not s or s.startswith("//"):
+    # Strip inline // comments (safe here: no // appears inside any string/regex,
+    # where slashes are written as \/ ). Then drop blank lines.
+    s = ln.split("//")[0].strip()
+    if not s:
         continue
     lines.append(s)
 code = "javascript:" + " ".join(lines)
+assert code.count("(") == code.count(")"), "unbalanced parens -- check for stray // in a string"
 with open(OUT, "w", encoding="utf-8") as fh:
     fh.write(code + "\n")
 print(f"Wrote {OUT} ({len(code)} chars)")
