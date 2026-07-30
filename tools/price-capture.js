@@ -38,7 +38,7 @@
     document.querySelectorAll("body *").forEach(function (el) {
       if (el.children.length) return;
       var txt = el.textContent || "";
-      if (PERL.test(txt)) return;                       // skip per-litre / per-kg unit prices
+      if (PERL.test(txt)) return;
       var prices = txt.match(/£\s?[0-9]{1,4}(?:\.[0-9]{2})?/g);
       if (!prices) return;
       var name = "", tile = el;
@@ -52,7 +52,7 @@
         tile = tile.parentElement;
       }
       if (!name) return;
-      prices.forEach(function (p) {                     // pack prices only (drops per-litre <£5)
+      prices.forEach(function (p) {
         var v = parseFloat(p.replace(/[^0-9.]/g, ""));
         if (v >= 5) add(name, v);
       });
