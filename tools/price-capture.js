@@ -33,18 +33,29 @@
     } catch (e) {}
   });
   if (found.length < 2) {
-    var priceRe = /£\s?([0-9]{1,4}(?:\.[0-9]{2})?)/;
+    var BAD = /mix\s*&\s*save|any combination|add to|basket|clubcard|multibuy|offer|^\s*save\b/i;
+    var PERL = /per\s*li|per\s*ltr|\/ltr|per\s*kg|\/kg/i;
     document.querySelectorAll("body *").forEach(function (el) {
       if (el.children.length) return;
-      var m = priceRe.exec(el.textContent || "");
-      if (!m) return;
-      var tile = el, name = "";
-      for (var i = 0; i < 6 && tile; i++) {
-        var cand = tile.querySelector && tile.querySelector("a,h1,h2,h3,h4,[class*=name],[class*=title],[class*=desc]");
-        if (cand && cand.textContent.trim().length > 6) { name = cand.textContent; break; }
+      var txt = el.textContent || "";
+      if (PERL.test(txt)) return;                       // skip per-litre / per-kg unit prices
+      var prices = txt.match(/£\s?[0-9]{1,4}(?:\.[0-9]{2})?/g);
+      if (!prices) return;
+      var name = "", tile = el;
+      for (var i = 0; i < 7 && tile; i++) {
+        var cands = tile.querySelectorAll ? tile.querySelectorAll('a[href*="product"],a[href*="Product"],h1,h2,h3,h4,[class*=name],[class*=title],[class*=desc]') : [];
+        for (var j = 0; j < cands.length; j++) {
+          var t = (cands[j].textContent || "").replace(/\s+/g, " ").trim();
+          if (t.length > 8 && !BAD.test(t)) { name = t; break; }
+        }
+        if (name) break;
         tile = tile.parentElement;
       }
-      if (name) add(name, m[1]);
+      if (!name) return;
+      prices.forEach(function (p) {                     // pack prices only (drops per-litre <£5)
+        var v = parseFloat(p.replace(/[^0-9.]/g, ""));
+        if (v >= 5) add(name, v);
+      });
     });
   }
   var today = new Date().toISOString().slice(0, 10);
