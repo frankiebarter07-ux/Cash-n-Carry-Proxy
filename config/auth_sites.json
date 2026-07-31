@@ -58,6 +58,31 @@
         }
       ]
     },
+    "Magna Foodservice": {
+      "enabled": true,
+      "no_login": true,
+      "_note": "Added from the seller list. WooCommerce-style store, prices appear public -> per-product URLs with JSON-LD expected. NO PRICE CAPTURED YET: the KTC Veg BIB URL below is confirmed; the drum and rapeseed URLs need filling from the live site (search 'KTC' in their oils category). Verify on first CI run.",
+      "price_selectors": [
+        "[itemprop='price']", ".woocommerce-Price-amount", "p.price .amount", ".summary .price"
+      ],
+      "products": [
+        {
+          "oil": "soybean", "product": "KTC Vegetable Oil (Bottle in Box) 20L (Magna)",
+          "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/",
+          "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "soybean", "product": "KTC Vegetable Cooking Oil Drum 20L (Magna)",
+          "url": "FILL_FROM_MAGNA_SITE",
+          "pack_value": 20, "pack_unit": "L"
+        },
+        {
+          "oil": "rapeseed", "product": "KTC Extended Life Rapeseed Oil 20L (Magna)",
+          "url": "FILL_FROM_MAGNA_SITE",
+          "pack_value": 20, "pack_unit": "L"
+        }
+      ]
+    },
     "Bestway Wholesale": {
       "enabled": false,
       "_note": "Disabled: Bestway prices need a trade login the user does not have. Re-enable with BESTWAY_ Secrets if you get an account.",
