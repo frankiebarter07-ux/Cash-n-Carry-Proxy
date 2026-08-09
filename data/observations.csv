@@ -30,3 +30,5 @@ date,oil,channel,source,product,url,pack_value,pack_unit,price_gbp,notes
 2026-08-07,soybean,cash_carry,Magna Foodservice,KTC Vegetable Oil (Bottle in Box) 20L (Magna),https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/,20,L,28.99,auth-scraped
 2026-08-08,soybean,cash_carry,CK Fast Foods,KTC Vegetable Oil 20L Yellow Drum,https://www.ckfastfoods.com/product/ktc-vegetable-oil-20ltr-yellow-drum,20.0,L,25.49,auto-scraped
 2026-08-08,soybean,cash_carry,Magna Foodservice,KTC Vegetable Oil (Bottle in Box) 20L (Magna),https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/,20,L,28.99,auth-scraped
+2026-08-09,soybean,cash_carry,CK Fast Foods,KTC Vegetable Oil 20L Yellow Drum,https://www.ckfastfoods.com/product/ktc-vegetable-oil-20ltr-yellow-drum,20.0,L,25.49,auto-scraped
+2026-08-09,soybean,cash_carry,Magna Foodservice,KTC Vegetable Oil (Bottle in Box) 20L (Magna),https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/,20,L,28.99,auth-scraped
