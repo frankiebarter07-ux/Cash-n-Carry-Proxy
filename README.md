@@ -27,7 +27,10 @@ Exact products and URLs: [`config/targets.json`](config/targets.json).
 
 ## Viewing it
 
-- **[`SUMMARY.md`](SUMMARY.md)** — start here. Rendered by GitHub, so it reads on any
+- **The published dashboard** — once GitHub Pages is switched on (`HANDOVER.md` §4a),
+  the index lives at `https://<owner>.github.io/Cash-n-Carry-Proxy/`, needing no
+  GitHub account and no download. Republished after every daily collection.
+- **[`SUMMARY.md`](SUMMARY.md)** — start here if Pages is not on. Rendered by GitHub, so it reads on any
   phone with nothing to download: current prices, what moved today, the trailing week.
   Rebuilt on every run.
 - **Notifications** — when a seller changes a price, the daily job comments on the
@@ -103,12 +106,13 @@ index.html                the interactive view (reads data/series.js)
 scripts/adapters.py       per-seller price adapters (+ selftest, diagnose)
 scripts/process.py        standardise, aggregate, carry forward, compute changes
 scripts/render_static.py  build the no-JavaScript dashboard
-scripts/render_summary.py build SUMMARY.md + the report posted when prices move
+scripts/render_summary.py build SUMMARY.md + the report (markdown + HTML)
+scripts/send_report.py     email the report via SMTP to non-GitHub recipients
 scripts/manual_prices.py  record a blocked seller's prices by hand
 scripts/booker_probe.py   check whether any Booker endpoint is reachable from here
 tools/setup-windows-runner.ps1  one-shot install of the self-hosted runner (Booker)
 tools/check_protection.sh probe each site for bot-protection / price visibility
-.github/workflows/        daily collection, adapter tests, manual Booker entry
+.github/workflows/        daily collection, Pages publish, adapter tests, manual entry
 legacy/                   superseded approaches, with why — do not wire back in
 ```
 

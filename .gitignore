@@ -4,3 +4,4 @@ package.json
 __pycache__/
 *.pyc
 report.md
+report.html

@@ -17,17 +17,31 @@ the schedule and the ability to fix anything.
 
 *Settings → General → Danger Zone → Transfer ownership* → a company organisation.
 
-### 0.2 Keep the repository private — DONE, but keep it that way
-✅ Already private, with no forks (verified 2026-08-10). No action needed now.
+### 0.2 Public dashboard **or** automated Booker — you cannot have both
+This is a real fork in the road, so decide it deliberately.
 
-It must **stay** private, because a self-hosted runner sits inside the company
-network and runs whatever the workflows contain. GitHub's own guidance:
+To serve the dashboard at a URL, GitHub Pages needs the repository to be **public**
+(Pages cannot publish from a private repo on the Free plan). But GitHub's own
+guidance is explicit:
 
 > Only use self-hosted runners with private repositories. Forks of a public
 > repository can run dangerous code on your self-hosted runner machine.
 
-So: do not make this public while a runner is attached. If you ever need to publish
-the *data*, export the CSV rather than opening up the repo.
+That runner would sit **inside the company network**. So:
+
+| If you want… | Then… |
+|---|---|
+| A public dashboard URL | Repo public, Pages on. **Do not attach the self-hosted runner.** Collect Booker by hand (§4), or let it lapse and run a four-seller index. |
+| Automated Booker collection | Repo stays private, runner attached (§3). View the index via `SUMMARY.md` and the committed dashboards instead of a URL. |
+
+**The chosen path is the public dashboard** (§4a). Booker therefore stays on manual
+entry. If the company later prefers automated Booker over a public URL, make the repo
+private again *before* registering any runner.
+
+Before publishing, know what becomes public: every price observation, the config, the
+docs and the full history. There are **no credentials in the repository** — SMTP
+details live in Actions secrets, which are never exposed to forks — so publishing
+leaks no secret, only the data itself.
 
 ### 0.3 Point alerts *and reports* at a company address
 Two things now arrive by GitHub notification, so this step is what makes the whole
@@ -85,7 +99,11 @@ never do. Change the window via `MAX_CARRY_DAYS` in `scripts/process.py`.
 
 ## 3. Installing the self-hosted runner (for Booker)
 
-Needed only for Booker. **Complete §0.2 first.** Budget 15 minutes, once.
+> ⚠️ **Only do this if the repository is PRIVATE.** See §0.2 — a self-hosted runner
+> on a public repo can be made to run a stranger's code on that machine. If you have
+> published the dashboard, skip this section entirely and use §4 instead.
+
+Needed only for Booker. Budget 15 minutes, once.
 
 **Why:** Booker returns *403 Access Denied* to GitHub's cloud runners because they use
 datacenter IP addresses. The prices are public — the problem is only *where the
@@ -162,16 +180,75 @@ The other four sellers keep collecting automatically regardless.
 
 ---
 
+## 4a. Publishing the dashboard, and emailing the report
+
+### Publish the dashboard to a URL (once, ~5 minutes)
+
+1. **Make the repository public** — *Settings → General → Danger Zone → Change
+   visibility*. Read §0.2 first; this rules out the self-hosted runner.
+2. *Settings → Pages → Build and deployment → **Source: GitHub Actions***.
+3. *Actions → **Publish dashboard** → Run workflow*.
+
+The URL appears in the run summary and under *Settings → Pages*, and looks like
+`https://<owner>.github.io/Cash-n-Carry-Proxy/`. It republishes automatically after
+every daily collection, so it is never stale.
+
+What is published is a fixed list — `index.html`, `dashboard_static.html`, and the
+series plus observations data. Nothing else, so adding a file to the repo can never
+accidentally put it on the site.
+
+> Anyone with the link can read it. Pages sites cannot be password-protected on any
+> plan below Enterprise Cloud. If that becomes unacceptable, host the same `site/`
+> folder on Cloudflare Pages behind Cloudflare Access instead — free for up to 50
+> named users — and make the repository private again.
+
+### Email the report to people without GitHub (once, ~10 minutes)
+
+Watchers already get GitHub notifications. For anyone else — a buyer, a procurement
+manager — add these as **repository secrets** (*Settings → Secrets and variables →
+Actions → Secrets*):
+
+| Secret | What it is |
+|---|---|
+| `SMTP_HOST` | e.g. `smtp.office365.com`, `smtp.gmail.com`, `smtp.resend.com` |
+| `SMTP_PORT` | `587` for STARTTLS (default), `465` for implicit TLS |
+| `SMTP_USER` | the mailbox or API username |
+| `SMTP_PASSWORD` | an **app password** or API key — never someone's login password |
+| `REPORT_FROM` | address to send from (defaults to `SMTP_USER`) |
+| `REPORT_TO` | comma-separated recipients |
+
+**Use a shared company mailbox, not a personal account.** A personal mailbox stops
+working the day that person leaves, which is exactly the failure this handover exists
+to prevent.
+
+Until these are set, the email step prints "not configured" and the run stays green —
+so nothing breaks if the company never wants email. Once set, a *failed* send fails
+the run loudly, because a report that quietly never arrives is worse than none.
+
+To test without waiting for a price to move:
+
+```bash
+python3 scripts/render_summary.py --report-out r.md --report-html r.html --force-report
+SMTP_HOST=… SMTP_USER=… SMTP_PASSWORD=… REPORT_TO=you@company.com \
+  python3 scripts/send_report.py --html r.html --text r.md --dry-run
+```
+
+Drop `--dry-run` to actually send one to yourself.
+
+---
+
 ## 5. Reading the output
 
-**The easiest way, and the one to show people:** open
+**The easiest way, and the one to show people:** the published dashboard URL
+(§4a) — it needs no GitHub account and no download. Failing that, open
 [`SUMMARY.md`](SUMMARY.md) in the repository. GitHub renders it, so it reads properly
 on a phone with nothing to download — current prices, what moved today, the trailing
 week, and any seller that has stopped reporting. It is rebuilt on every run.
 
 **You will also be emailed when something moves.** The daily job posts to a single
 issue thread, *📈 Cooking oil price reports*, and GitHub emails everyone watching the
-repository. It posts only when a seller actually changed a listed price, plus a
+repository. If the SMTP secrets are set (§4a), the same report is emailed to a named
+list of addresses as well, for people who do not use GitHub. It posts only when a seller actually changed a listed price, plus a
 Monday digest so a quiet week still proves the system is alive.
 
 > **Silence is information here.** No email means no seller moved a price — not that
@@ -280,5 +357,9 @@ Full reasoning in `ARCHITECTURE.md`.
 
 ## 10. Cost
 
-£0. GitHub Actions is free for this volume (~2 minutes/day). The only optional cost
-is a small always-on machine for the Booker runner.
+£0. GitHub Actions is free for this volume (~2 minutes/day), and GitHub Pages is free
+for public repositories. Optional costs, only if you want them:
+
+- a small always-on PC for the Booker runner (and only on a **private** repo, §0.2);
+- an email provider, if the company mailbox cannot do SMTP — free tiers are ample at
+  a handful of messages a month.

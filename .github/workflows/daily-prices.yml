@@ -140,7 +140,9 @@ jobs:
       # decides whether anyone gets emailed below.
       - name: Build summary, and a report if there is something to say
         id: summary
-        run: python3 scripts/render_summary.py --report-out report.md
+        run: |
+          python3 scripts/render_summary.py \
+            --report-out report.md --report-html report.html
 
       - name: Commit
         run: |
@@ -178,6 +180,24 @@ jobs:
             gh issue comment "$issue" --body-file report.md
             echo "Commented on report thread #$issue"
           fi
+
+      # For recipients who will never have a GitHub account. Silently does nothing
+      # until the SMTP secrets are set, so the run stays green for anyone who never
+      # configures it -- but a configured send that FAILS is loud, because a report
+      # that quietly never arrives is worse than no report at all.
+      - name: Email the report to non-GitHub recipients
+        if: steps.summary.outputs.notify == 'true'
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          REPORT_FROM: ${{ secrets.REPORT_FROM }}
+          REPORT_TO: ${{ secrets.REPORT_TO }}
+        run: |
+          python3 scripts/send_report.py \
+            --html report.html --text report.md \
+            --subject "${{ steps.summary.outputs.subject }}"
 
   alert-on-failure:
     needs: [collect-cloud, collect-booker, build-and-commit]

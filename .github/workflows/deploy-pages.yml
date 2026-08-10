@@ -1,0 +1,73 @@
+name: Publish dashboard
+
+# Publishes the dashboard to GitHub Pages, so it can be opened in any browser at a
+# URL instead of downloading a file. Runs after every daily collection, and on any
+# push that changes the dashboard or its data.
+#
+# ONE-OFF SETUP (someone with admin on the repo):
+#   1. The repository must be PUBLIC -- GitHub Pages cannot publish from a private
+#      repository on the Free plan.
+#   2. Settings -> Pages -> Build and deployment -> Source: **GitHub Actions**
+#   3. Re-run this workflow. The URL appears in the run summary and under Settings
+#      -> Pages, and looks like https://<owner>.github.io/<repo>/
+#
+# SECURITY NOTE, please read before making the repository public: GitHub's guidance
+# is to use self-hosted runners ONLY with private repositories, because a fork's pull
+# request can otherwise run code on that machine. If you publish this repo, do not
+# also attach the self-hosted Booker runner -- collect Booker by hand instead
+# (HANDOVER.md section 4). The two choices are mutually exclusive.
+
+on:
+  workflow_run:
+    workflows: ["Daily oil prices"]
+    types: [completed]
+  push:
+    branches: [main, master, claude/cooking-oil-price-tracker-2iipfw]
+    paths:
+      - "index.html"
+      - "dashboard_static.html"
+      - "data/series.*"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; always publish the newest.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only the files a browser needs. Nothing else is published -- keeping the
+      # site to a known list means adding a file to the repo can never accidentally
+      # expose it.
+      - name: Assemble the site
+        run: |
+          mkdir -p site/data
+          cp index.html dashboard_static.html site/
+          cp data/series.js data/series.json site/data/
+          cp data/observations.csv site/data/
+          # index.html is the interactive view; dashboard_static.html is the
+          # no-JavaScript fallback for locked-down or mobile browsers.
+          ls -R site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Show where it went
+        run: echo "Published to ${{ steps.deploy.outputs.page_url }}"
