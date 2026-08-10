@@ -3,176 +3,199 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cash &amp; Carry Cooking Oil Price Proxy</title>
+<title>UK Cooking Oil Index</title>
 <style>
+  /* Terminal-style: dark by default, dense, numbers in tabular monospace.
+     Light palette kept for anyone who wants it, but dark is the intended look. */
   :root {
-    --bg: #f7f7f5;
-    --panel: #ffffff;
-    --ink: #1c1c1e;
-    --muted: #6b6b70;
-    --line: #e3e3e0;
-    --grid: #ececea;
-    --accent: #1c1c1e;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #16171a;
-      --panel: #1f2126;
-      --ink: #f2f2f4;
-      --muted: #9a9ba1;
-      --line: #2e3138;
-      --grid: #262930;
-      --accent: #f2f2f4;
-    }
+    --bg:#0b0c0e; --panel:#121418; --panel2:#16181d; --line:#23262d;
+    --grid:#1c1f25; --ink:#e9eaee; --muted:#878d99; --dim:#5d636e;
+    --accent:#ffa028; --up:#ff5f56; --down:#33d17a;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   }
   :root[data-theme="light"] {
-    --bg: #f7f7f5; --panel: #ffffff; --ink: #1c1c1e; --muted: #6b6b70;
-    --line: #e3e3e0; --grid: #ececea; --accent: #1c1c1e;
+    --bg:#f4f4f2; --panel:#ffffff; --panel2:#fafaf8; --line:#dedcd6;
+    --grid:#e8e6e0; --ink:#16181d; --muted:#5f646d; --dim:#8b909a;
+    --accent:#b46a00; --up:#c0392b; --down:#1e8449;
   }
-  :root[data-theme="dark"] {
-    --bg: #16171a; --panel: #1f2126; --ink: #f2f2f4; --muted: #9a9ba1;
-    --line: #2e3138; --grid: #262930; --accent: #f2f2f4;
-  }
-  * { box-sizing: border-box; }
+  * { box-sizing:border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
-  header h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
-  header p { margin: 0; color: var(--muted); font-size: 14px; }
-  .card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 14px; padding: 18px; margin-top: 18px;
+  .wrap { max-width:1180px; margin:0 auto; padding:0 16px 48px; }
+  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    border-bottom:2px solid var(--accent); padding:14px 0 9px; margin-bottom:2px;
   }
-  .controls { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; }
-  .control-group { display: flex; flex-direction: column; gap: 7px; }
-  .control-group .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .brand { font-size:15px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+  .brand span { color:var(--accent); }
+  .meta {
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:.05em; text-transform:uppercase; margin-right:auto;
+  }
+  .themebtn {
+    font:inherit; font-size:11px; font-family:var(--mono); color:var(--muted); cursor:pointer;
+    background:transparent; border:1px solid var(--line); padding:3px 8px; letter-spacing:.06em;
+  }
+  .fallback { font-size:11px; color:var(--dim); padding:6px 0 0; font-family:var(--mono); }
+  .fallback a { color:var(--muted); }
+
+  /* ---- quote strip ---- */
+  .quotes { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:2px; margin:12px 0; }
+  .q { background:var(--panel); border-left:3px solid var(--qc,var(--accent)); padding:12px 14px; }
+  .q .name { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .q .px { font-family:var(--mono); font-size:30px; line-height:1.15; margin-top:3px; font-variant-numeric:tabular-nums; }
+  .q .chg { font-family:var(--mono); font-size:13px; margin-top:1px; }
+  .q .sub { font-family:var(--mono); font-size:10.5px; color:var(--dim); margin-top:6px; letter-spacing:.05em; text-transform:uppercase; }
+  .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
+
+  /* ---- panels ---- */
+  .panel { background:var(--panel); border:1px solid var(--line); padding:14px 16px 16px; margin-top:2px; }
+  .phead {
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+    border-bottom:1px solid var(--line); padding-bottom:9px; margin-bottom:12px;
+  }
+  .phead .spacer { margin-left:auto; }
+  .seg { display:inline-flex; border:1px solid var(--line); }
   .seg button {
-    appearance: none; border: 0; background: transparent; color: var(--ink);
-    padding: 7px 13px; font-size: 13px; cursor: pointer; border-right: 1px solid var(--line);
+    appearance:none; border:0; border-right:1px solid var(--line); background:transparent;
+    color:var(--muted); font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+    padding:4px 10px; cursor:pointer; text-transform:uppercase;
   }
-  .seg button:last-child { border-right: 0; }
-  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--bg); }
-  [hidden] { display: none !important; }
-  .chart-wrap { position: relative; margin-top: 6px; }
-  #chartHost svg { width: 100%; height: auto; display: block; }
-  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .seg button:last-child { border-right:0; }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:#0b0c0e; font-weight:600; }
+  [hidden] { display:none !important; }
+
+  /* ---- chart ---- */
+  .chart-wrap { position:relative; }
+  #chartHost svg { width:100%; height:auto; display:block; }
+  .legend { display:flex; flex-wrap:wrap; gap:2px; margin-top:10px; }
   .chip {
-    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;
-    border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 10px; font-size: 13px;
-    background: var(--panel); transition: opacity .15s;
+    display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
+    border:1px solid var(--line); background:var(--panel2); padding:4px 10px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--ink);
+    text-transform:uppercase;
   }
-  .chip[aria-pressed="false"] { opacity: 0.4; }
-  .chip .dot { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
+  .chip[aria-pressed="false"] { opacity:.35; }
+  .chip .dot { width:9px; height:9px; flex:0 0 auto; }
   .tip {
-    position: absolute; pointer-events: none; opacity: 0; transition: opacity .1s;
-    background: var(--accent); color: var(--bg); padding: 8px 10px; border-radius: 8px;
-    font-size: 12px; line-height: 1.45; max-width: 240px; z-index: 5; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+    background:var(--ink); color:var(--bg); padding:7px 9px; font-family:var(--mono);
+    font-size:11px; line-height:1.5; max-width:260px; z-index:5;
   }
-  .tip b { font-weight: 600; }
-  .foot { color: var(--muted); font-size: 12.5px; margin-top: 16px; }
-  .foot a { color: inherit; }
-  .banner {
-    font-size: 12.5px; color: var(--muted); margin-top: 10px; padding: 9px 12px;
-    border: 1px dashed var(--line); border-radius: 9px;
+
+  /* ---- tables ---- */
+  table { width:100%; border-collapse:collapse; }
+  th {
+    text-align:left; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--dim); font-weight:600; padding:6px 10px 6px 0; border-bottom:1px solid var(--line);
+    white-space:nowrap;
   }
-  table.src { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12.5px; }
-  table.src th, table.src td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
-  table.src th { color: var(--muted); font-weight: 500; }
-  .detail { display: none; margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
-  .detail .dhead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; margin-bottom: 8px; }
-  table.dtab { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.dtab th, table.dtab td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); }
-  table.dtab th { color: var(--muted); font-weight: 500; }
-  table.dtab tr.ex td { opacity: .5; text-decoration: line-through; }
-  table.dtab .fl { color: var(--muted); }
-  .up { color: #c0392b; }          /* a price rise is bad news for a buyer */
-  .down { color: #1e8449; }
-  .note { color: var(--muted); font-size: 12.5px; margin: 6px 0 0; }
-  .subhead { font-size: 12.5px; font-weight: 600; margin: 14px 0 4px; }
-  .summary { font-size: 12.5px; margin: 2px 0 8px; color: var(--muted); }
-  .themebtn { float: right; font-size: 12px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; cursor: pointer; }
+  td { padding:6px 10px 6px 0; border-bottom:1px solid var(--grid); font-size:13px; }
+  td.n { font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  tr.ex td { opacity:.45; text-decoration:line-through; }
+  .fl { color:var(--dim); font-size:11px; }
+  .scroll { overflow-x:auto; }
+
+  .detail { display:none; margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
+  .dhead { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px;
+           font-family:var(--mono); margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
+  .dhead .dot { width:9px; height:9px; }
+  .subhead {
+    font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+    margin:16px 0 6px; font-weight:600;
+  }
+  .subhead:first-child { margin-top:0; }
+  .sum { font-family:var(--mono); font-size:12px; color:var(--muted); margin:0 0 8px; }
+  .none { font-family:var(--mono); font-size:12px; color:var(--dim); margin:0; }
+  .foot {
+    font-family:var(--mono); font-size:10.5px; color:var(--dim); line-height:1.7;
+    letter-spacing:.04em; margin-top:14px; text-transform:uppercase;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <button class="themebtn" id="themeToggle" title="Toggle theme">◐ theme</button>
-    <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
-    <p>UK B2B index &mdash; rapeseed and vegetable (soybean) oil, aggregated across five reliable cash-and-carry sellers at the collection price. Tap a point for the full per-SKU price list. No blends, no supermarket retail, no logins.</p>
-    <!-- Deliberately plain HTML, not rendered by script: if the JavaScript on this
-         page fails or is blocked, this link is the reader's way out. -->
-    <p style="font-size:12.5px;margin-top:-4px">
-      Chart not loading, or JavaScript blocked?
-      <a href="dashboard_static.html">Open the plain version</a>.
-    </p>
-  </header>
 
-  <div class="card">
-    <div class="controls">
-      <div class="control-group">
-        <span class="lbl">Units</span>
-        <div class="seg" id="unitSeg">
-          <button data-v="price_per_unit" aria-pressed="true">£ / unit</button>
-          <button data-v="price_per_tonne" aria-pressed="false">£ / metric tonne</button>
-        </div>
+  <div class="topbar">
+    <div class="brand">UK Cooking Oil <span>Index</span></div>
+    <div class="meta" id="asof">&nbsp;</div>
+    <button class="themebtn" id="themeToggle">THEME</button>
+  </div>
+  <!-- Plain HTML on purpose: if this page's JavaScript fails, a link drawn by that
+       same JavaScript would be no use to the reader. -->
+  <p class="fallback">JavaScript blocked? <a href="dashboard_static.html">Plain version</a></p>
+
+  <div class="quotes" id="quotes"></div>
+
+  <div class="panel">
+    <div class="phead">
+      <span>Index history</span>
+      <span class="spacer"></span>
+      <div class="seg" id="unitSeg">
+        <button data-v="price_per_unit" aria-pressed="true">£/pack</button>
+        <button data-v="price_per_tonne" aria-pressed="false">£/tonne</button>
       </div>
-      <div class="control-group" id="chanGroup" hidden>
-        <span class="lbl">Channel</span>
-        <div class="seg" id="chanSeg"></div>
-      </div>
+      <div class="seg" id="chanSeg" hidden></div>
     </div>
-
     <div class="chart-wrap">
       <div id="chartHost"></div>
       <div class="tip" id="tip"></div>
     </div>
     <div class="legend" id="legend"></div>
-    <div class="banner" id="banner"></div>
     <div class="detail" id="detail"></div>
   </div>
 
-  <div class="card" id="changesCard">
-    <div class="lbl" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Price changes</div>
+  <div class="panel">
+    <div class="phead"><span>Price changes</span><span class="spacer"></span>
+      <span class="num" id="chgWindow"></span></div>
     <div id="changesBody"></div>
   </div>
 
-  <div class="card">
-    <div class="lbl" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Standard unit per oil</div>
-    <table class="src" id="unitTable"></table>
-    <p class="foot" id="foot"></p>
-  </div>
+  <p class="foot" id="foot">&nbsp;</p>
 </div>
 
 <script src="data/series.js"></script>
 <script>
 (function () {
   const DATA = window.OIL_SERIES;
-  if (!DATA) { document.body.innerHTML = "<p style='padding:40px'>No data. Run <code>python3 scripts/process.py</code> first.</p>"; return; }
+  if (!DATA) {
+    document.body.innerHTML = "<p style='padding:40px;font-family:monospace'>NO DATA — run scripts/process.py</p>";
+    return;
+  }
 
   const CHANNEL_LABEL = { cash_carry: "Cash & carry", retail: "Retail" };
-  const state = {
-    unit: "price_per_unit",
-    channel: "cash_carry",
-    off: new Set(),          // oil keys switched off
-  };
+  const state = { unit: "price_per_unit", channel: "cash_carry", off: new Set() };
 
-  // ---- theme toggle -------------------------------------------------------
-  document.getElementById("themeToggle").addEventListener("click", () => {
-    const root = document.documentElement;
-    const cur = root.getAttribute("data-theme")
-      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g,
+    c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+  const money = v => "£" + v.toLocaleString("en-GB",
+    { minimumFractionDigits: v < 1000 ? 2 : 0, maximumFractionDigits: v < 1000 ? 2 : 0 });
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  // Signed everywhere, so the arrow and sign carry the meaning even where the colour
+  // convention (a price RISE is bad for a buyer) reads backwards to a trader.
+  const signed = v => (v > 0 ? "+" : v < 0 ? "−" : "") + money(Math.abs(v)).replace("£", "£");
+  const cls = d => d > 0 ? "up" : d < 0 ? "down" : "flat";
+  const arrow = d => d > 0 ? "▲" : d < 0 ? "▼" : "■";
+
+  $("themeToggle").addEventListener("click", () => {
+    const r = document.documentElement;
+    const cur = r.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "dark");
+    r.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
     draw();
   });
 
-  // ---- which oils have data for the current channel -----------------------
-  function activeChannels() {
-    return state.channel === "both" ? ["cash_carry", "retail"] : [state.channel];
-  }
-  // A "series" = one oil in one channel.
+  const activeChannels = () =>
+    state.channel === "both" ? ["cash_carry", "retail"] : [state.channel];
+
   function buildSeries() {
     const out = [];
     for (const [oil, o] of Object.entries(DATA.oils)) {
@@ -181,14 +204,12 @@
         const pts = (o.channels && o.channels[ch]) || [];
         if (!pts.length) continue;
         out.push({
-          key: oil + "|" + ch, oil, ch,
+          key: oil + "|" + ch, oil, ch, color: o.color,
           label: o.label + (state.channel === "both" ? " · " + CHANNEL_LABEL[ch] : ""),
-          color: o.color,
           dashed: ch === "retail" && state.channel === "both",
           points: pts.map(p => ({
-            date: p.date, t: Date.parse(p.date),
-            v: p[state.unit], n_used: p.n_used, n_obs: p.n_obs,
-            n_excluded: p.n_excluded, sources: p.sources,
+            date: p.date, t: Date.parse(p.date), v: p[state.unit],
+            n_used: p.n_used, n_obs: p.n_obs, n_excluded: p.n_excluded,
           })),
         });
       }
@@ -196,251 +217,233 @@
     return out;
   }
 
-  // ---- legend -------------------------------------------------------------
-  const legendEl = document.getElementById("legend");
-  function renderLegend() {
-    legendEl.innerHTML = "";
+  // ---- quote strip: last price and the move that produced it ---------------
+  function renderQuotes() {
+    let html = "";
     for (const [oil, o] of Object.entries(DATA.oils)) {
-      const on = !state.off.has(oil);
+      const pts = (o.channels || {})[state.channel] || [];
+      if (!pts.length) continue;
+      const last = pts[pts.length - 1], prev = pts[pts.length - 2];
+      const d = prev ? last[state.unit] - prev[state.unit] : 0;
+      const pct = prev && prev[state.unit] ? (d / prev[state.unit]) * 100 : 0;
+      const sp = o.standard_pack;
+      const chg = prev
+        ? `<span class="${cls(d)}">${arrow(d)} ${signed(d)} (${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(pct).toFixed(2)}%)</span>`
+        : `<span class="flat">■ no prior close</span>`;
+      html += `<div class="q" style="--qc:${o.color}">
+        <div class="name">${esc(o.label)}</div>
+        <div class="px num">${esc(money(last[state.unit]))}</div>
+        <div class="chg">${chg}</div>
+        <div class="sub">${sp.value}${esc(sp.unit)} · ${last.n_used} sellers${
+          last.n_excluded ? " · " + last.n_excluded + " excl" : ""}</div>
+      </div>`;
+    }
+    $("quotes").innerHTML = html;
+  }
+
+  // ---- legend --------------------------------------------------------------
+  function renderLegend() {
+    const el = $("legend");
+    el.innerHTML = "";
+    for (const [oil, o] of Object.entries(DATA.oils)) {
       const chip = document.createElement("button");
       chip.className = "chip";
-      chip.setAttribute("aria-pressed", on ? "true" : "false");
-      chip.innerHTML = `<span class="dot" style="background:${o.color}"></span>${o.label}`;
+      chip.setAttribute("aria-pressed", state.off.has(oil) ? "false" : "true");
+      chip.innerHTML = `<span class="dot" style="background:${o.color}"></span>${esc(o.label)}`;
       chip.addEventListener("click", () => {
-        if (state.off.has(oil)) state.off.delete(oil); else state.off.add(oil);
+        state.off.has(oil) ? state.off.delete(oil) : state.off.add(oil);
         renderLegend(); draw();
       });
-      legendEl.appendChild(chip);
+      el.appendChild(chip);
     }
   }
 
-  // ---- segmented controls -------------------------------------------------
-  function wireSeg(id, key, after) {
-    const seg = document.getElementById(id);
-    seg.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", "false"));
-        btn.setAttribute("aria-pressed", "true");
-        state[key] = btn.dataset.v;
-        if (after) after();
-        draw();
-      });
+  $("unitSeg").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      $("unitSeg").querySelectorAll("button")
+        .forEach(b => b.setAttribute("aria-pressed", "false"));
+      btn.setAttribute("aria-pressed", "true");
+      state.unit = btn.dataset.v;
+      renderQuotes(); draw();
     });
-  }
-  wireSeg("unitSeg", "unit");
+  });
 
-  // ---- channel control (only shown when >1 channel has data) --------------
   function renderChannels() {
     const present = new Set();
     Object.values(DATA.oils).forEach(o =>
       Object.keys(o.channels || {}).forEach(ch => present.add(ch)));
     const order = ["cash_carry", "retail"].filter(ch => present.has(ch));
     state.channel = order[0] || "cash_carry";
-
-    const group = document.getElementById("chanGroup");
-    const seg = document.getElementById("chanSeg");
-    if (order.length <= 1) { group.hidden = true; return; }  // B2B-only: nothing to switch
-    group.hidden = false;
+    const seg = $("chanSeg");
+    if (order.length <= 1) { seg.hidden = true; return; }   // B2B only: nothing to switch
+    seg.hidden = false;
     seg.innerHTML = "";
-    const opts = [...order.map(ch => [ch, CHANNEL_LABEL[ch]]), ["both", "Both"]];
-    opts.forEach(([v, label], i) => {
+    [...order.map(ch => [ch, CHANNEL_LABEL[ch]]), ["both", "Both"]].forEach(([v, label], i) => {
       const b = document.createElement("button");
       b.dataset.v = v; b.textContent = label;
       b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
       b.addEventListener("click", () => {
         seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
         b.setAttribute("aria-pressed", "true");
-        state.channel = v; updateBanner(); draw();
+        state.channel = v; renderQuotes(); draw();
       });
       seg.appendChild(b);
     });
   }
 
-  // ---- chart (inline SVG: renders from a fixed viewBox, no canvas sizing) --
-  const host = document.getElementById("chartHost");
-  const tip = document.getElementById("tip");
-
-  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-  function fmtMoney(v) {
-    return "£" + v.toLocaleString("en-GB", { minimumFractionDigits: v < 100 ? 2 : 0, maximumFractionDigits: v < 100 ? 2 : 0 });
-  }
-  function esc(s) {
-    return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  }
-
-  const VW = 1000, VH = 440, pad = { l: 86, r: 30, t: 20, b: 48 };
-  const plotW = VW - pad.l - pad.r, plotH = VH - pad.t - pad.b;
-  const DAY = 86400000;
+  // ---- chart (inline SVG from a fixed viewBox -- no canvas sizing) ---------
+  const host = $("chartHost"), tip = $("tip");
+  const VW = 1000, VH = 380, pad = { l: 78, r: 22, t: 16, b: 40 };
+  const plotW = VW - pad.l - pad.r, plotH = VH - pad.t - pad.b, DAY = 86400000;
 
   function draw() {
     const series = buildSeries();
     const muted = css("--muted"), grid = css("--grid"), panel = css("--panel");
+    const mono = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
 
-    // Single-point series -> flat line back to the previous day so it's visible.
+    // A single observation is drawn flat from the day before, so the line exists.
     series.forEach(s => {
-      s.linePts = (s.points.length === 1)
+      s.linePts = s.points.length === 1
         ? [{ t: s.points[0].t - DAY, v: s.points[0].v }, s.points[0]]
         : s.points;
     });
 
-    let vals = [], times = [];
+    const vals = [], times = [];
     series.forEach(s => s.linePts.forEach(p => { vals.push(p.v); times.push(p.t); }));
-
-    const head = `<svg viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">`;
+    const head = `<svg viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" font-family="${mono}">`;
     if (!vals.length) {
-      host.innerHTML = head + `<text x="${VW / 2}" y="${VH / 2}" fill="${muted}" font-size="15" text-anchor="middle">No series selected.</text></svg>`;
+      host.innerHTML = head + `<text x="${VW/2}" y="${VH/2}" fill="${muted}" font-size="13" text-anchor="middle">NO SERIES SELECTED</text></svg>`;
       return;
     }
 
     let vmin = Math.min(...vals), vmax = Math.max(...vals);
-    if (vmin === vmax) { vmin *= 0.9; vmax *= 1.1; }
-    const vpad = (vmax - vmin) * 0.12; vmin = Math.max(0, vmin - vpad); vmax += vpad;
+    if (vmin === vmax) { vmin *= 0.97; vmax *= 1.03; }
+    const vpad = (vmax - vmin) * 0.14; vmin -= vpad; vmax += vpad;
     let tmin = Math.min(...times), tmax = Math.max(...times);
     if (tmin === tmax) { tmin -= DAY; tmax += DAY; }
-
-    const X = t => (pad.l + plotW * (t - tmin) / (tmax - tmin));
-    const Y = v => (pad.t + plotH * (1 - (v - vmin) / (vmax - vmin)));
+    const X = t => pad.l + plotW * (t - tmin) / (tmax - tmin);
+    const Y = v => pad.t + plotH * (1 - (v - vmin) / (vmax - vmin));
 
     let svg = head;
-    // y grid + labels
-    const ticks = 5;
-    for (let i = 0; i <= ticks; i++) {
-      const v = vmin + (vmax - vmin) * i / ticks, y = Y(v).toFixed(1);
+    for (let i = 0; i <= 5; i++) {
+      const v = vmin + (vmax - vmin) * i / 5, y = Y(v).toFixed(1);
       svg += `<line x1="${pad.l}" y1="${y}" x2="${VW - pad.r}" y2="${y}" stroke="${grid}" stroke-width="1"/>`;
-      svg += `<text x="${pad.l - 10}" y="${y}" fill="${muted}" font-size="13" text-anchor="end" dominant-baseline="middle">${esc(fmtMoney(v))}</text>`;
+      svg += `<text x="${pad.l - 9}" y="${y}" fill="${muted}" font-size="11.5" text-anchor="end" dominant-baseline="middle">${esc(money(v))}</text>`;
     }
-    // x labels (dates)
     [...new Set(times)].sort((a, b) => a - b).forEach(t => {
-      const lab = new Date(t).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" });
-      svg += `<text x="${X(t).toFixed(1)}" y="${VH - pad.b + 22}" fill="${muted}" font-size="13" text-anchor="middle">${esc(lab)}</text>`;
+      const lab = new Date(t).toLocaleDateString("en-GB",
+        { day: "2-digit", month: "short" }).toUpperCase();
+      svg += `<text x="${X(t).toFixed(1)}" y="${VH - pad.b + 20}" fill="${muted}" font-size="11" text-anchor="middle">${esc(lab)}</text>`;
     });
-    // y-axis caption
-    const cy = pad.t + plotH / 2;
-    svg += `<text x="20" y="${cy}" fill="${muted}" font-size="13" text-anchor="middle" transform="rotate(-90 20 ${cy})">${state.unit === "price_per_unit" ? "£ per standard unit" : "£ per metric tonne"}</text>`;
-    // series: flat/linked line + a marker per real point
     series.forEach(s => {
       const line = s.linePts.slice().sort((a, b) => a.t - b.t)
         .map(p => `${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
-      svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2.6" stroke-linejoin="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
+      svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
       s.points.forEach(p => {
-        const excl = p.n_excluded ? `, ${p.n_excluded} outlier${p.n_excluded > 1 ? "s" : ""} dropped` : "";
-        const info = `${s.label} · ${p.date} · ${fmtMoney(p.v)} · ${p.n_used}/${p.n_obs} seller${p.n_obs > 1 ? "s" : ""}${excl}`;
-        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="5.5" fill="${s.color}" stroke="${panel}" stroke-width="2" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
+        const excl = p.n_excluded ? ` · ${p.n_excluded} EXCL` : "";
+        const info = `${s.label.toUpperCase()} · ${p.date} · ${money(p.v)} · ${p.n_used}/${p.n_obs} SELLERS${excl}`;
+        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="4.5" fill="${s.color}" stroke="${panel}" stroke-width="1.5" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
       });
     });
-    host.innerHTML = svg + `</svg>`;
+    host.innerHTML = svg + "</svg>";
   }
 
-  // ---- tap / hover a point for details (works on touch and desktop) -------
-  function showTip(circle) {
-    tip.textContent = circle.getAttribute("data-info");
-    const hb = host.getBoundingClientRect(), cb = circle.getBoundingClientRect();
-    let x = cb.left - hb.left + 12, y = cb.top - hb.top - 6;
-    if (x + 230 > hb.width) x = Math.max(4, hb.width - 236);
-    tip.style.left = x + "px"; tip.style.top = y + "px"; tip.style.opacity = 1;
+  function showTip(c) {
+    tip.textContent = c.getAttribute("data-info");
+    const hb = host.getBoundingClientRect(), cb = c.getBoundingClientRect();
+    let x = cb.left - hb.left + 12;
+    if (x + 250 > hb.width) x = Math.max(4, hb.width - 256);
+    tip.style.left = x + "px";
+    tip.style.top = (cb.top - hb.top - 6) + "px";
+    tip.style.opacity = 1;
   }
   host.addEventListener("click", ev => {
     const c = ev.target.closest("circle[data-info]");
     if (c) { showTip(c); renderDetail(c.dataset.oil, c.dataset.ch, c.dataset.date); }
     else tip.style.opacity = 0;
   });
-
-  // ---- click-through: full per-SKU-per-website breakdown ------------------
-  const detail = document.getElementById("detail");
-  function renderDetail(oil, ch, date) {
-    const o = DATA.oils[oil]; if (!o) return;
-    const pt = (o.channels[ch] || []).find(p => p.date === date);
-    if (!pt || !pt.breakdown) return;
-    const rows = pt.breakdown.map(b => {
-      const flags = [];
-      if (b.stale) flags.push(`carried from ${b.as_of.slice(5)}`);
-      if (b.excluded) flags.push("outlier — excluded");
-      const fl = flags.length ? ` <span class="fl">(${flags.join(" · ")})</span>` : "";
-      return `<tr class="${b.excluded ? "ex" : ""}"><td>${b.source}</td><td>${b.product}${fl}</td>` +
-             `<td>${fmtMoney(b.price_per_unit)}</td><td>${fmtMoney(b.price_per_tonne)}</td></tr>`;
-    }).join("");
-    detail.innerHTML =
-      `<div class="dhead"><span class="dot" style="background:${o.color}"></span>` +
-      `<b>${o.label}</b> &mdash; ${date} &middot; aggregate ${fmtMoney(pt.price_per_unit)}/unit ` +
-      `(${pt.n_used} seller${pt.n_used > 1 ? "s" : ""})</div>` +
-      `<table class="dtab"><tr><th>Website</th><th>Product (SKU)</th><th>£/unit</th><th>£/tonne</th></tr>${rows}</table>`;
-    detail.style.display = "block";
-  }
   host.addEventListener("mouseover", ev => {
     const c = ev.target.closest("circle[data-info]");
     if (c) showTip(c);
   });
   host.addEventListener("mouseleave", () => { tip.style.opacity = 0; });
 
-  // ---- banner + unit table ------------------------------------------------
-  function updateBanner() {
-    const b = document.getElementById("banner");
-    const dates = new Set();
-    Object.values(DATA.oils).forEach(o =>
-      Object.values(o.channels || {}).forEach(pts => pts.forEach(p => dates.add(p.date))));
-    const nd = dates.size;
-    b.innerHTML = nd <= 1
-      ? `Single snapshot so far (<b>${DATA.generated}</b>), drawn as a flat line from the previous day so every oil is visible. Each marker is the cross-seller mean after dropping anomalies beyond ${DATA.std_dev_threshold} SD. The line takes real shape as the daily job adds dates.`
-      : `${nd} dates &middot; generated ${DATA.generated}. Points beyond ${DATA.std_dev_threshold} SD from the cross-seller mean are excluded.`;
-  }
-
-  function buildUnitTable() {
-    const t = document.getElementById("unitTable");
-    let html = "<tr><th>Oil</th><th>Standard unit</th><th>Basis</th><th>Note</th></tr>";
-    for (const o of Object.values(DATA.oils)) {
-      const sp = o.standard_pack;
-      html += `<tr><td>${o.label}</td><td>${sp.value} ${sp.unit}</td><td>${o.basis === "mass" ? "by weight" : "by volume"}</td><td style="color:var(--muted)">${o.notes || ""}</td></tr>`;
-    }
-    t.innerHTML = html;
-  }
-
-  document.getElementById("foot").innerHTML =
-    "UK prices only, one fixed pack size per oil, reliable/established sellers only. Aggregated across: " +
-    "JJ Foodservice, Brakes (Sysco), Booker, Marfast and Magna Foodservice. " +
-    "All prices are the <strong>collection</strong> price for a single pack, including any current discount " +
-    "(a reliable shop dropping its price is the signal this index exists to catch). " +
-    "£/tonne is computed here using published oil densities. This is a movement proxy, not a trading price. " +
-    "See <code>config/targets.json</code> for the exact products and URLs.";
-
-  // ---- price changes: what moved today, and across the trailing week --------
-  function movesTable(moves) {
-    if (!moves || !moves.length) return '<p class="note">No price changes recorded in this window.</p>';
-    const head = "<tr><th>Website</th><th>Oil</th><th>Brand</th><th>Pack</th>" +
-                 "<th>From</th><th>To</th><th>Change</th></tr>";
-    const body = moves.map(m => {
-      const up = m.delta > 0, cls = up ? "up" : "down", arrow = up ? "▲" : "▼";
-      const pct = (m.pct > 0 ? "+" : "") + m.pct.toFixed(2);
-      return `<tr><td>${esc(m.source)}</td><td>${esc(m.oil)}</td>` +
-             `<td>${esc(m.brand || "")}</td><td>${esc((m.format || "").toUpperCase())}</td>` +
-             `<td>${fmtMoney(m.from)}</td><td>${fmtMoney(m.to)}</td>` +
-             `<td class="${cls}">${arrow} ${fmtMoney(Math.abs(m.delta))} (${pct}%)</td></tr>`;
+  // ---- per-SKU constituents behind a point --------------------------------
+  function renderDetail(oil, ch, date) {
+    const o = DATA.oils[oil]; if (!o) return;
+    const pt = (o.channels[ch] || []).find(p => p.date === date);
+    if (!pt || !pt.breakdown) return;
+    const rows = pt.breakdown.map(b => {
+      const flags = [];
+      if (b.stale) flags.push(`carried ${b.as_of.slice(5)}`);
+      if (b.lapsed) flags.push(`stopped reporting ${b.age_days}d`);
+      if (b.excluded) flags.push("outlier");
+      const fl = flags.length ? ` <span class="fl">${esc(flags.join(" · "))}</span>` : "";
+      return `<tr class="${b.excluded || b.lapsed ? "ex" : ""}"><td>${esc(b.source)}</td>` +
+             `<td>${esc(b.brand || "")}</td><td>${esc((b.format || "").toUpperCase())}</td>` +
+             `<td>${esc(b.product)}${fl}</td>` +
+             `<td class="n">${esc(money(b.price_per_unit))}</td>` +
+             `<td class="n">${esc(money(b.price_per_tonne))}</td></tr>`;
     }).join("");
-    return `<table class="dtab">${head}${body}</table>`;
+    $("detail").innerHTML =
+      `<div class="dhead"><span class="dot" style="background:${o.color}"></span>` +
+      `${esc(o.label)} · ${esc(date)} · ${esc(money(pt.price_per_unit))} · ${pt.n_used} sellers</div>` +
+      `<div class="scroll"><table><tr><th>Seller</th><th>Brand</th><th>Pack</th>` +
+      `<th>SKU</th><th>£/pack</th><th>£/tonne</th></tr>${rows}</table></div>`;
+    $("detail").style.display = "block";
   }
 
-  // "and who by" -- the movers are the point of this section, not the average
+  // ---- price changes -------------------------------------------------------
+  function movesTable(moves) {
+    if (!moves || !moves.length) return '<p class="none">No changes in this window.</p>';
+    const rows = moves.map(m =>
+      `<tr><td>${esc(m.source)}</td><td>${esc(m.oil)}</td><td>${esc(m.brand || "")}</td>` +
+      `<td>${esc((m.format || "").toUpperCase())}</td>` +
+      `<td class="n">${esc(money(m.from))}</td><td class="n">${esc(money(m.to))}</td>` +
+      `<td class="n ${cls(m.delta)}">${arrow(m.delta)} ${esc(signed(m.delta))} ` +
+      `(${m.pct > 0 ? "+" : m.pct < 0 ? "−" : ""}${Math.abs(m.pct).toFixed(2)}%)</td></tr>`).join("");
+    return `<div class="scroll"><table><tr><th>Seller</th><th>Oil</th><th>Brand</th>` +
+           `<th>Pack</th><th>From</th><th>To</th><th>Change</th></tr>${rows}</table></div>`;
+  }
+
   function movesSummary(summary) {
     const oils = Object.keys(summary || {});
     if (!oils.length) return "";
     return oils.map(oil => {
       const s = summary[oil];
-      const dir = s.avg_delta > 0 ? "up" : "down";
-      return `<p class="summary"><strong>${esc(oil)}</strong>: ${s.n_skus_changed} SKU(s) changed, ` +
-             `average ${dir} ${fmtMoney(Math.abs(s.avg_delta))} (${s.avg_pct > 0 ? "+" : ""}${s.avg_pct.toFixed(2)}%) ` +
-             `&mdash; ${s.n_up} up, ${s.n_down} down. Moved by: ${esc(s.movers.join(", "))}.</p>`;
+      return `<p class="sum"><span class="${cls(s.avg_delta)}">${arrow(s.avg_delta)}</span> ` +
+             `${esc(oil)} — ${s.n_skus_changed} SKU, avg ${esc(signed(s.avg_delta))} ` +
+             `(${s.avg_pct > 0 ? "+" : s.avg_pct < 0 ? "−" : ""}${Math.abs(s.avg_pct).toFixed(2)}%), ` +
+             `${s.n_up} up / ${s.n_down} down · ${esc(s.movers.join(", "))}</p>`;
     }).join("");
   }
 
   function renderChanges() {
     const ch = DATA.changes || {};
-    document.getElementById("changesBody").innerHTML =
-      `<div class="subhead">Today &mdash; ${esc(ch.latest_date || "no data")}</div>` +
+    $("chgWindow").textContent = (ch.week_from || "") + " → " + (ch.latest_date || "");
+    $("changesBody").innerHTML =
+      `<div class="subhead">Latest session · ${esc(ch.latest_date || "n/a")}</div>` +
       movesSummary(ch.today_summary) + movesTable(ch.today) +
-      `<div class="subhead">Trailing week &mdash; since ${esc(ch.week_from || "n/a")}</div>` +
+      `<div class="subhead">Trailing 7 days</div>` +
       movesSummary(ch.week_summary) + movesTable(ch.week);
   }
 
-  renderLegend(); renderChannels(); buildUnitTable(); renderChanges(); updateBanner(); draw();
+  // ---- header + footer -----------------------------------------------------
+  function renderMeta() {
+    const dates = new Set();
+    Object.values(DATA.oils).forEach(o =>
+      Object.values(o.channels || {}).forEach(pts => pts.forEach(p => dates.add(p.date))));
+    const n = dates.size;
+    $("asof").textContent =
+      `Cash & carry · collection · as of ${DATA.generated} · ${n} session${n === 1 ? "" : "s"}`;
+    $("foot").innerHTML =
+      `▲ price rise &nbsp;·&nbsp; ▼ price fall &nbsp;·&nbsp; ` +
+      `5 UK sellers, one 20L pack per oil, collection price incl. discounts<br>` +
+      `Cross-seller mean, outliers beyond ${DATA.std_dev_threshold}σ excluded &nbsp;·&nbsp; ` +
+      `£/tonne from published densities &nbsp;·&nbsp; movement proxy, not a trading price`;
+  }
+
+  renderChannels(); renderQuotes(); renderLegend(); renderChanges(); renderMeta(); draw();
 })();
 </script>
 </body>
