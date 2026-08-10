@@ -171,6 +171,28 @@ Two lessons worth generalising:
    disagrees with the displayed price, the displayed price is what the buyer pays —
    hence the `prefer_rendered` flag on affected adapters.
 
+## 9b. Why prices are anchored on the word "Collection"
+
+Diagnostics showed these sellers render **both** prices together:
+
+```
+Delivery £28.99   Collection £27.99      <- Magna, KTC Veg BIB 20L
+Collection £32.79 Delivery £34.29        <- Marfast (order varies)
+```
+
+Any position-based selector picks whichever comes first in the DOM, which is why
+early runs recorded the *delivery* price and looked perfectly healthy doing it. The
+distinguishing CSS was a Bootstrap spacing class (`ms-2` = delivery, `ms-3` =
+collection) — that would break on any restyle.
+
+So affected adapters set `price_label = "Collection"` and read the value that follows
+that word in the tightest element containing both. **Business meaning is more durable
+than layout.** The tier order is: label → rendered selector → static (JSON-LD/meta).
+
+This tracks the **collection** price throughout, which is what the index is defined
+on. If you ever want delivery instead, change `price_label` — do not change it per
+seller, or the series stops being comparable.
+
 ## 10. Known gaps
 
 - Adapters are not yet wired to the live sites; the current baseline is

@@ -138,10 +138,11 @@ class BaseAdapter:
     # ordered, seller-specific price selectors (used only by the browser tier)
     selectors: list[str] = []
 
-    def __init__(self, fetch_html=None, fetch_rendered=None):
+    def __init__(self, fetch_html=None, fetch_rendered=None, fetch_labelled=None):
         # injectable so tests can run with no network
         self._fetch_html = fetch_html
         self._fetch_rendered = fetch_rendered
+        self._fetch_labelled = fetch_labelled
 
     # -- tier 2: static HTML (JSON-LD / meta) --------------------------------
     def from_static(self, url: str) -> Quote | None:
@@ -156,6 +157,22 @@ class BaseAdapter:
         p = price_from_meta(html)
         if p is not None:
             return Quote(p, "meta-itemprop", url, datetime.now(timezone.utc).isoformat())
+        return None
+
+    # -- tier 2b: label-anchored price ---------------------------------------
+    # Sellers commonly show "Delivery £X  Collection £Y" together. Anchoring on the
+    # word is far more durable than a CSS position: utility classes (ms-2/ms-3)
+    # change on any restyle, the word "Collection" does not.
+    price_label = None          # set to "Collection" to enable
+
+    def from_label(self, url) -> Quote | None:
+        if not self.price_label or not self._fetch_labelled:
+            return None
+        val = self._fetch_labelled(url, self.price_label)
+        p = money(val)
+        if p is not None:
+            return Quote(p, f"label:{self.price_label}", url,
+                         datetime.now(timezone.utc).isoformat())
         return None
 
     # -- tier 3: rendered page + known selector ------------------------------
@@ -176,8 +193,9 @@ class BaseAdapter:
 
     def fetch(self, sku: dict) -> Quote:
         url = sku["url"]
-        order = ((self.from_rendered, self.from_static) if self.prefer_rendered
-                 else (self.from_static, self.from_rendered))
+        order = ((self.from_label, self.from_rendered, self.from_static)
+                 if self.prefer_rendered
+                 else (self.from_label, self.from_static, self.from_rendered))
         for step in order:
             q = step(url)
             if q:
@@ -193,6 +211,7 @@ class MagnaAdapter(BaseAdapter):
     """
     name = "Magna Foodservice"
     prefer_rendered = True
+    price_label = "Collection"      # page shows "Delivery £28.99 Collection £27.99"
     selectors = ["p.price ins .woocommerce-Price-amount",
                  "p.price .woocommerce-Price-amount",
                  ".summary .woocommerce-Price-amount",
@@ -209,6 +228,7 @@ class MarfastAdapter(BaseAdapter):
     """
     name = "Marfast"
     prefer_rendered = True
+    price_label = "Collection"      # page renders delivery and collection together
     selectors = ["[class*='collection'] .price-wrapper .price",
                  "[data-price-type='finalPrice'] .price",
                  ".price-container.price-final_price .price-wrap"]
@@ -240,6 +260,7 @@ class JJAdapter(BaseAdapter):
     browser tier carries it.
     """
     name = "JJ Foodservice"
+    price_label = "Collection"
     selectors = ["[class*='collection'] [class*='price']", "[class*='product-price']",
                  "[itemprop='price']"]
 
@@ -386,6 +407,21 @@ def cmd_selftest():
     check("reads via selector", q.price_gbp == 33.99)
     check("records provenance", q.method.startswith("selector:"))
 
+    print("label anchoring (Delivery vs Collection)")
+    import re as _re
+    def _lbl(text, label="Collection"):
+        m = _re.search(label + r"\s*:?\s*£\s?([0-9]{1,4}(?:\.[0-9]{2})?)", text, _re.I)
+        return float(m.group(1)) if m else None
+    check("picks Collection, not Delivery (Magna layout)",
+          _lbl("Delivery £28.99 Collection £27.99") == 27.99)
+    check("works when Collection comes first (Marfast layout)",
+          _lbl("Collection: £32.79 Delivery: £34.29") == 32.79)
+    a = MagnaAdapter(fetch_labelled=lambda u, l: "27.99",
+                     fetch_html=lambda u: '<meta itemprop="price" content="28.99">')
+    q = a.fetch({"url": "https://example.test/p"})
+    check("label tier beats the stale meta/JSON-LD value",
+          q.price_gbp == 27.99 and q.method == "label:Collection")
+
     print("validation gate")
     check("accepts a normal price", validate(30.49) == "")
     check("rejects out-of-band", validate(199.0) != "")
@@ -445,6 +481,28 @@ def cmd_run(only=None, exclude=None, write=False):
         page_holder["at"] = url
         return True
 
+    def fetch_labelled(url, label):
+        """Return the £ value that follows `label` in the tightest element
+        containing both. Handles "Delivery £28.99 Collection £27.99"."""
+        pw = page_holder.get("page")
+        if not pw:
+            return None
+        try:
+            _prepare(pw, url)
+            return pw.evaluate("""(label) => {
+              const re = new RegExp(label + '\\s*:?\\s*£\\s?([0-9]{1,4}(?:\\.[0-9]{2})?)', 'i');
+              let best = null, bestLen = Infinity;
+              for (const el of document.querySelectorAll('body *')) {
+                const t = (el.textContent || '').replace(/\\s+/g, ' ');
+                if (t.length > 400) continue;
+                const m = re.exec(t);
+                if (m && t.length < bestLen) { bestLen = t.length; best = m[1]; }
+              }
+              return best;
+            }""", label)
+        except Exception:
+            return None
+
     def fetch_rendered(url, selector):
         pw = page_holder.get("page")
         if not pw:
@@ -484,7 +542,8 @@ def cmd_run(only=None, exclude=None, write=False):
         cls = ADAPTERS.get(seller)
         if not cls:
             print(f"{seller}: no adapter"); continue
-        ad = cls(fetch_html=fetch_html, fetch_rendered=fetch_rendered)
+        ad = cls(fetch_html=fetch_html, fetch_rendered=fetch_rendered,
+                 fetch_labelled=fetch_labelled)
         print(seller)
         for sku in v["skus"]:
             page_holder.pop("at", None)   # force navigation for each SKU
