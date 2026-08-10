@@ -88,6 +88,11 @@
   table.dtab th { color: var(--muted); font-weight: 500; }
   table.dtab tr.ex td { opacity: .5; text-decoration: line-through; }
   table.dtab .fl { color: var(--muted); }
+  .up { color: #c0392b; }          /* a price rise is bad news for a buyer */
+  .down { color: #1e8449; }
+  .note { color: var(--muted); font-size: 12.5px; margin: 6px 0 0; }
+  .subhead { font-size: 12.5px; font-weight: 600; margin: 14px 0 4px; }
+  .summary { font-size: 12.5px; margin: 2px 0 8px; color: var(--muted); }
   .themebtn { float: right; font-size: 12px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; cursor: pointer; }
 </style>
 </head>
@@ -96,7 +101,7 @@
   <header>
     <button class="themebtn" id="themeToggle" title="Toggle theme">◐ theme</button>
     <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
-    <p>UK B2B index &mdash; single-source oils &amp; refined fats, aggregated across reliable cash-and-carry sellers. Tap a point for the full per-SKU price list. No blends, no supermarket retail.</p>
+    <p>UK B2B index &mdash; rapeseed and vegetable (soybean) oil, aggregated across five reliable cash-and-carry sellers at the collection price. Tap a point for the full per-SKU price list. No blends, no supermarket retail, no logins.</p>
   </header>
 
   <div class="card">
@@ -121,6 +126,11 @@
     <div class="legend" id="legend"></div>
     <div class="banner" id="banner"></div>
     <div class="detail" id="detail"></div>
+  </div>
+
+  <div class="card" id="changesCard">
+    <div class="lbl" style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)">Price changes</div>
+    <div id="changesBody"></div>
   </div>
 
   <div class="card">
@@ -380,12 +390,51 @@
 
   document.getElementById("foot").innerHTML =
     "UK prices only, one fixed pack size per oil, reliable/established sellers only. Aggregated across: " +
-    "JJ Foodservice, Brakes (Sysco), Costco UK, Marfast, CK Fast Foods, Cater-Choice and the Foodomarket UK index. " +
-    "Prices are the single pack price including any current discount (a reliable shop dropping price is the signal). " +
+    "JJ Foodservice, Brakes (Sysco), Booker, Marfast and Magna Foodservice. " +
+    "All prices are the <strong>collection</strong> price for a single pack, including any current discount " +
+    "(a reliable shop dropping its price is the signal this index exists to catch). " +
     "£/tonne is computed here using published oil densities. This is a movement proxy, not a trading price. " +
-    "See <code>data/sources.md</code> and <code>config/products.json</code> for the exact products.";
+    "See <code>config/targets.json</code> for the exact products and URLs.";
 
-  renderLegend(); renderChannels(); buildUnitTable(); updateBanner(); draw();
+  // ---- price changes: what moved today, and across the trailing week --------
+  function movesTable(moves) {
+    if (!moves || !moves.length) return '<p class="note">No price changes recorded in this window.</p>';
+    const head = "<tr><th>Website</th><th>Oil</th><th>Brand</th><th>Pack</th>" +
+                 "<th>From</th><th>To</th><th>Change</th></tr>";
+    const body = moves.map(m => {
+      const up = m.delta > 0, cls = up ? "up" : "down", arrow = up ? "▲" : "▼";
+      const pct = (m.pct > 0 ? "+" : "") + m.pct.toFixed(2);
+      return `<tr><td>${esc(m.source)}</td><td>${esc(m.oil)}</td>` +
+             `<td>${esc(m.brand || "")}</td><td>${esc((m.format || "").toUpperCase())}</td>` +
+             `<td>${fmtMoney(m.from)}</td><td>${fmtMoney(m.to)}</td>` +
+             `<td class="${cls}">${arrow} ${fmtMoney(Math.abs(m.delta))} (${pct}%)</td></tr>`;
+    }).join("");
+    return `<table class="dtab">${head}${body}</table>`;
+  }
+
+  // "and who by" -- the movers are the point of this section, not the average
+  function movesSummary(summary) {
+    const oils = Object.keys(summary || {});
+    if (!oils.length) return "";
+    return oils.map(oil => {
+      const s = summary[oil];
+      const dir = s.avg_delta > 0 ? "up" : "down";
+      return `<p class="summary"><strong>${esc(oil)}</strong>: ${s.n_skus_changed} SKU(s) changed, ` +
+             `average ${dir} ${fmtMoney(Math.abs(s.avg_delta))} (${s.avg_pct > 0 ? "+" : ""}${s.avg_pct.toFixed(2)}%) ` +
+             `&mdash; ${s.n_up} up, ${s.n_down} down. Moved by: ${esc(s.movers.join(", "))}.</p>`;
+    }).join("");
+  }
+
+  function renderChanges() {
+    const ch = DATA.changes || {};
+    document.getElementById("changesBody").innerHTML =
+      `<div class="subhead">Today &mdash; ${esc(ch.latest_date || "no data")}</div>` +
+      movesSummary(ch.today_summary) + movesTable(ch.today) +
+      `<div class="subhead">Trailing week &mdash; since ${esc(ch.week_from || "n/a")}</div>` +
+      movesSummary(ch.week_summary) + movesTable(ch.week);
+  }
+
+  renderLegend(); renderChannels(); buildUnitTable(); renderChanges(); updateBanner(); draw();
 })();
 </script>
 </body>

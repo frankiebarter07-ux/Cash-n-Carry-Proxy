@@ -43,8 +43,10 @@ Exact products and URLs: [`config/targets.json`](config/targets.json).
    shop listing four SKUs doesn't outvote one listing a single SKU.
 4. **Average across sellers** — dropping any seller more than **2 standard deviations**
    from the cross-seller mean (only applied with ≥ 3 sellers).
-5. **Carry forward** — a seller that didn't report keeps its last price, so the index
-   moves only on *real* price changes, never on missing data.
+5. **Carry forward, then lapse** — a seller that didn't report keeps its last price, so
+   the index moves only on *real* price changes, never on missing data. After **7 days**
+   without a fresh price that seller drops out of the average and is shown as "stopped
+   reporting", so a blocked site can't sit frozen making *no data* look like *no change*.
 
 **VAT:** UK cooking oils are zero-rated, so inc-VAT = ex-VAT; prices are used as listed.
 
@@ -75,10 +77,11 @@ page. If no labelled price is found, nothing is written and the run fails loudly
 This exists because a regex fallback once recorded a delivery-threshold figure from a
 blocked page as if it were a product price. See `ARCHITECTURE.md` §2.
 
-Related: a *green run is not necessarily a correct run*. Two sellers have returned
-properly-labelled but **wrong** prices (delivery instead of collection; stale
-structured data). Spot-check a few SKUs against the live sites periodically —
-`HANDOVER.md` §7.
+Related: a *green run is not necessarily a correct run*. Three times an adapter has
+returned a properly-labelled but **wrong** price — delivery instead of collection,
+stale structured data, and the right label read off the wrong product on the page.
+Each produced a perfectly green run. Spot-check a few SKUs against the live sites
+periodically — `HANDOVER.md` §7.
 
 ## Files
 
@@ -89,12 +92,17 @@ config/targets.json       the 15 SKUs: seller, oil, format, product, URL
 config/oils.json          oil registry: pack size, density, colour
 data/observations.csv     raw record, one row per SKU per day
 data/series.json|.js      computed series + per-SKU breakdown + price changes
+dashboard_static.html     the no-JavaScript view (built by render_static.py)
+index.html                the interactive view (reads data/series.js)
 scripts/adapters.py       per-seller price adapters (+ selftest, diagnose)
 scripts/process.py        standardise, aggregate, carry forward, compute changes
 scripts/render_static.py  build the no-JavaScript dashboard
 scripts/manual_prices.py  record a blocked seller's prices by hand
+scripts/booker_probe.py   check whether any Booker endpoint is reachable from here
+tools/setup-windows-runner.ps1  one-shot install of the self-hosted runner (Booker)
 tools/check_protection.sh probe each site for bot-protection / price visibility
 .github/workflows/        daily collection, adapter tests, manual Booker entry
+legacy/                   superseded approaches, with why — do not wire back in
 ```
 
 `data/observations_legacy.csv` is the pre-verification history. It contains values

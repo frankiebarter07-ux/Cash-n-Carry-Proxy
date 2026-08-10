@@ -6,10 +6,11 @@ Pipeline
 --------
 1. Read every price observation (one row = one product seen on one site on one day).
    Each row carries only the price for the single standalone pack it is sold in.
-2. Standardise every observation to the oil's standard pack (20L drum for most,
-   12.5kg block for palm, 5L tin for olive) -> "price per unit".
-3. Convert every observation to "price per metric tonne" using the oil's density
-   (palm is sold by weight, so per-kg scales straight to per-tonne).
+2. Standardise every observation to the oil's standard pack (20L for both oils
+   currently tracked) -> "price per unit".
+3. Convert every observation to "price per metric tonne" using the oil's density.
+   An oil whose config sets "basis": "mass" is sold by weight instead, so its per-kg
+   price scales straight to per-tonne with no density involved.
 4. For each (oil, channel, date) group, drop cross-site anomalies: any observation
    more than 2 standard deviations from the group mean (measured in £/tonne, the
    common comparable unit). Only applied when a group has >= 3 points.
@@ -209,7 +210,7 @@ def build():
             print(f"  ! skipping unknown oil {oil!r}")
             continue
         # Enforce one pack size per oil: every observation for an oil must be at that
-        # oil's standard pack (e.g. sunflower is 20L only, never 5L + 20L mixed).
+        # oil's standard pack, never a mix of 5L and 20L, or the average is meaningless.
         pack = oils_cfg[oil]["standard_pack"]
         if r["pack_value"] != pack["value"] or r["pack_unit"] != pack["unit"]:
             print(f"  ! {oil} {r['source']}: pack {r['pack_value']}{r['pack_unit']} "
