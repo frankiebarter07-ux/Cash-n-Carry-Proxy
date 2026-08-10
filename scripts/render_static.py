@@ -138,6 +138,7 @@ def build():
                 flags.append("outlier — excluded")
             fl = f' <span class="flag">({" · ".join(flags)})</span>' if flags else ""
             rows_b += (f'<tr><td>{esc(b["source"])}</td>'
+                       f'<td>{esc((b.get("format") or "").upper())}</td>'
                        f'<td>{esc(b["product"])}{fl}</td>'
                        f'<td>{esc(money(b["price_per_unit"]))}</td>'
                        f'<td>{esc(money(b["price_per_tonne"]))}</td></tr>')
@@ -145,7 +146,7 @@ def build():
             f'<div class="card"><div class="oilhead"><span class="dot" style="background:{o["color"]}"></span>'
             f'{esc(o["label"])} &mdash; full price list ({esc(p["date"])}) &middot; '
             f'aggregate {esc(money(p["price_per_unit"]))}/unit</div>'
-            f'<table><tr><th>Website</th><th>Product (SKU)</th><th>£/unit</th><th>£/tonne</th></tr>'
+            f'<table><tr><th>Website</th><th>Pack</th><th>Product (SKU)</th><th>£/20L</th><th>£/tonne</th></tr>'
             f'{rows_b}</table></div>')
 
     html = f"""<!doctype html>

@@ -27,7 +27,7 @@ from datetime import date
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OBS_PATH = os.path.join(ROOT, "data", "observations.csv")
 CONFIG_PATH = os.path.join(ROOT, "config", "oils.json")
-FIELDS = ["date", "oil", "channel", "source", "product", "url",
+FIELDS = ["date", "oil", "format", "channel", "source", "product", "url",
           "pack_value", "pack_unit", "price_gbp", "notes"]
 
 
@@ -38,6 +38,8 @@ def main():
     ap = argparse.ArgumentParser(description="Add a cooking-oil price observation.")
     ap.add_argument("--oil", required=True, choices=sorted(oils))
     ap.add_argument("--channel", required=True, choices=["cash_carry", "retail"])
+    ap.add_argument("--format", default="", choices=["", "bib", "drum"],
+                    help="pack format: bag-in-box or drum")
     ap.add_argument("--source", required=True, help="Website / retailer name")
     ap.add_argument("--product", required=True, help="Product name as listed")
     ap.add_argument("--url", required=True)
@@ -49,7 +51,8 @@ def main():
     args = ap.parse_args()
 
     row = {
-        "date": args.date, "oil": args.oil, "channel": args.channel,
+        "date": args.date, "oil": args.oil, "format": args.format,
+        "channel": args.channel,
         "source": args.source, "product": args.product, "url": args.url,
         "pack_value": args.pack, "pack_unit": args.unit,
         "price_gbp": args.price, "notes": args.note,

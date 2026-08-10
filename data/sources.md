@@ -1,78 +1,54 @@
 # Price sources
 
-**UK prices only — this is a UK index.** Every price is the **single standalone pack
-price** as listed on a UK seller, **including any current discount** — a reliable shop
-dropping its price is the signal this index exists to catch, so sale prices are kept, not
-reverted to RRP. £/tonne is computed in `scripts/process.py` from published oil densities.
+**UK prices only. All 15 SKUs verified in-browser on 2026-08-10 — every seller shows
+prices publicly, no trade login required anywhere.** Collection prices throughout.
 
-**Reliable / established sellers only.** Small online shops and loss-leaders are excluded
-from the aggregate (see the excluded list below). **No blends. No supermarket D2C retail.**
+Two oils, one pack size (20 L), two formats (bag-in-box / drum), five sellers.
 
-**One fixed pack size per oil** (enforced in `process.py` — any observation at a
-different size is rejected):
+**Aggregation:** a seller's SKUs are averaged into one seller-price, then averaged
+across sellers with a 2-standard-deviation outlier filter. A non-reporting seller's
+last price is carried forward so the index moves only on real price changes.
 
-| Oil | Fixed size |
-|-----|-----------|
-| Rapeseed | 20 L |
-| Soybean (pure veg, 100% soya) | 20 L |
+**VAT:** UK cooking oils are zero-rated, so inc-VAT = ex-VAT; prices used as listed.
 
-**Two-stage aggregation:** (1) a seller's multiple products for an oil are averaged
-into one **seller price** (a shop listing 4 rapeseed SKUs counts as one seller, not
-four); (2) across sellers, any seller more than **2 standard deviations** from the
-cross-seller mean (in £/tonne) is dropped, then survivors are averaged (stage 2 applies
-with ≥ 3 sellers). On days when only some sellers report (e.g. only the auto-scraped
-ones), each other seller's **last known price is carried forward**, so the seller set
-stays comparable and the index moves only when a seller's price actually changes.
+## Verified prices (2026-08-10)
 
-**VAT:** UK cooking oils and fats are **zero-rated food (0% VAT)**, so a seller's
-inc-VAT price equals its ex-VAT price — confirmed by the identical KTC Vegetable Oil
-20L at £30.69 inc-VAT (Booker) vs £30.49 ex-VAT (JJ). Prices are used as listed, no VAT
-adjustment.
+### Rapeseed — 20 L
 
-## Exact products in the aggregate (as of 2026-07-29)
+| Seller | Format | Product | £ / 20L |
+|---|---|---|---|
+| Magna Foodservice | DRUM | KTC Extended Life Rapeseed Oil 20ltr | £31.49 |
+| Marfast | DRUM | KTC Chef's Choice Rapeseed Oil 20ltr (Drum) | £32.79 |
+| JJ Foodservice | DRUM | KTC Chef's Choice Rapeseed Oil Drum 1x20L | £33.99 |
+| Booker | BIB | Chef's Larder Rapeseed Cooking Oil 20 Litres (141775) | £33.99 |
+| Booker | DRUM | Chef's Larder Rapeseed Cooking Oil 20 Litres (570135) | £33.99 |
+| Brakes (Sysco) | BIB | Sysco Classic Extended Life Rapeseed Oil 20L | £39.51 |
 
-Prices are per single pack. Where a seller lists several products for an oil, they are
-averaged into the one seller-price shown in brackets.
+### Soybean — 20 L
 
-*Auto-updating (no login) sellers are **bold**.*
+| Seller | Format | Product | £ / 20L |
+|---|---|---|---|
+| Magna Foodservice | BIB | KTC Vegetable Oil Box 20ltr | £27.99 |
+| JJ Foodservice | BIB | KTC Vegetable Cooking Oil BIB 1x20L | £28.99 |
+| Magna Foodservice | DRUM | KTC Vegetable Oil Tin 20ltr | £28.99 |
+| JJ Foodservice | DRUM | KTC Vegetable Cooking Oil Drum 1x20L | £29.49 |
+| Marfast | BIB | KTC (Bottle In Box) 20ltr Vegetable Oil | £29.99 |
+| Marfast | DRUM | KTC Vegetable Oil 20ltr (Drum) | £30.49 |
+| Booker | BIB | KTC Vegetable Cooking Oil 20 Litres (181801) | £30.69 |
+| Booker | DRUM | KTC Vegetable Cooking Oil 20 Litres (51332) | £30.69 |
+| Brakes (Sysco) | BIB | KTC Vegetable Oil (Bottle in Box) 20L | £35.33 |
 
-### Rapeseed — 20 L  *(4 sellers)*
-- JJ Foodservice *(£33.24 avg)* — Ext Life Drum £32.99 · Ext Life BIB £32.49 · Pride £33.99 · KTC Chef's Choice £33.49
-- Brakes (Sysco) *(£36.75 avg)* — Sysco Classic Ext Life Drum £33.99 · Sysco Classic BIB £39.51
-- **Booker** — Chef's Larder Rapeseed 20L — £33.99
-- Marfast — KTC Chef's Choice Rapeseed 20L — £42.99
+## Sellers
 
-### Soybean (pure veg, 100% soya = KTC Vegetable) — 20 L  *(4 sellers)*
-- JJ Foodservice *(£30.24 avg)* — KTC Veg Drum £30.49 · KTC Veg BIB £29.99
-- **Booker** — KTC Vegetable Oil 20L — £30.69
-- **CK Fast Foods** — KTC Vegetable Oil 20L — £25.39
-- Brakes (Sysco) — KTC Vegetable Oil BIB 20L — £35.33
+JJ Foodservice · Brakes (Sysco) · Booker · Marfast · Magna Foodservice
 
-## Reliable sellers used
+All five are auto-scrape targets (`config/auth_sites.json`), fetched with a real
+browser. No credentials are used. A price is accepted **only** from a labelled
+selector — the bare-£ regex fallback was removed after it once recorded a stray
+number from a gated page as a real price.
 
-JJ Foodservice, Brakes (Sysco UK), Booker, Marfast, CK Fast Foods.
+## Removed
 
-**Auto-updating (no login, scraped daily):** Booker (public listing) and CK Fast Foods.
-These drive the live movement; the login-gated sellers (JJ, Brakes, Marfast,
-Cater-Choice) carry their last price forward until refreshed. Costco/Bestway/Bidfood are
-disabled — they need a trade account/login the user does not have.
-
-## Excluded — small shops / loss-leaders (not in the aggregate)
-
-YesDeal UK, Bakers Street (£22.50 soya looked like a loss-leader), Surulere Foods,
-Asetena Pa, Everest Cash & Carry, PJ Martinelli. Kept out per the reliability rule.
-
-## Reliable sellers to add once a trade price is available (login-gated)
-
-Bidfood, Bestway Wholesale, Magna Foodservice, Country Range, Cater-Choice (more lines),
-Woods Foodservice, Turner Price, Henry Colbeck, Friars Pride, Nortech, V.A. Whitley,
-Costco *KTC Vegetable Oil 20L Box*, Costco *KTC Super Hi-Fry 20L*.
-
-## Collection reliability
-
-- **Auto-scrapable** (Costco, Foodomarket, CK Fast Foods): re-read daily by
-  `scripts/scrape.py`.
-- **Gated** (JJ Foodservice, Brakes/Sysco, Marfast, Cater-Choice): HTTP 403 to bots or a
-  trade login → refreshed via `scripts/add_observation.py`.
-- No public price API / push feed exists, so collection is **daily best-effort scrape +
-  assisted top-up**, not real-time. Wholesale prices move over days/weeks.
+CK Fast Foods — its page is login-walled, and the values the old regex scraper
+recorded (£25.39 / £25.49) could not be verified. Dropped from the index.
+Earlier data is archived in `data/observations_legacy.csv`.

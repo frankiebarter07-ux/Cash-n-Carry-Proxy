@@ -1,149 +1,208 @@
 {
-  "_comment": "Login-gated sellers scraped by scripts/scrape_auth.py using Playwright. Credentials come ONLY from environment variables (GitHub Actions Secrets) named in cred_env -- never store passwords here. Selectors are candidate lists tried in order (first match wins), so login-form/price markup changes don't need code edits. VERIFY the selectors and product URLs against the live logged-in site once; where unknown they're marked and the site is disabled until filled.",
+  "_comment": "Browser-based scrape targets: the 15 verified SKUs across 5 UK sellers. Every price is publicly visible -- NO login or credentials are used anywhere. Rendered with Playwright; a price is only accepted from a labelled selector, never a bare-\u00a3 regex.",
   "sites": {
-    "Costco UK": {
-      "enabled": false,
-      "_note": "Disabled: Costco bulk oils are behind a business membership login the user does not have. Re-enable only if you get a business account + set COSTCO_ Secrets.",
-      "cred_env": { "user": "COSTCO_USER", "pass": "COSTCO_PASS" },
-      "login_url": "https://www.costco.co.uk/login",
-      "username_selectors": [
-        "#logonId", "input[name='logonId']", "input[name='j_username']",
-        "input[type='email']", "input[autocomplete='username']"
-      ],
-      "password_selectors": [
-        "#logonPassword", "input[name='logonPassword']", "input[name='j_password']",
-        "input[type='password']", "input[autocomplete='current-password']"
-      ],
-      "submit_selectors": [
-        "button[type='submit']", "#sign-in-button",
-        "button:has-text('Sign In')", "button:has-text('Sign in')"
-      ],
+    "JJ Foodservice": {
+      "enabled": true,
+      "no_login": true,
+      "_note": "All prices publicly visible (verified in browser 2026-08-10). Expected route: json_api_or_playwright. React SPA; returns 403 to plain fetchers. URLs are BRANCH-SPECIFIC (London-Enfield) -- JJ prices vary by branch, so keep the branch fixed for a consistent series. Look for the internal JSON API in DevTools > Network > Fetch/XHR.",
       "price_selectors": [
-        "[itemprop='price']", ".product-price .notranslate", ".your-price .value",
-        ".price-wrapper .notranslate", ".product-details-pricing__value", ".price"
+        "[itemprop='price']",
+        "meta[itemprop='price']",
+        ".woocommerce-Price-amount",
+        "p.price .amount",
+        "[class*='collection'] [class*='price']",
+        "[data-testid*='price']",
+        "[class*='product-price']",
+        "[class*='price']"
       ],
       "products": [
         {
-          "oil": "soybean", "product": "KTC Vegetable Oil 20L Box",
-          "url": "https://www.costco.co.uk/Business-Delivery/Business-Delivery/KTC-Vegetable-Oil-20L-Box/p/76584_BD",
-          "pack_value": 20, "pack_unit": "L"
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
+          "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL068/",
+          "pack_value": 20,
+          "pack_unit": "L"
         },
         {
-          "oil": "soybean", "product": "KTC Super Hi-Fry Extra Long Life Vegetable Oil 20L",
-          "url": "https://www.costco.co.uk/Business-Delivery/Business-Delivery/Oils-Salad-Dressing/KTC-Super-Hi-Fry-Extra-Long-Life-Vegetable-Oil-20L/p/507868_BD",
-          "pack_value": 20, "pack_unit": "L"
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Cooking Oil BIB 1x20L",
+          "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL072/",
+          "pack_value": 20,
+          "pack_unit": "L"
+        },
+        {
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Cooking Oil Drum 1x20L",
+          "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL013/",
+          "pack_value": 20,
+          "pack_unit": "L"
+        }
+      ]
+    },
+    "Brakes (Sysco)": {
+      "enabled": true,
+      "no_login": true,
+      "_note": "All prices publicly visible (verified in browser 2026-08-10). Expected route: playwright. Check for Akamai. Note the rapeseed SKU here is p/85064 (bag-in-box), not p/9802 which was used earlier.",
+      "price_selectors": [
+        "[itemprop='price']",
+        "meta[itemprop='price']",
+        ".woocommerce-Price-amount",
+        "p.price .amount",
+        "[class*='collection'] [class*='price']",
+        "[data-testid*='price']",
+        "[class*='product-price']",
+        "[class*='price']"
+      ],
+      "products": [
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Oil (Bottle in Box) 20L",
+          "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753",
+          "pack_value": 20,
+          "pack_unit": "L"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "bib",
+          "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
+          "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/85064",
+          "pack_value": 20,
+          "pack_unit": "L"
         }
       ]
     },
     "Booker": {
       "enabled": true,
       "no_login": true,
-      "_note": "Prices are public on Booker's category listing (no login). The scraper renders list_url with Playwright and matches product tiles by keyword. Verify tile parsing on the first CI run and adjust 'match'/'tile_selectors' if needed.",
-      "list_url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
-      "tile_selectors": [
-        "[class*='product']", "[class*='tile']", "[class*='card']", "li"
+      "_note": "All prices publicly visible (verified in browser 2026-08-10). Expected route: playwright. Direct per-product URLs (Code=...). These replace the category-listing keyword match, which silently returned no price in CI. Format mapping (bib/drum) is inferred from the order in the source list -- verify against each page title.",
+      "price_selectors": [
+        "[itemprop='price']",
+        "meta[itemprop='price']",
+        ".woocommerce-Price-amount",
+        "p.price .amount",
+        "[class*='collection'] [class*='price']",
+        "[data-testid*='price']",
+        "[class*='product-price']",
+        "[class*='price']"
       ],
       "products": [
         {
-          "oil": "rapeseed", "product": "Chef's Larder Rapeseed Cooking Oil 20L",
-          "match": ["chef's larder", "rapeseed", "20 lit"],
-          "exclude": ["premium", "5 lit", "litho"],
-          "pack_value": 20, "pack_unit": "L"
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Cooking Oil 20 Litres (Booker 181801)",
+          "url": "https://www.booker.co.uk/products/product?Code=181801&itemHierarchy=KTC_Vegetable_Cooking_Oil_20_Litres",
+          "pack_value": 20,
+          "pack_unit": "L"
         },
         {
-          "oil": "soybean", "product": "KTC Vegetable Cooking Oil 20L (Booker)",
-          "match": ["ktc", "vegetable", "20 lit"],
-          "exclude": ["rapeseed", "blend", "5 lit"],
-          "pack_value": 20, "pack_unit": "L"
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Cooking Oil 20 Litres (Booker 51332)",
+          "url": "https://www.booker.co.uk/products/product?Code=51332&itemHierarchy=KTC_Vegetable_Cooking_Oil_20_Litres",
+          "pack_value": 20,
+          "pack_unit": "L"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "bib",
+          "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (Booker 141775)",
+          "url": "https://www.booker.co.uk/products/product?Code=141775&itemHierarchy=Chef%27s_Larder_Rapeseed_Cooking_Oil_20_Litres",
+          "pack_value": 20,
+          "pack_unit": "L"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (Booker 570135)",
+          "url": "https://www.booker.co.uk/products/product?Code=570135&itemHierarchy=Chef%27s_Larder_Rapeseed_Cooking_Oil_20_Litres",
+          "pack_value": 20,
+          "pack_unit": "L"
+        }
+      ]
+    },
+    "Marfast": {
+      "enabled": true,
+      "no_login": true,
+      "_note": "All prices publicly visible (verified in browser 2026-08-10). Expected route: html_or_jsonld. Magento-style store; URLs are flat (no /ambient-food-products/oils/ prefix as previously recorded).",
+      "price_selectors": [
+        "[itemprop='price']",
+        "meta[itemprop='price']",
+        ".woocommerce-Price-amount",
+        "p.price .amount",
+        "[class*='collection'] [class*='price']",
+        "[data-testid*='price']",
+        "[class*='product-price']",
+        "[class*='price']"
+      ],
+      "products": [
+        {
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
+          "url": "https://marfast.co.uk/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html",
+          "pack_value": 20,
+          "pack_unit": "L"
+        },
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC (Bottle In Box) 20ltr Vegetable Oil",
+          "url": "https://marfast.co.uk/ktc-bottle-in-box-20ltr-vegetable-oil-box.html",
+          "pack_value": 20,
+          "pack_unit": "L"
+        },
+        {
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Oil 20ltr (Drum)",
+          "url": "https://marfast.co.uk/ktc-vegetable-oil-20ltr-drum.html",
+          "pack_value": 20,
+          "pack_unit": "L"
         }
       ]
     },
     "Magna Foodservice": {
       "enabled": true,
       "no_login": true,
-      "_note": "Added from the seller list. WooCommerce-style store, prices appear public -> per-product URLs with JSON-LD expected. NO PRICE CAPTURED YET: the KTC Veg BIB URL below is confirmed; the drum and rapeseed URLs need filling from the live site (search 'KTC' in their oils category). Verify on first CI run.",
+      "_note": "All prices publicly visible (verified in browser 2026-08-10). Expected route: jsonld. WooCommerce store; JSON-LD offers.price expected. 'tin' in the URL is the drum SKU.",
       "price_selectors": [
-        "[itemprop='price']", ".woocommerce-Price-amount", "p.price .amount", ".summary .price"
+        "[itemprop='price']",
+        "meta[itemprop='price']",
+        ".woocommerce-Price-amount",
+        "p.price .amount",
+        "[class*='collection'] [class*='price']",
+        "[data-testid*='price']",
+        "[class*='product-price']",
+        "[class*='price']"
       ],
       "products": [
         {
-          "oil": "soybean", "product": "KTC Vegetable Oil (Bottle in Box) 20L (Magna)",
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Oil Box 20ltr",
           "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/",
-          "pack_value": 20, "pack_unit": "L"
+          "pack_value": 20,
+          "pack_unit": "L"
         },
         {
-          "oil": "soybean", "product": "KTC Vegetable Cooking Oil Drum 20L (Magna)",
-          "url": "FILL_FROM_MAGNA_SITE",
-          "pack_value": 20, "pack_unit": "L"
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Oil Tin 20ltr",
+          "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-tin-20ltr/",
+          "pack_value": 20,
+          "pack_unit": "L"
         },
         {
-          "oil": "rapeseed", "product": "KTC Extended Life Rapeseed Oil 20L (Magna)",
-          "url": "FILL_FROM_MAGNA_SITE",
-          "pack_value": 20, "pack_unit": "L"
-        }
-      ]
-    },
-    "Bestway Wholesale": {
-      "enabled": false,
-      "_note": "Disabled: Bestway prices need a trade login the user does not have. Re-enable with BESTWAY_ Secrets if you get an account.",
-      "cred_env": { "user": "BESTWAY_USER", "pass": "BESTWAY_PASS" },
-      "login_url": "https://www.bestwaywholesale.co.uk/login",
-      "username_selectors": [
-        "#email", "input[name='email']", "input[name='username']",
-        "input[type='email']", "input[autocomplete='username']"
-      ],
-      "password_selectors": [
-        "#password", "input[name='password']", "input[type='password']",
-        "input[autocomplete='current-password']"
-      ],
-      "submit_selectors": [
-        "button[type='submit']", "button:has-text('Sign in')", "button:has-text('Login')"
-      ],
-      "price_selectors": [
-        "[itemprop='price']", ".price", ".product-price", ".pdp-price"
-      ],
-      "products": [
-        {
-          "oil": "rapeseed", "product": "Consumer's Pride Rapeseed Cooking Oil 20L",
-          "url": "https://www.bestwaywholesale.co.uk/product/388027-1",
-          "pack_value": 20, "pack_unit": "L"
-        },
-        {
-          "oil": "rapeseed", "product": "White Pearl Rapeseed Oil 20L",
-          "url": "https://www.bestwaywholesale.co.uk/product/778644-1",
-          "pack_value": 20, "pack_unit": "L"
-        }
-      ]
-    },
-    "Bidfood": {
-      "enabled": false,
-      "_todo": "Log in to bidfood.co.uk, open each product, paste its URL into 'url' below and set enabled=true. Bidfood needs a login to view product pages.",
-      "cred_env": { "user": "BIDFOOD_USER", "pass": "BIDFOOD_PASS" },
-      "login_url": "https://www.bidfood.co.uk/login/",
-      "username_selectors": [
-        "#username", "input[name='username']", "input[type='email']",
-        "input[autocomplete='username']"
-      ],
-      "password_selectors": [
-        "#password", "input[name='password']", "input[type='password']",
-        "input[autocomplete='current-password']"
-      ],
-      "submit_selectors": [
-        "button[type='submit']", "button:has-text('Sign in')", "button:has-text('Log in')"
-      ],
-      "price_selectors": [
-        "[itemprop='price']", ".price", ".product-price", "[data-testid='price']"
-      ],
-      "products": [
-        {
-          "oil": "rapeseed", "product": "Rapeseed Oil 20L (Bidfood)",
-          "url": "FILL_ME_FROM_LOGGED_IN_BIDFOOD",
-          "pack_value": 20, "pack_unit": "L"
-        },
-        {
-          "oil": "soybean", "product": "Vegetable (soya) Oil 20L (Bidfood)",
-          "url": "FILL_ME_FROM_LOGGED_IN_BIDFOOD",
-          "pack_value": 20, "pack_unit": "L"
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "KTC Extended Life Rapeseed Oil 20ltr",
+          "url": "https://www.magnafoodservice.co.uk/product/ktc-rapeseed-oil-20ltr/",
+          "pack_value": 20,
+          "pack_unit": "L"
         }
       ]
     }

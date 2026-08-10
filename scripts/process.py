@@ -127,7 +127,8 @@ def build():
             continue
         per_unit, per_tonne = normalise(r, oils_cfg[oil], tonne_kg)
         panel[(oil, r["channel"])][r["source"]][r["date"]].append(
-            {"product": r["product"], "price_per_unit": per_unit, "price_per_tonne": per_tonne}
+            {"product": r["product"], "format": r.get("format", ""),
+             "price_per_unit": per_unit, "price_per_tonne": per_tonne}
         )
 
     out = {
@@ -192,6 +193,7 @@ def build():
                 ({
                     "source": s["source"],
                     "product": pr["product"],
+                    "format": pr.get("format", ""),
                     "price_per_unit": round(pr["price_per_unit"], 2),
                     "price_per_tonne": round(pr["price_per_tonne"], 2),
                     "as_of": s["as_of"],

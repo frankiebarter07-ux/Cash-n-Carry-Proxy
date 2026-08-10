@@ -31,7 +31,7 @@ from datetime import date
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRODUCTS_PATH = os.path.join(ROOT, "config", "products.json")
 OBS_PATH = os.path.join(ROOT, "data", "observations.csv")
-FIELDS = ["date", "oil", "channel", "source", "product", "url",
+FIELDS = ["date", "oil", "format", "channel", "source", "product", "url",
           "pack_value", "pack_unit", "price_gbp", "notes"]
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -73,16 +73,9 @@ def price_from_jsonld(html):
     return None
 
 
-def price_from_regex(html):
-    """Fallback: the first plausible £ amount on the page (>= £1)."""
-    for m in re.findall(r'£\s*([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)', html):
-        try:
-            v = float(m.replace(",", ""))
-            if v >= 1:
-                return v
-        except ValueError:
-            continue
-    return None
+# NOTE: a bare-£ regex fallback was removed deliberately. It once recorded a
+# stray number from a gated page as if it were the product price. A price is
+# now only accepted from a labelled source (JSON-LD offers.price).
 
 
 def existing_keys():
@@ -117,13 +110,14 @@ def main():
             blocked += 1
             print(f"  ✗  {tag:34s} fetch failed ({type(e).__name__})")
             continue
-        price = price_from_jsonld(html) or price_from_regex(html)
+        price = price_from_jsonld(html)  # labelled source only -- no bare-£ regex
         if not price:
             blocked += 1
             print(f"  ?  {tag:34s} no price found on page")
             continue
         new_rows.append({
-            "date": today, "oil": p["oil"], "channel": p["channel"],
+            "date": today, "oil": p["oil"], "format": p.get("format", ""),
+            "channel": p["channel"],
             "source": p["source"], "product": p["product"], "url": p["url"],
             "pack_value": p["pack_value"], "pack_unit": p["pack_unit"],
             "price_gbp": round(price, 2), "notes": "auto-scraped",

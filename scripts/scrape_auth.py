@@ -30,7 +30,7 @@ from datetime import date
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CFG = os.path.join(ROOT, "config", "auth_sites.json")
 OBS = os.path.join(ROOT, "data", "observations.csv")
-FIELDS = ["date", "oil", "channel", "source", "product", "url",
+FIELDS = ["date", "oil", "format", "channel", "source", "product", "url",
           "pack_value", "pack_unit", "price_gbp", "notes"]
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/125.0 Safari/537.36")
@@ -139,7 +139,7 @@ def read_price(page, site, prod):
                 return price
         except Exception:
             continue
-    return parse_price(page.content())  # last resort: whole-page scan
+    return None  # labelled selectors only -- never scan the whole page
 
 
 def read_price_from_listing(page, site, prod):
@@ -233,7 +233,8 @@ def run():
                     print(f"?  {name}: {prod['product']} no price found")
                     continue
                 new.append({
-                    "date": today, "oil": prod["oil"], "channel": "cash_carry",
+                    "date": today, "oil": prod["oil"],
+                    "format": prod.get("format", ""), "channel": "cash_carry",
                     "source": name, "product": prod["product"],
                     "url": prod.get("url") or site.get("list_url", ""),
                     "pack_value": prod["pack_value"], "pack_unit": prod["pack_unit"],

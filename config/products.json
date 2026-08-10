@@ -1,131 +1,47 @@
 {
-  "_comment": "Exact products aggregated per oil (rapeseed & soybean only, UK, reliable sellers, 20L). Prioritises no-login sellers (Booker public listing + open JSON-LD) for automatic daily updates; gated sellers carry forward. Seller products averaged then aggregated across sellers with a 2-SD filter. UK oils zero-rated so inc-VAT = ex-VAT.",
+  "_comment": "The 15 verified SKUs: 5 UK cash & carry sellers x rapeseed/soybean x bib/drum, all 20L. All prices publicly visible -- no login used. Baseline verified in-browser 2026-08-10. Collection prices only. Aggregation: seller's SKUs averaged into one seller-price, then cross-seller mean with 2-SD outlier filter.",
   "currency": "GBP",
   "country": "UK",
   "products": [
     {
       "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "JJ Extended Life Rapeseed Oil Drum 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL115",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "JJ Extended Life Rapeseed Oil BIB 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL116",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "Pride Rapeseed Oil Drum 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL055",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
+      "format": "drum",
       "channel": "cash_carry",
       "source": "JJ Foodservice",
       "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL068",
+      "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL068/",
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "Brakes (Sysco)",
-      "product": "Sysco Classic Extended Life Rapeseed Oil Drum 20L",
-      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/9802",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "Brakes (Sysco)",
-      "product": "Sysco Classic Rapeseed Oil Bottle in Box 20L",
-      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "Marfast",
-      "product": "KTC Chef's Choice Rapeseed Oil 20L Drum",
-      "url": "https://marfast.co.uk/ambient-food-products/oils/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "rapeseed",
-      "channel": "cash_carry",
-      "source": "Booker",
-      "product": "Chef's Larder Rapeseed Cooking Oil 20L",
-      "url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
     },
     {
       "oil": "soybean",
-      "channel": "cash_carry",
-      "source": "JJ Foodservice",
-      "product": "KTC Vegetable Cooking Oil Drum 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL013",
-      "pack_value": 20.0,
-      "pack_unit": "L",
-      "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
-    },
-    {
-      "oil": "soybean",
+      "format": "bib",
       "channel": "cash_carry",
       "source": "JJ Foodservice",
       "product": "KTC Vegetable Cooking Oil BIB 1x20L",
-      "url": "https://www.jjfoodservice.com/product/england/OIL072",
+      "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL072/",
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
     },
     {
       "oil": "soybean",
+      "format": "drum",
       "channel": "cash_carry",
-      "source": "CK Fast Foods",
-      "product": "KTC Vegetable Oil 20L Yellow Drum",
-      "url": "https://www.ckfastfoods.com/product/ktc-vegetable-oil-20ltr-yellow-drum",
+      "source": "JJ Foodservice",
+      "product": "KTC Vegetable Cooking Oil Drum 1x20L",
+      "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL013/",
       "pack_value": 20.0,
       "pack_unit": "L",
-      "scrapable": true,
-      "note": "Reliable seller; price readable from open page -> daily auto-scrape."
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
     },
     {
       "oil": "soybean",
+      "format": "bib",
       "channel": "cash_carry",
       "source": "Brakes (Sysco)",
       "product": "KTC Vegetable Oil (Bottle in Box) 20L",
@@ -133,18 +49,139 @@
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Reliable seller; price behind bot-protection/trade login -> assisted top-up."
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
     },
     {
-      "oil": "soybean",
+      "oil": "rapeseed",
+      "format": "bib",
       "channel": "cash_carry",
-      "source": "Booker",
-      "product": "KTC Vegetable Cooking Oil 20L",
-      "url": "https://www.booker.co.uk/products/category?categoryName=Other_305250&itemHierarchy=Grocery_-_Catering|Cooking_Ingredients",
+      "source": "Brakes (Sysco)",
+      "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
+      "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/85064",
       "pack_value": 20.0,
       "pack_unit": "L",
       "scrapable": false,
-      "note": "Public listing (no login) -> daily auto-scrape via scripts/scrape_auth.py."
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "soybean",
+      "format": "bib",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "KTC Vegetable Cooking Oil 20 Litres (181801)",
+      "url": "https://www.booker.co.uk/products/product?Code=181801",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "soybean",
+      "format": "drum",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "KTC Vegetable Cooking Oil 20 Litres (51332)",
+      "url": "https://www.booker.co.uk/products/product?Code=51332",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "rapeseed",
+      "format": "bib",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (141775)",
+      "url": "https://www.booker.co.uk/products/product?Code=141775",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "rapeseed",
+      "format": "drum",
+      "channel": "cash_carry",
+      "source": "Booker",
+      "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (570135)",
+      "url": "https://www.booker.co.uk/products/product?Code=570135",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "rapeseed",
+      "format": "drum",
+      "channel": "cash_carry",
+      "source": "Marfast",
+      "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
+      "url": "https://marfast.co.uk/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "soybean",
+      "format": "bib",
+      "channel": "cash_carry",
+      "source": "Marfast",
+      "product": "KTC (Bottle In Box) 20ltr Vegetable Oil",
+      "url": "https://marfast.co.uk/ktc-bottle-in-box-20ltr-vegetable-oil-box.html",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "soybean",
+      "format": "drum",
+      "channel": "cash_carry",
+      "source": "Marfast",
+      "product": "KTC Vegetable Oil 20ltr (Drum)",
+      "url": "https://marfast.co.uk/ktc-vegetable-oil-20ltr-drum.html",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "soybean",
+      "format": "bib",
+      "channel": "cash_carry",
+      "source": "Magna Foodservice",
+      "product": "KTC Vegetable Oil Box 20ltr",
+      "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "soybean",
+      "format": "drum",
+      "channel": "cash_carry",
+      "source": "Magna Foodservice",
+      "product": "KTC Vegetable Oil Tin 20ltr",
+      "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-tin-20ltr/",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
+    },
+    {
+      "oil": "rapeseed",
+      "format": "drum",
+      "channel": "cash_carry",
+      "source": "Magna Foodservice",
+      "product": "KTC Extended Life Rapeseed Oil 20ltr",
+      "url": "https://www.magnafoodservice.co.uk/product/ktc-rapeseed-oil-20ltr/",
+      "pack_value": 20.0,
+      "pack_unit": "L",
+      "scrapable": false,
+      "note": "Publicly visible price (no login). Collected via browser scraper (scrape_auth.py)."
     }
   ]
 }
