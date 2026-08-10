@@ -50,8 +50,8 @@
       ]
     },
     "Booker": {
-      "route": "blocked_from_datacenter",
-      "note": "BLOCKED from datacenter IPs. Diagnosed 2026-08-10 on a GitHub runner: HTTP 403, title 'Access Denied', 307-byte edge block page -- no HTML, no price, nothing to select. This is IP reputation filtering at the CDN edge, NOT a selector problem, so no code change fixes it. Needs residential/business egress (office line, home box, 4G) or manual collection. Prices ARE publicly visible from a normal connection.",
+      "route": "embedded_json_needs_residential_ip",
+      "note": "Pricing is EMBEDDED AS JSON in the product document -- no separate API exists (verified in DevTools 2026-08-10: all matches for the price were inside the main document). Fields: collectOE.wsp and clickAndCollect.wsp (collection, what we track), delivered.wsp (delivery, never used), standardPricing.price, formattedPrice. Parsing is solved -- see price_from_booker_embedded(). The ONLY obstacle is access: Booker returns HTTP 403 to datacenter IPs, so this succeeds from a self-hosted runner on a normal connection and fails from GitHub's runners.",
       "skus": [
         {
           "oil": "soybean",

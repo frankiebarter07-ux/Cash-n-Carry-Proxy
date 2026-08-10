@@ -138,11 +138,13 @@ class BaseAdapter:
     # ordered, seller-specific price selectors (used only by the browser tier)
     selectors: list[str] = []
 
-    def __init__(self, fetch_html=None, fetch_rendered=None, fetch_labelled=None):
+    def __init__(self, fetch_html=None, fetch_rendered=None, fetch_labelled=None,
+                 fetch_page_html=None):
         # injectable so tests can run with no network
         self._fetch_html = fetch_html
         self._fetch_rendered = fetch_rendered
         self._fetch_labelled = fetch_labelled
+        self._fetch_page_html = fetch_page_html
 
     # -- tier 2: static HTML (JSON-LD / meta) --------------------------------
     def from_static(self, url: str) -> Quote | None:
@@ -234,15 +236,75 @@ class MarfastAdapter(BaseAdapter):
                  ".price-container.price-final_price .price-wrap"]
 
 
-class BookerAdapter(BaseAdapter):
-    """Direct per-product URLs (Code=...). JS-rendered -> browser tier.
+def price_from_booker_embedded(html: str) -> tuple:
+    """Read Booker's pricing from the JSON embedded in the product page.
 
-    NOTE: replaces an earlier category-listing keyword match that silently
-    returned no price on every run.
+    Booker server-renders its pricing into the document (confirmed 2026-08-10 via
+    DevTools: all matches for the price were inside the main document, never a
+    separate API call). The page carries clearly named fields:
+
+        "collectOE":{"wsp":30.69            <- collection at depot
+        "clickAndCollect":{"wsp":30.69      <- click & collect
+        "delivered":{"wsp":30.69            <- delivery
+        "standardPricing":{"price":"£30.69"
+        "formattedPrice":"£30.69"
+
+    We track the COLLECTION price, so collection fields are tried first and the
+    delivered field is never used. Returns (price, field_name) or (None, None).
+    """
+    patterns = [
+        ("collectOE",       r'"collectOE"\s*:\s*\{[^}]*?"wsp"\s*:\s*([0-9]+(?:\.[0-9]{1,2})?)'),
+        ("clickAndCollect", r'"clickAndCollect"\s*:\s*\{[^}]*?"wsp"\s*:\s*([0-9]+(?:\.[0-9]{1,2})?)'),
+        ("standardPricing", r'"standardPricing"\s*:\s*\{[^}]*?"price"\s*:\s*"?£?\s*([0-9]+(?:\.[0-9]{1,2})?)'),
+        ("formattedPrice",  r'"formattedPrice"\s*:\s*"£?\s*([0-9]+(?:\.[0-9]{1,2})?)'),
+    ]
+    for field, pat in patterns:
+        m = re.search(pat, html, re.IGNORECASE | re.DOTALL)
+        if m:
+            p = money(m.group(1))
+            if p is not None:
+                return p, field
+    return None, None
+
+
+class BookerAdapter(BaseAdapter):
+    """Booker.
+
+    Pricing is embedded as JSON in the product document -- no separate API exists
+    (verified in DevTools). Parsing is therefore easy and precise; the only
+    obstacle is that Booker returns HTTP 403 to datacenter IPs, so this adapter
+    only succeeds when run from a residential/business connection (self-hosted
+    runner). See HANDOVER.md section 3.
     """
     name = "Booker"
     selectors = ["[class*='product-price']", "[class*='price-value']",
                  "[data-testid*='price']", "[itemprop='price']"]
+
+    def from_embedded(self, url) -> Quote | None:
+        for getter in (self._fetch_html, self._fetch_page_html):
+            if not getter:
+                continue
+            html = getter(url)
+            if not html:
+                continue
+            if "access denied" in html[:2000].lower():
+                continue
+            price, field = price_from_booker_embedded(html)
+            if price is not None:
+                return Quote(price, f"embedded-json:{field}", url,
+                             datetime.now(timezone.utc).isoformat())
+        return None
+
+    def fetch(self, sku: dict) -> Quote:
+        url = sku["url"]
+        for step in (self.from_embedded, self.from_rendered, self.from_static):
+            q = step(url)
+            if q:
+                return q
+        raise AdapterError(
+            f"{self.name}: no labelled price at {url}. If this says 403/Access "
+            f"Denied, the request came from a datacenter IP -- run the collector "
+            f"from a self-hosted runner on a normal connection.")
 
 
 class BrakesAdapter(BaseAdapter):
@@ -422,6 +484,26 @@ def cmd_selftest():
     check("label tier beats the stale meta/JSON-LD value",
           q.price_gbp == 27.99 and q.method == "label:Collection")
 
+    print("Booker embedded JSON (real page text)")
+    booker_html = (
+        'const args = { ...{ "sucode": 181801, "standardPricing": { "price": "£30.69", '
+        '"priceInclVat":30.69,"collectOE":{"wsp":30.69,"x":1},'
+        '"clickAndCollect":{"wsp":30.69},"delivered":{"wsp":31.99},'
+        '"formattedPrice":"£30.69" } }')
+    pr, fld = price_from_booker_embedded(booker_html)
+    check("reads the collection price from embedded JSON", pr == 30.69)
+    check("uses a collection field, never 'delivered'", fld in ("collectOE", "clickAndCollect"))
+    a = BookerAdapter(fetch_html=lambda u: booker_html)
+    q = a.fetch({"url": "https://www.booker.co.uk/products/product?Code=181801"})
+    check("adapter returns it with provenance", q.price_gbp == 30.69
+          and q.method.startswith("embedded-json:"))
+    blocked = BookerAdapter(fetch_html=lambda u: "<HTML><HEAD>Access Denied</HEAD></HTML>")
+    try:
+        blocked.fetch({"url": "https://www.booker.co.uk/x"})
+        check("refuses an Access Denied stub", False)
+    except AdapterError:
+        check("refuses an Access Denied stub", True)
+
     print("validation gate")
     check("accepts a normal price", validate(30.49) == "")
     check("rejects out-of-band", validate(199.0) != "")
@@ -480,6 +562,17 @@ def cmd_run(only=None, exclude=None, write=False):
         pw.wait_for_timeout(2000)
         page_holder["at"] = url
         return True
+
+    def fetch_page_html(url):
+        """Full HTML after rendering -- lets embedded-JSON parsing use the browser."""
+        pw = page_holder.get("page")
+        if not pw:
+            return None
+        try:
+            _prepare(pw, url)
+            return pw.content()
+        except Exception:
+            return None
 
     def fetch_labelled(url, label):
         """Return the £ value that follows `label` in the tightest element
@@ -543,7 +636,7 @@ def cmd_run(only=None, exclude=None, write=False):
         if not cls:
             print(f"{seller}: no adapter"); continue
         ad = cls(fetch_html=fetch_html, fetch_rendered=fetch_rendered,
-                 fetch_labelled=fetch_labelled)
+                 fetch_labelled=fetch_labelled, fetch_page_html=fetch_page_html)
         print(seller)
         for sku in v["skus"]:
             page_holder.pop("at", None)   # force navigation for each SKU
