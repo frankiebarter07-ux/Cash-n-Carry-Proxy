@@ -9,7 +9,16 @@ name: Test adapters
 # normal connection. See ARCHITECTURE.md section 7.
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      diagnose:
+        description: "Seller to diagnose (blank = all). Prints every price-like element on the page so selectors can be written from evidence."
+        required: false
+        default: "Booker Marfast Magna"
+      skus_each:
+        description: "How many SKUs per seller to diagnose"
+        required: false
+        default: "1"
 
 jobs:
   test:
@@ -33,7 +42,15 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Live fetch all 15 SKUs
-        run: python3 scripts/adapters.py --run
+        run: python3 scripts/adapters.py --run || true
+
+      - name: Diagnose pages (what the price element actually is)
+        if: ${{ inputs.diagnose != '' }}
+        run: |
+          for s in ${{ inputs.diagnose }}; do
+            echo ""
+            python3 scripts/adapters.py --diagnose "$s" --limit ${{ inputs.skus_each }} || true
+          done
 
       - name: Upload results
         if: always()

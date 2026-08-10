@@ -347,13 +347,34 @@ def cmd_run():
 
     page_holder = {}
 
+    def _prepare(pw, url):
+        """Navigate, dismiss consent banners, wait for the price to actually load."""
+        if page_holder.get("at") == url:
+            return True
+        pw.goto(url, wait_until="domcontentloaded", timeout=45000)
+        for sel in ("button:has-text('Accept')", "button:has-text('Allow all')",
+                    "#onetrust-accept-btn-handler", "button:has-text('I accept')"):
+            try:
+                b = pw.locator(sel).first
+                if b.count() > 0 and b.is_visible():
+                    b.click(timeout=3000)
+                    break
+            except Exception:
+                pass
+        try:
+            pw.wait_for_load_state("networkidle", timeout=20000)
+        except Exception:
+            pass
+        pw.wait_for_timeout(2000)
+        page_holder["at"] = url
+        return True
+
     def fetch_rendered(url, selector):
         pw = page_holder.get("page")
         if not pw:
             return None
         try:
-            pw.goto(url, wait_until="domcontentloaded", timeout=45000)
-            pw.wait_for_timeout(1500)
+            _prepare(pw, url)
             loc = pw.locator(selector).first
             if loc.count() == 0:
                 return None
@@ -380,6 +401,7 @@ def cmd_run():
         ad = cls(fetch_html=fetch_html, fetch_rendered=fetch_rendered)
         print(seller)
         for sku in v["skus"]:
+            page_holder.pop("at", None)   # force navigation for each SKU
             try:
                 q = ad.fetch(sku)
             except AdapterError as e:
@@ -405,17 +427,141 @@ def cmd_run():
     return 0
 
 
+def cmd_diagnose(seller_filter=None, limit=1):
+    """Print what a page ACTUALLY contains, so selectors are written from evidence.
+
+    For each SKU: loads the page in a real browser, dismisses cookie banners, waits
+    for network idle, then lists every element whose text looks like a GBP price
+    along with its tag/class and nearby label. Also reports title, challenge/login
+    hints and JSON-LD presence.
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("Playwright required for --diagnose"); return 1
+
+    UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+          "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
+    sellers = load_targets()
+    if seller_filter:
+        sellers = {k: v for k, v in sellers.items()
+                   if seller_filter.lower() in k.lower()}
+        if not sellers:
+            print(f"no seller matching {seller_filter!r}"); return 1
+
+    JS = """() => {
+      const out = [];
+      const re = /£\\s?\\d{1,4}(?:\\.\\d{2})?/;
+      document.querySelectorAll('body *').forEach(el => {
+        if (el.children.length) return;
+        const t = (el.textContent || '').trim();
+        if (!t || t.length > 60 || !re.test(t)) return;
+        const path = [];
+        let n = el;
+        for (let i = 0; i < 3 && n && n.tagName; i++) {
+          path.unshift(n.tagName.toLowerCase() +
+            (n.className && typeof n.className === 'string'
+              ? '.' + n.className.trim().split(/\\s+/).slice(0,3).join('.') : ''));
+          n = n.parentElement;
+        }
+        // nearest text label above this element, to tell collection vs delivery
+        let label = '';
+        let p = el.parentElement;
+        if (p) label = (p.textContent || '').trim().slice(0, 70).replace(/\\s+/g, ' ');
+        out.push({ text: t, path: path.join(' > '), label });
+      });
+      return out.slice(0, 40);
+    }"""
+
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        ctx = browser.new_context(user_agent=UA, locale="en-GB",
+                                  viewport={"width": 1440, "height": 1000})
+        page = ctx.new_page()
+        for seller, v in sellers.items():
+            print("=" * 70)
+            print(f"  {seller}")
+            print("=" * 70)
+            for sku in v["skus"][:limit]:
+                url = sku["url"]
+                print(f"\n--- {sku['oil']}/{sku['format']}\n    {url}")
+                try:
+                    resp = page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                    print(f"    http status : {resp.status if resp else '?'}")
+                except Exception as e:
+                    print(f"    NAVIGATION FAILED: {type(e).__name__}: {e}")
+                    continue
+
+                # dismiss cookie / consent banners -- a very common price blocker
+                for sel in ["button:has-text('Accept')", "button:has-text('Allow all')",
+                            "button:has-text('I accept')", "#onetrust-accept-btn-handler",
+                            "[id*='accept']", "[class*='accept']"]:
+                    try:
+                        b = page.locator(sel).first
+                        if b.count() > 0 and b.is_visible():
+                            b.click(timeout=3000)
+                            print(f"    dismissed banner via {sel}")
+                            break
+                    except Exception:
+                        pass
+                try:
+                    page.wait_for_load_state("networkidle", timeout=20000)
+                except Exception:
+                    pass
+                page.wait_for_timeout(2500)
+
+                html = page.content()
+                print(f"    title       : {page.title()[:70]}")
+                print(f"    html length : {len(html)}")
+                low = html.lower()
+                for hint, msg in [
+                    ("just a moment", "CLOUDFLARE CHALLENGE"),
+                    ("checking your browser", "BOT CHALLENGE"),
+                    ("access denied", "ACCESS DENIED"),
+                    ("log in to see", "LOGIN REQUIRED for price"),
+                    ("sign in to view", "LOGIN REQUIRED for price"),
+                    ("select a branch", "BRANCH SELECTION REQUIRED"),
+                    ("choose your store", "STORE SELECTION REQUIRED"),
+                ]:
+                    if hint in low:
+                        print(f"    !! {msg}")
+                print(f"    json-ld     : {'yes' if 'application/ld+json' in low else 'no'}")
+
+                try:
+                    hits = page.evaluate(JS)
+                except Exception as e:
+                    hits = []
+                    print(f"    (scan failed: {type(e).__name__})")
+                if not hits:
+                    print("    NO £ VALUES FOUND ON PAGE")
+                else:
+                    print(f"    {len(hits)} price-like element(s):")
+                    for h in hits:
+                        print(f"      {h['text']:<12} | {h['path'][:60]}")
+                        if h["label"] and h["label"] != h["text"]:
+                            print(f"          context: {h['label'][:66]}")
+        ctx.close(); browser.close()
+    print("\nUse the paths above to write exact per-seller selectors.")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description="Per-seller price adapters.")
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--list", action="store_true")
     g.add_argument("--selftest", action="store_true")
     g.add_argument("--run", action="store_true")
+    g.add_argument("--diagnose", metavar="SELLER", nargs="?", const="",
+                   help="dump what a seller's page actually contains")
+    ap.add_argument("--limit", type=int, default=1,
+                    help="SKUs per seller to diagnose (default 1)")
     a = ap.parse_args()
     if a.list:
         return cmd_list()
     if a.selftest:
         return cmd_selftest()
+    if a.diagnose is not None:
+        return cmd_diagnose(a.diagnose or None, a.limit)
     return cmd_run()
 
 
