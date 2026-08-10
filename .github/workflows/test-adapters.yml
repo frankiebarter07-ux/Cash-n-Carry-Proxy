@@ -48,6 +48,9 @@ jobs:
       - name: Live fetch all 15 SKUs
         run: python3 scripts/adapters.py --run || true
 
+      - name: Probe Booker for any reachable price endpoint
+        run: python3 scripts/booker_probe.py || true
+
       - name: Diagnose pages (what the price element actually is)
         if: ${{ inputs.diagnose != '' }}
         run: |
