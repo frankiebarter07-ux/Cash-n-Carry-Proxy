@@ -1,0 +1,44 @@
+name: Test adapters
+
+# Run this by hand to see, per SKU, whether each seller's price can be read and by
+# which method. Nothing is committed -- it only reports. Trigger it from the Actions
+# tab (works from a phone/iPad browser: Actions -> Test adapters -> Run workflow).
+#
+# Caveat: GitHub runners use datacenter IPs, which some sites block. A failure here
+# is therefore "blocked or selector wrong", not proof the site is unreadable from a
+# normal connection. See ARCHITECTURE.md section 7.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Offline selftest (parse rules + validation gate)
+        run: python3 scripts/adapters.py --selftest
+
+      - name: Show configured adapters
+        run: python3 scripts/adapters.py --list
+
+      - name: Install Playwright (for the rendered tier)
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Live fetch all 15 SKUs
+        run: python3 scripts/adapters.py --run
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adapter-run
+          path: data/adapter_run.json
+          if-no-files-found: ignore

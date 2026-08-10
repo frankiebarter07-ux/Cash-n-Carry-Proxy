@@ -282,7 +282,7 @@ def build():
                     "stale": s["stale"],
                     "excluded": s["source"] in excluded_sources,
                 } for s in sellers for pr in s["products"]),
-                key=lambda x: (x["brand"], x["source"], x["format"]),
+                key=lambda x: (x["source"], x["format"], x["brand"]),
             )
             out["oils"][oil]["channels"][channel].append(
                 {

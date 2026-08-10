@@ -63,23 +63,23 @@
                 "excluded": false
               },
               {
+                "source": "Brakes (Sysco)",
+                "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
+                "brand": "Sysco Classic",
+                "format": "bib",
+                "price_per_unit": 39.51,
+                "price_per_tonne": 2159.02,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
                 "source": "JJ Foodservice",
                 "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
                 "brand": "KTC Chef's Choice",
                 "format": "drum",
                 "price_per_unit": 33.99,
                 "price_per_tonne": 1857.38,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Marfast",
-                "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
-                "brand": "KTC Chef's Choice",
-                "format": "drum",
-                "price_per_unit": 32.79,
-                "price_per_tonne": 1791.8,
                 "as_of": "2026-08-10",
                 "stale": false,
                 "excluded": false
@@ -96,12 +96,12 @@
                 "excluded": false
               },
               {
-                "source": "Brakes (Sysco)",
-                "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
-                "brand": "Sysco Classic",
-                "format": "bib",
-                "price_per_unit": 39.51,
-                "price_per_tonne": 2159.02,
+                "source": "Marfast",
+                "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
+                "brand": "KTC Chef's Choice",
+                "format": "drum",
+                "price_per_unit": 32.79,
+                "price_per_tonne": 1791.8,
                 "as_of": "2026-08-10",
                 "stale": false,
                 "excluded": false
