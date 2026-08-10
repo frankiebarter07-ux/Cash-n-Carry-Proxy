@@ -120,16 +120,49 @@ jobs:
           python3 scripts/process.py
           python3 scripts/render_static.py
 
+      # Writes SUMMARY.md every day (GitHub renders it in the repo, so the index is
+      # readable on a phone without cloning). Writes report.md ONLY when a price
+      # actually moved, or on the Monday digest -- that file's existence is what
+      # decides whether anyone gets emailed below.
+      - name: Build summary, and a report if there is something to say
+        id: summary
+        run: python3 scripts/render_summary.py --report-out report.md
+
       - name: Commit
         run: |
           git config user.name  "oil-price-bot"
           git config user.email "actions@github.com"
-          git add data/observations.csv data/series.js data/series.json dashboard_static.html
+          git add data/observations.csv data/series.js data/series.json \
+                  dashboard_static.html SUMMARY.md
           if git diff --cached --quiet; then
             echo "No price changes today."
           else
             git commit -m "Daily oil prices: $(date -u +%Y-%m-%d)"
             git push
+          fi
+
+      # Posted as a comment on one long-running issue, so GitHub emails everyone
+      # watching the repo. Deliberately silent on days nothing moved: a summary that
+      # arrives every morning saying "no change" gets filtered, and then the morning
+      # that matters gets filtered with it.
+      - name: Notify watchers (only when prices moved, or the weekly digest)
+        if: steps.summary.outputs.notify == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: "📈 Cooking oil price reports"
+        run: |
+          set -euo pipefail
+          # List and filter locally rather than using --search: GitHub's search index
+          # is eventually consistent, so a freshly-opened thread can be invisible to
+          # search for minutes, which would open a second thread the next morning.
+          issue=$(gh issue list --state open --limit 100 --json number,title \
+                    --jq 'map(select(.title == env.TITLE)) | .[0].number // empty')
+          if [ -z "$issue" ]; then
+            url=$(gh issue create --title "$TITLE" --body-file report.md)
+            echo "Opened the report thread: $url"
+          else
+            gh issue comment "$issue" --body-file report.md
+            echo "Commented on report thread #$issue"
           fi
 
   alert-on-failure:

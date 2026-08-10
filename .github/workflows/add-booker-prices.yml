@@ -68,12 +68,13 @@ jobs:
         run: |
           python3 scripts/process.py
           python3 scripts/render_static.py
+          python3 scripts/render_summary.py
 
       - name: Commit
         run: |
           git config user.name  "oil-price-bot"
           git config user.email "actions@github.com"
-          git add data/observations.csv data/series.js data/series.json dashboard_static.html
+          git add data/observations.csv data/series.js data/series.json dashboard_static.html SUMMARY.md
           if git diff --cached --quiet; then
             echo "No change."
           else

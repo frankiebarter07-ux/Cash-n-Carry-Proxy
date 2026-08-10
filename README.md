@@ -27,6 +27,12 @@ Exact products and URLs: [`config/targets.json`](config/targets.json).
 
 ## Viewing it
 
+- **[`SUMMARY.md`](SUMMARY.md)** — start here. Rendered by GitHub, so it reads on any
+  phone with nothing to download: current prices, what moved today, the trailing week.
+  Rebuilt on every run.
+- **Notifications** — when a seller changes a price, the daily job comments on the
+  *📈 Cooking oil price reports* issue, which GitHub emails to everyone watching the
+  repo. Quiet days stay quiet on purpose; a Monday digest confirms it is still alive.
 - **[`dashboard_static.html`](dashboard_static.html)** — works everywhere, including
   with JavaScript disabled and in embedded viewers. Chart, full per-SKU price list by
   seller, and price-change tables (today + trailing 7 days, showing who moved).
@@ -97,6 +103,7 @@ index.html                the interactive view (reads data/series.js)
 scripts/adapters.py       per-seller price adapters (+ selftest, diagnose)
 scripts/process.py        standardise, aggregate, carry forward, compute changes
 scripts/render_static.py  build the no-JavaScript dashboard
+scripts/render_summary.py build SUMMARY.md + the report posted when prices move
 scripts/manual_prices.py  record a blocked seller's prices by hand
 scripts/booker_probe.py   check whether any Booker endpoint is reachable from here
 tools/setup-windows-runner.ps1  one-shot install of the self-hosted runner (Booker)

@@ -29,10 +29,17 @@ network and runs whatever the workflows contain. GitHub's own guidance:
 So: do not make this public while a runner is attached. If you ever need to publish
 the *data*, export the CSV rather than opening up the repo.
 
-### 0.3 Point failure alerts at a company address
-The daily workflow opens a GitHub **issue** on any failure (label
-`collection-failure`). Make sure a monitored company account watches the repo, or
-those issues go unread and the index dies quietly.
+### 0.3 Point alerts *and reports* at a company address
+Two things now arrive by GitHub notification, so this step is what makes the whole
+system reach a human:
+
+- **Failures** — an issue labelled `collection-failure`, on any broken run.
+- **Price reports** — a comment on the *📈 Cooking oil price reports* thread,
+  whenever a seller moves a price, plus a Monday digest (§5).
+
+Have a **monitored company account** watch this repository (*Watch → All Activity*).
+Without it, both go unread and the index dies quietly — collecting perfectly, telling
+nobody.
 
 ---
 
@@ -146,6 +153,25 @@ The other four sellers keep collecting automatically regardless.
 ---
 
 ## 5. Reading the output
+
+**The easiest way, and the one to show people:** open
+[`SUMMARY.md`](SUMMARY.md) in the repository. GitHub renders it, so it reads properly
+on a phone with nothing to download — current prices, what moved today, the trailing
+week, and any seller that has stopped reporting. It is rebuilt on every run.
+
+**You will also be emailed when something moves.** The daily job posts to a single
+issue thread, *📈 Cooking oil price reports*, and GitHub emails everyone watching the
+repository. It posts only when a seller actually changed a listed price, plus a
+Monday digest so a quiet week still proves the system is alive.
+
+> **Silence is information here.** No email means no seller moved a price — not that
+> the collection failed. Failures open a *separate* issue labelled
+> `collection-failure`. If you would rather hear every day regardless, remove the
+> `if:` condition on the *Notify watchers* step in `daily-prices.yml`; be aware that
+> daily "nothing changed" mail is exactly what trains people to filter the folder.
+
+To receive the emails: **Watch → All Activity** on the repository (§0.3). Anyone who
+should see prices needs this; it is the only step that makes the reports reach a human.
 
 - **`dashboard_static.html`** — open in any browser. Works with JavaScript disabled
   and in embedded viewers. Chart, per-SKU price list by seller, and price-change
