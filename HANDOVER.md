@@ -221,6 +221,15 @@ Actions → Secrets*):
 working the day that person leaves, which is exactly the failure this handover exists
 to prevent.
 
+> ⚠️ **Currently sending from a personal Gmail account** (verified working
+> 2026-08-10 — both samples delivered). This was set up to prove the pipeline and is
+> **not a permanent arrangement**: the reports stop the moment that app password is
+> revoked or the account goes. Replace `SMTP_HOST` / `SMTP_USER` / `SMTP_PASSWORD` /
+> `REPORT_FROM` with a company mailbox, then re-run *Test email* to confirm.
+>
+> Mail from a consumer address to a company domain also tends to land in Junk on
+> first contact, which a company mailbox largely avoids.
+
 Until these are set, the email step prints "not configured" and the run stays green —
 so nothing breaks if the company never wants email. Once set, a *failed* send fails
 the run loudly, because a report that quietly never arrives is worse than none.
