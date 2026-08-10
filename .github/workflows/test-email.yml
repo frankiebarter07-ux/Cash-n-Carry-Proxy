@@ -50,11 +50,28 @@ jobs:
 
       # Names only -- never values. Tells you which secret is missing without
       # printing any of them.
-      - name: Which settings are present
+      #
+      # This FAILS when a required setting is absent. The daily workflow deliberately
+      # stays green when email is unconfigured, so nothing breaks for anyone who
+      # never wants it -- but a workflow whose only job is to test email must not
+      # report success having sent nothing.
+      - name: Check the settings are present
         run: |
-          for n in SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASSWORD REPORT_FROM REPORT_TO; do
-            if [ -n "${!n}" ]; then echo "  $n: set"; else echo "  $n: MISSING"; fi
+          missing=""
+          for n in SMTP_HOST SMTP_USER SMTP_PASSWORD REPORT_TO; do
+            if [ -n "${!n}" ]; then echo "  $n: set"; else echo "  $n: MISSING"; missing="$missing $n"; fi
           done
+          for n in SMTP_PORT REPORT_FROM; do
+            if [ -n "${!n}" ]; then echo "  $n: set"; else echo "  $n: not set (optional)"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo ""
+            echo "::error::Cannot send: missing$missing. REPORT_TO alone is only the"
+            echo "::error::recipient list -- sending also needs a mailbox to send THROUGH."
+            echo "::error::Add them under Settings -> Secrets and variables -> Actions."
+            echo "::error::See HANDOVER.md section 4a."
+            exit 1
+          fi
 
       - name: Send the weekly digest sample
         if: env.KIND == 'both' || env.KIND == 'digest'

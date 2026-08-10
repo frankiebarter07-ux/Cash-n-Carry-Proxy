@@ -225,7 +225,18 @@ Until these are set, the email step prints "not configured" and the run stays gr
 so nothing breaks if the company never wants email. Once set, a *failed* send fails
 the run loudly, because a report that quietly never arrives is worse than none.
 
-To test without waiting for a price to move:
+**Testing it:** *Actions → **Test email** → Run workflow*. Put your own address in
+`to` so a trial cannot surprise the distribution list. It fails with a named list if
+any required secret is missing, so "green" always means a message really went out.
+
+`REPORT_TO` on its own is **not enough** — that is only the recipient list. Sending
+also needs a mailbox to send *through*: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`.
+
+On Microsoft 365 (`smtp.office365.com`, port 587) note that basic authentication is
+usually disabled: you need an app password, and IT may have to enable SMTP AUTH on
+that mailbox.
+
+Or from a terminal:
 
 ```bash
 python3 scripts/render_summary.py --report-out r.md --report-html r.html --force-report
