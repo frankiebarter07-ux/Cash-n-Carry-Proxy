@@ -136,6 +136,8 @@ def build():
                 flags.append(f"carried from {b['as_of'][5:]}")
             if b.get("excluded"):
                 flags.append("outlier — excluded")
+            if b.get("lapsed"):
+                flags.append(f"stopped reporting {b['age_days']}d ago — not counted")
             fl = f' <span class="flag">({" · ".join(flags)})</span>' if flags else ""
             rows_b += (f'<tr><td>{esc(b["source"])}</td>'
                        f'<td>{esc(b.get("brand",""))}</td>'
@@ -143,10 +145,19 @@ def build():
                        f'<td>{esc(b["product"])}{fl}</td>'
                        f'<td>{esc(money(b["price_per_unit"]))}</td>'
                        f'<td>{esc(money(b["price_per_tonne"]))}</td></tr>')
+        lapsed_note = ""
+        if p.get("lapsed"):
+            who = ", ".join(f'{esc(l["source"])} (last seen {esc(l["last_seen"])})'
+                            for l in p["lapsed"])
+            lapsed_note = (f'<p class="note"><strong>Not counted in this average:</strong> '
+                           f'{who}. A seller drops out after 7 days without a fresh '
+                           f'price, so a blocked site cannot sit frozen in the index '
+                           f'pretending nothing has moved.</p>')
         bd_sections += (
             f'<div class="card"><div class="oilhead"><span class="dot" style="background:{o["color"]}"></span>'
             f'{esc(o["label"])} &mdash; full price list ({esc(p["date"])}) &middot; '
             f'aggregate {esc(money(p["price_per_unit"]))}/unit</div>'
+            f'{lapsed_note}'
             f'<table><tr><th>Website</th><th>Brand</th><th>Pack</th><th>Product (SKU)</th><th>£/20L</th><th>£/tonne</th></tr>'
             f'{rows_b}</table></div>')
 

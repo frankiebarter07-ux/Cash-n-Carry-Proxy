@@ -34,6 +34,17 @@ JS_OUT = os.path.join(ROOT, "data", "series.js")
 
 STD_DEV_THRESHOLD = 2.0  # exclude observations beyond this many SDs from the mean
 
+# How long a seller's last known price may be carried forward before that seller
+# stops counting towards the index.
+#
+# Carry-forward exists so the index moves only on real price changes, not on a
+# seller being briefly unreadable. But carried indefinitely it becomes a lie: a
+# permanently blocked seller would sit frozen at its final price and still pull the
+# average, making "we have no data" look identical to "the price did not move".
+# After this many days a seller lapses -- it still appears in the SKU breakdown,
+# marked as no longer reporting, but it no longer counts towards the aggregate.
+MAX_CARRY_DAYS = 7
+
 
 def load_config():
     with open(CONFIG_PATH, encoding="utf-8") as fh:
@@ -256,15 +267,21 @@ def build():
                     else:
                         break
                 if latest is not None:
+                    age = (date.fromisoformat(day) - date.fromisoformat(latest[0])).days
                     sellers.append({"source": source,
                                     "as_of": latest[0],
                                     "price_per_unit": latest[1],
                                     "price_per_tonne": latest[2],
                                     "products": latest[3],
-                                    "stale": latest[0] != day})
-            kept, excluded = filter_anomalies(sellers)   # stage 2: drop cross-seller outliers
+                                    "stale": latest[0] != day,
+                                    "age_days": age,
+                                    "lapsed": age > MAX_CARRY_DAYS})
+            # a seller that has gone quiet for too long stops counting (see MAX_CARRY_DAYS)
+            reporting = [s for s in sellers if not s["lapsed"]]
+            lapsed = [s for s in sellers if s["lapsed"]]
+            kept, excluded = filter_anomalies(reporting)  # stage 2: drop cross-seller outliers
             if not kept:
-                kept = sellers
+                kept = reporting or sellers
             agg_unit = statistics.fmean(s["price_per_unit"] for s in kept)
             agg_tonne = statistics.fmean(s["price_per_tonne"] for s in kept)
             n_fresh = sum(1 for s in kept if not s["stale"])
@@ -280,6 +297,8 @@ def build():
                     "price_per_tonne": round(pr["price_per_tonne"], 2),
                     "as_of": s["as_of"],
                     "stale": s["stale"],
+                    "age_days": s["age_days"],
+                    "lapsed": s["lapsed"],
                     "excluded": s["source"] in excluded_sources,
                 } for s in sellers for pr in s["products"]),
                 key=lambda x: (x["source"], x["format"], x["brand"]),
@@ -294,6 +313,11 @@ def build():
                     "n_excluded": len(excluded),
                     "n_fresh": n_fresh,          # sellers that actually reported this day
                     "sources": sorted(s["source"] for s in kept),
+                    "lapsed": [                  # stopped reporting; no longer counted
+                        {"source": s["source"], "last_seen": s["as_of"],
+                         "days_ago": s["age_days"]}
+                        for s in sorted(lapsed, key=lambda x: x["source"])
+                    ],
                     "excluded": [
                         {"source": s["source"], "price_per_tonne": round(s["price_per_tonne"], 2)}
                         for s in excluded
@@ -303,8 +327,10 @@ def build():
             )
             flag = f"  [{len(excluded)} excl]" if excluded else ""
             cf = f", {len(kept) - n_fresh} carried" if n_fresh < len(kept) else ""
+            lap = (f"  [LAPSED: {', '.join(s['source'] for s in lapsed)}]"
+                   if lapsed else "")
             print(f"  {oil:12s} {channel:10s} {day}  £{agg_unit:8.2f}/unit  "
-                  f"£{agg_tonne:8.2f}/tonne  (sellers={len(kept)}{cf}){flag}")
+                  f"£{agg_tonne:8.2f}/tonne  (sellers={len(kept)}{cf}){flag}{lap}")
 
     # sort each channel by date and drop empty channels
     for oil in out["oils"].values():

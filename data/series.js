@@ -39,6 +39,7 @@ window.OIL_SERIES = {
               "Magna Foodservice",
               "Marfast"
             ],
+            "lapsed": [],
             "excluded": [],
             "breakdown": [
               {
@@ -50,6 +51,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1857.38,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -61,6 +64,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1857.38,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -72,6 +77,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 2159.02,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -83,6 +90,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1857.38,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -94,6 +103,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1720.77,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -105,6 +116,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1791.8,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               }
             ]
@@ -138,6 +151,7 @@ window.OIL_SERIES = {
               "Magna Foodservice",
               "Marfast"
             ],
+            "lapsed": [],
             "excluded": [],
             "breakdown": [
               {
@@ -149,6 +163,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1673.39,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -160,6 +176,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1673.39,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -171,6 +189,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1926.39,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -182,6 +202,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1580.7,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -193,6 +215,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1607.96,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -204,6 +228,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1526.17,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -215,6 +241,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1526.17,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -226,6 +254,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1635.22,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               },
               {
@@ -237,6 +267,8 @@ window.OIL_SERIES = {
                 "price_per_tonne": 1662.49,
                 "as_of": "2026-08-10",
                 "stale": false,
+                "age_days": 0,
+                "lapsed": false,
                 "excluded": false
               }
             ]
