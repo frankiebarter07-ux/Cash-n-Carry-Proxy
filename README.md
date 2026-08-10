@@ -1,5 +1,10 @@
 # Cash & Carry Cooking Oil Price Proxy
 
+> **Taking this over / running it in production? Start with
+> [`HANDOVER.md`](HANDOVER.md)** — ownership, security, the daily schedule, and what
+> to do when something breaks. Design rationale is in
+> [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
 A lightweight **UK** indicator that tracks the price of **single-source cooking oils**
 at UK **B2B / cash & carry** outlets (foodservice wholesalers + warehouse clubs),
 aggregated **across multiple websites**, so you can watch when these oils move. No oil

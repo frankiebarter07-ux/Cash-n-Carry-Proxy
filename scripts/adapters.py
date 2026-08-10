@@ -281,6 +281,57 @@ ADAPTERS = {
 }
 
 
+OBS = os.path.join(ROOT, "data", "observations.csv")
+OBS_FIELDS = ["date", "oil", "brand", "format", "channel", "source", "product",
+              "url", "pack_value", "pack_unit", "price_gbp", "notes"]
+_BRAND_RULES = [(r"chef'?s larder", "Chef's Larder"), (r"sysco classic", "Sysco Classic"),
+                (r"chef'?s choice", "KTC Chef's Choice"),
+                (r"extended life rapeseed|ktc extended life", "KTC Extended Life"),
+                (r"\bktc\b", "KTC")]
+
+
+def _brand(product):
+    low = product.lower()
+    for pat, b in _BRAND_RULES:
+        if re.search(pat, low):
+            return b
+    return "Other"
+
+
+def _write_observations(results):
+    """Append today's publishable quotes, replacing same-day rows for those SKUs."""
+    import csv
+    from datetime import date as _date
+    today = _date.today().isoformat()
+    rows = []
+    for r in results:
+        if r.get("held"):
+            print(f"  (held, not written: {r['seller']} {r['oil']}/{r['format']} -- {r['held']})")
+            continue
+        rows.append({
+            "date": today, "oil": r["oil"], "brand": _brand(r["product"]),
+            "format": r["format"], "channel": "cash_carry", "source": r["seller"],
+            "product": r["product"], "url": r["url"], "pack_value": 20,
+            "pack_unit": "L", "price_gbp": f"{r['price_gbp']:.2f}",
+            "notes": f"auto ({r['method']})",
+        })
+    if not rows:
+        print("nothing publishable to write"); return
+    existing = []
+    if os.path.exists(OBS):
+        with open(OBS, encoding="utf-8") as fh:
+            existing = list(csv.DictReader(fh))
+    new_keys = {(r["date"], r["source"], r["product"]) for r in rows}
+    keep = [e for e in existing
+            if (e["date"], e["source"], e["product"]) not in new_keys]
+    out = keep + rows
+    out.sort(key=lambda r: (r["date"], r["oil"], r["source"], r["format"]))
+    with open(OBS, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=OBS_FIELDS)
+        w.writeheader(); w.writerows(out)
+    print(f"wrote {len(rows)} observation(s) to {OBS}")
+
+
 def load_targets():
     with open(TARGETS, encoding="utf-8") as fh:
         return json.load(fh)["sellers"]
@@ -345,8 +396,12 @@ def cmd_selftest():
     return 0 if ok else 1
 
 
-def cmd_run():
-    """Live fetch. Needs network; uses Playwright for the rendered tier if present."""
+def cmd_run(only=None, exclude=None, write=False):
+    """Live fetch. Needs network; uses Playwright for the rendered tier if present.
+
+    only/exclude filter sellers (used to split cloud vs self-hosted collection).
+    write=True appends validated quotes to data/observations.csv.
+    """
     try:
         import urllib.request
     except ImportError:
@@ -414,8 +469,18 @@ def cmd_run():
     except Exception:
         print("Playwright unavailable -- static tier only\n")
 
+    targets = load_targets()
+    if only:
+        targets = {k: v for k, v in targets.items() if k.lower() in
+                   [o.strip().lower() for o in only.split(",")]}
+    if exclude:
+        skip = [e.strip().lower() for e in exclude.split(",")]
+        targets = {k: v for k, v in targets.items() if k.lower() not in skip}
+    if not targets:
+        print("no sellers selected"); return 1
+
     results, failures = [], []
-    for seller, v in load_targets().items():
+    for seller, v in targets.items():
         cls = ADAPTERS.get(seller)
         if not cls:
             print(f"{seller}: no adapter"); continue
@@ -440,6 +505,8 @@ def cmd_run():
         ctx.close()
     if browser:
         browser.close()
+    if write and results:
+        _write_observations(results)
     out = os.path.join(ROOT, "data", "adapter_run.json")
     with open(out, "w", encoding="utf-8") as fh:
         json.dump({"fetched_at": datetime.now(timezone.utc).isoformat(),
@@ -586,6 +653,10 @@ def main():
                    help="dump what a seller's page actually contains")
     ap.add_argument("--limit", type=int, default=1,
                     help="SKUs per seller to diagnose (default 1)")
+    ap.add_argument("--only", default=None, help="comma-separated sellers to include")
+    ap.add_argument("--exclude", default=None, help="comma-separated sellers to skip")
+    ap.add_argument("--write", action="store_true",
+                    help="append validated quotes to data/observations.csv")
     a = ap.parse_args()
     if a.list:
         return cmd_list()
@@ -593,7 +664,7 @@ def main():
         return cmd_selftest()
     if a.diagnose is not None:
         return cmd_diagnose(a.diagnose or None, a.limit)
-    return cmd_run()
+    return cmd_run(a.only, a.exclude, a.write)
 
 
 if __name__ == "__main__":

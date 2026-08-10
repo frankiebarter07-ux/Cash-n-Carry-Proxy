@@ -1,47 +1,118 @@
 name: Daily oil prices
 
-# Re-gathers prices once per day and commits the refreshed series.
-# Daily (not real-time) is deliberate: UK cash & carry / wholesale sellers have no
-# public price API or push feed, sit behind bot-protection, and move prices over
-# days/weeks -- so a daily pass captures all real movement. See scripts/scrape.py.
+# Collects the tracked SKUs once a day and commits the rebuilt index.
+#
+# Split deliberately into two collectors so one failing never stops the other:
+#
+#   collect-cloud     GitHub's runners  -> JJ, Brakes, Marfast, Magna  (11 SKUs)
+#   collect-booker    self-hosted runner -> Booker only        (4 SKUs)
+#
+# Booker blocks datacenter IPs at its CDN edge, so it can ONLY be read from a
+# machine on a normal (residential/business) connection. See ARCHITECTURE.md §11
+# and HANDOVER.md. If the self-hosted runner is offline, that job fails, the other
+# 11 SKUs still collect, and Booker's last price carries forward -- the index stays
+# correct, just staler for that seller.
+#
+# Any failure opens a GitHub issue, so a silent death is impossible.
 
 on:
   schedule:
-    - cron: "0 6 * * *"      # 06:00 UTC every day
-  workflow_dispatch: {}        # allow manual "Run workflow"
+    - cron: "0 6 * * *"      # 06:00 UTC daily
+  workflow_dispatch: {}
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
-  refresh:
+  collect-cloud:
     runs-on: ubuntu-latest
-    # No login credentials are used -- the index runs on public, no-login sellers
-    # (Booker's public listing via Playwright, plus open JSON-LD sites). If you ever
-    # get a trade account, add its Secrets here and re-enable that site in
-    # config/auth_sites.json.
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Scrape open prices (best-effort) and rebuild series
-        run: |
-          python3 scripts/scrape.py || true
-          python3 scripts/process.py
-          python3 scripts/render_static.py
-
-      - name: Browser scrape (public no-login sites like Booker)
+      - name: Install Playwright
         run: |
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium
-          python3 scripts/scrape_auth.py || true
+      - name: Collect (all sellers except Booker)
+        run: python3 scripts/adapters.py --run --write --exclude "Booker"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-cloud
+          path: data/observations.csv
+
+  collect-booker:
+    runs-on: self-hosted
+    # Never block the pipeline: if the runner is offline or Booker changes, the
+    # rest of the index still updates.
+    continue-on-error: true
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Playwright
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install chromium
+      - name: Collect Booker only
+        run: python3 scripts/adapters.py --run --write --only "Booker"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-booker
+          path: data/observations.csv
+
+  build-and-commit:
+    needs: [collect-cloud, collect-booker]
+    if: always() && needs.collect-cloud.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          path: incoming
+        continue-on-error: true
+
+      - name: Merge collector outputs
+        run: |
+          python3 - <<'PY'
+          import csv, glob, os
+          FIELDS = ["date","oil","brand","format","channel","source","product","url",
+                    "pack_value","pack_unit","price_gbp","notes"]
+          rows, seen = [], set()
+          # repo copy first, then each collector's file; later wins per (date,source,product)
+          paths = ["data/observations.csv"] + sorted(glob.glob("incoming/*/observations.csv"))
+          merged = {}
+          order = []
+          for p in paths:
+              if not os.path.exists(p):
+                  continue
+              with open(p, encoding="utf-8") as fh:
+                  for r in csv.DictReader(fh):
+                      k = (r["date"], r["source"], r["product"])
+                      if k not in merged:
+                          order.append(k)
+                      merged[k] = r
+              print(f"read {p}")
+          out = [merged[k] for k in order]
+          out.sort(key=lambda r: (r["date"], r["oil"], r["source"], r["format"]))
+          with open("data/observations.csv", "w", newline="", encoding="utf-8") as fh:
+              w = csv.DictWriter(fh, fieldnames=FIELDS); w.writeheader(); w.writerows(out)
+          print(f"merged -> {len(out)} rows")
+          PY
+
+      - name: Rebuild index
+        run: |
           python3 scripts/process.py
           python3 scripts/render_static.py
 
-      - name: Commit refreshed data if anything changed
+      - name: Commit
         run: |
           git config user.name  "oil-price-bot"
           git config user.email "actions@github.com"
@@ -52,3 +123,52 @@ jobs:
             git commit -m "Daily oil prices: $(date -u +%Y-%m-%d)"
             git push
           fi
+
+  alert-on-failure:
+    needs: [collect-cloud, collect-booker, build-and-commit]
+    if: always() && (needs.collect-cloud.result != 'success' || needs.build-and-commit.result != 'success' || needs.collect-booker.result != 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open an issue so the failure is visible
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const r = {
+              cloud: '${{ needs.collect-cloud.result }}',
+              booker: '${{ needs.collect-booker.result }}',
+              build: '${{ needs.build-and-commit.result }}',
+            };
+            const today = new Date().toISOString().slice(0,10);
+            const title = `Daily price collection problem — ${today}`;
+            const body = [
+              'The daily collection did not complete cleanly.',
+              '',
+              `- collect-cloud (JJ, Brakes, Marfast, Magna): **${r.cloud}**`,
+              `- collect-booker (self-hosted runner): **${r.booker}**`,
+              `- build-and-commit: **${r.build}**`,
+              '',
+              `[View the run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              '',
+              'Most likely causes, in order:',
+              '1. **collect-booker failed** — the self-hosted runner is offline or the',
+              '   machine is switched off. Booker carries its last price forward, so the',
+              '   index is still correct, just staler. See HANDOVER.md.',
+              '2. **A seller changed their page** — the adapter can no longer find a',
+              '   labelled price. Run the "Test adapters" workflow with diagnostics.',
+              '3. **A seller started blocking us** — check for 403 / "Access Denied".',
+              '',
+              'No bad data is ever written: a price is only recorded from a labelled',
+              'source, so a failure means missing data, never wrong data.',
+            ].join('\n');
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'collection-failure',
+            });
+            if (existing.data.some(i => i.title === title)) {
+              core.info('Issue already open for today.');
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body, labels: ['collection-failure'],
+              });
+            }
