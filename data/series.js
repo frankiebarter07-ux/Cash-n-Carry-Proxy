@@ -4,6 +4,14 @@ window.OIL_SERIES = {
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
   "raw_count": 15,
+  "changes": {
+    "latest_date": "2026-08-10",
+    "week_from": "2026-08-03",
+    "today": [],
+    "week": [],
+    "today_summary": {},
+    "week_summary": {}
+  },
   "oils": {
     "rapeseed": {
       "label": "Rapeseed",
@@ -34,38 +42,9 @@ window.OIL_SERIES = {
             "excluded": [],
             "breakdown": [
               {
-                "source": "Magna Foodservice",
-                "product": "KTC Extended Life Rapeseed Oil 20ltr",
-                "format": "drum",
-                "price_per_unit": 31.49,
-                "price_per_tonne": 1720.77,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Marfast",
-                "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
-                "format": "drum",
-                "price_per_unit": 32.79,
-                "price_per_tonne": 1791.8,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "JJ Foodservice",
-                "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
-                "format": "drum",
-                "price_per_unit": 33.99,
-                "price_per_tonne": 1857.38,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
                 "source": "Booker",
                 "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (141775)",
+                "brand": "Chef's Larder",
                 "format": "bib",
                 "price_per_unit": 33.99,
                 "price_per_tonne": 1857.38,
@@ -76,6 +55,7 @@ window.OIL_SERIES = {
               {
                 "source": "Booker",
                 "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (570135)",
+                "brand": "Chef's Larder",
                 "format": "drum",
                 "price_per_unit": 33.99,
                 "price_per_tonne": 1857.38,
@@ -84,8 +64,42 @@ window.OIL_SERIES = {
                 "excluded": false
               },
               {
+                "source": "JJ Foodservice",
+                "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
+                "brand": "KTC Chef's Choice",
+                "format": "drum",
+                "price_per_unit": 33.99,
+                "price_per_tonne": 1857.38,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Marfast",
+                "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
+                "brand": "KTC Chef's Choice",
+                "format": "drum",
+                "price_per_unit": 32.79,
+                "price_per_tonne": 1791.8,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Magna Foodservice",
+                "product": "KTC Extended Life Rapeseed Oil 20ltr",
+                "brand": "KTC Extended Life",
+                "format": "drum",
+                "price_per_unit": 31.49,
+                "price_per_tonne": 1720.77,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
                 "source": "Brakes (Sysco)",
                 "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
+                "brand": "Sysco Classic",
                 "format": "bib",
                 "price_per_unit": 39.51,
                 "price_per_tonne": 2159.02,
@@ -127,68 +141,9 @@ window.OIL_SERIES = {
             "excluded": [],
             "breakdown": [
               {
-                "source": "Magna Foodservice",
-                "product": "KTC Vegetable Oil Box 20ltr",
-                "format": "bib",
-                "price_per_unit": 27.99,
-                "price_per_tonne": 1526.17,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "JJ Foodservice",
-                "product": "KTC Vegetable Cooking Oil BIB 1x20L",
-                "format": "bib",
-                "price_per_unit": 28.99,
-                "price_per_tonne": 1580.7,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Magna Foodservice",
-                "product": "KTC Vegetable Oil Tin 20ltr",
-                "format": "drum",
-                "price_per_unit": 28.99,
-                "price_per_tonne": 1580.7,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "JJ Foodservice",
-                "product": "KTC Vegetable Cooking Oil Drum 1x20L",
-                "format": "drum",
-                "price_per_unit": 29.49,
-                "price_per_tonne": 1607.96,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Marfast",
-                "product": "KTC (Bottle In Box) 20ltr Vegetable Oil",
-                "format": "bib",
-                "price_per_unit": 29.99,
-                "price_per_tonne": 1635.22,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
-                "source": "Marfast",
-                "product": "KTC Vegetable Oil 20ltr (Drum)",
-                "format": "drum",
-                "price_per_unit": 30.49,
-                "price_per_tonne": 1662.49,
-                "as_of": "2026-08-10",
-                "stale": false,
-                "excluded": false
-              },
-              {
                 "source": "Booker",
                 "product": "KTC Vegetable Cooking Oil 20 Litres (181801)",
+                "brand": "KTC",
                 "format": "bib",
                 "price_per_unit": 30.69,
                 "price_per_tonne": 1673.39,
@@ -199,6 +154,7 @@ window.OIL_SERIES = {
               {
                 "source": "Booker",
                 "product": "KTC Vegetable Cooking Oil 20 Litres (51332)",
+                "brand": "KTC",
                 "format": "drum",
                 "price_per_unit": 30.69,
                 "price_per_tonne": 1673.39,
@@ -209,9 +165,76 @@ window.OIL_SERIES = {
               {
                 "source": "Brakes (Sysco)",
                 "product": "KTC Vegetable Oil (Bottle in Box) 20L",
+                "brand": "KTC",
                 "format": "bib",
                 "price_per_unit": 35.33,
                 "price_per_tonne": 1926.39,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Vegetable Cooking Oil BIB 1x20L",
+                "brand": "KTC",
+                "format": "bib",
+                "price_per_unit": 28.99,
+                "price_per_tonne": 1580.7,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "JJ Foodservice",
+                "product": "KTC Vegetable Cooking Oil Drum 1x20L",
+                "brand": "KTC",
+                "format": "drum",
+                "price_per_unit": 29.49,
+                "price_per_tonne": 1607.96,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Magna Foodservice",
+                "product": "KTC Vegetable Oil Box 20ltr",
+                "brand": "KTC",
+                "format": "bib",
+                "price_per_unit": 27.99,
+                "price_per_tonne": 1526.17,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Magna Foodservice",
+                "product": "KTC Vegetable Oil Tin 20ltr",
+                "brand": "KTC",
+                "format": "drum",
+                "price_per_unit": 28.99,
+                "price_per_tonne": 1580.7,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Marfast",
+                "product": "KTC (Bottle In Box) 20ltr Vegetable Oil",
+                "brand": "KTC",
+                "format": "bib",
+                "price_per_unit": 29.99,
+                "price_per_tonne": 1635.22,
+                "as_of": "2026-08-10",
+                "stale": false,
+                "excluded": false
+              },
+              {
+                "source": "Marfast",
+                "product": "KTC Vegetable Oil 20ltr (Drum)",
+                "brand": "KTC",
+                "format": "drum",
+                "price_per_unit": 30.49,
+                "price_per_tonne": 1662.49,
                 "as_of": "2026-08-10",
                 "stale": false,
                 "excluded": false

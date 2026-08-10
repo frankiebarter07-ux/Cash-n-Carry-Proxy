@@ -105,6 +105,85 @@ def filter_anomalies(points):
     return kept, excluded
 
 
+def compute_changes(rows):
+    """Per-SKU price movements: what changed on the latest date, and a 7-day summary.
+
+    Works off the raw observations (one row per SKU per date), so a change is only
+    reported when that exact SKU's listed price actually differs from its previous
+    observation -- never from a seller simply not reporting.
+    """
+    from datetime import datetime, timedelta
+
+    by_sku = defaultdict(list)                       # (source, product) -> [(date, price)]
+    for r in rows:
+        by_sku[(r["source"], r["product"])].append(
+            (r["date"], float(r["price_gbp"]), r.get("oil", ""), r.get("brand", ""),
+             r.get("format", "")))
+    all_dates = sorted({r["date"] for r in rows})
+    if not all_dates:
+        return {"latest_date": None, "today": [], "week": [], "week_from": None}
+    latest = all_dates[-1]
+    week_from = (datetime.fromisoformat(latest) - timedelta(days=7)).date().isoformat()
+
+    today_moves, week_moves = [], []
+    for (source, product), series in by_sku.items():
+        series.sort(key=lambda e: e[0])
+        oil, brand, fmt = series[-1][2], series[-1][3], series[-1][4]
+        # movement on the latest date vs the SKU's previous observation
+        if len(series) >= 2 and series[-1][0] == latest:
+            prev_d, prev_p = series[-2][0], series[-2][1]
+            cur_p = series[-1][1]
+            if abs(cur_p - prev_p) >= 0.01:
+                today_moves.append({
+                    "source": source, "product": product, "oil": oil,
+                    "brand": brand, "format": fmt,
+                    "from": round(prev_p, 2), "to": round(cur_p, 2),
+                    "delta": round(cur_p - prev_p, 2),
+                    "pct": round((cur_p - prev_p) / prev_p * 100, 2),
+                    "since": prev_d,
+                })
+        # movement across the trailing 7 days
+        window = [e for e in series if e[0] >= week_from]
+        if len(window) >= 2 and abs(window[-1][1] - window[0][1]) >= 0.01:
+            first, last = window[0][1], window[-1][1]
+            week_moves.append({
+                "source": source, "product": product, "oil": oil,
+                "brand": brand, "format": fmt,
+                "from": round(first, 2), "to": round(last, 2),
+                "delta": round(last - first, 2),
+                "pct": round((last - first) / first * 100, 2),
+                "n_obs": len(window),
+            })
+
+    today_moves.sort(key=lambda m: -abs(m["delta"]))
+    week_moves.sort(key=lambda m: -abs(m["delta"]))
+
+    def summarise(moves):
+        if not moves:
+            return {}
+        out = {}
+        for oil in {m["oil"] for m in moves}:
+            ms = [m for m in moves if m["oil"] == oil]
+            out[oil] = {
+                "n_skus_changed": len(ms),
+                "avg_delta": round(statistics.fmean(m["delta"] for m in ms), 2),
+                "avg_pct": round(statistics.fmean(m["pct"] for m in ms), 2),
+                "n_up": sum(1 for m in ms if m["delta"] > 0),
+                "n_down": sum(1 for m in ms if m["delta"] < 0),
+                "movers": sorted({m["source"] for m in ms}),
+            }
+        return out
+
+    return {
+        "latest_date": latest,
+        "week_from": week_from,
+        "today": today_moves,
+        "week": week_moves,
+        "today_summary": summarise(today_moves),
+        "week_summary": summarise(week_moves),
+    }
+
+
 def build():
     config = load_config()
     tonne_kg = config["metric_tonne_kg"]
@@ -128,6 +207,7 @@ def build():
         per_unit, per_tonne = normalise(r, oils_cfg[oil], tonne_kg)
         panel[(oil, r["channel"])][r["source"]][r["date"]].append(
             {"product": r["product"], "format": r.get("format", ""),
+             "brand": r.get("brand", ""), "url": r.get("url", ""),
              "price_per_unit": per_unit, "price_per_tonne": per_tonne}
         )
 
@@ -136,6 +216,7 @@ def build():
         "metric_tonne_kg": tonne_kg,
         "std_dev_threshold": STD_DEV_THRESHOLD,
         "raw_count": len(rows),
+        "changes": compute_changes(rows),
         "oils": {},
     }
 
@@ -193,6 +274,7 @@ def build():
                 ({
                     "source": s["source"],
                     "product": pr["product"],
+                    "brand": pr.get("brand", ""),
                     "format": pr.get("format", ""),
                     "price_per_unit": round(pr["price_per_unit"], 2),
                     "price_per_tonne": round(pr["price_per_tonne"], 2),
@@ -200,7 +282,7 @@ def build():
                     "stale": s["stale"],
                     "excluded": s["source"] in excluded_sources,
                 } for s in sellers for pr in s["products"]),
-                key=lambda x: x["price_per_unit"],
+                key=lambda x: (x["brand"], x["source"], x["format"]),
             )
             out["oils"][oil]["channels"][channel].append(
                 {

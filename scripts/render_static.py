@@ -138,6 +138,7 @@ def build():
                 flags.append("outlier — excluded")
             fl = f' <span class="flag">({" · ".join(flags)})</span>' if flags else ""
             rows_b += (f'<tr><td>{esc(b["source"])}</td>'
+                       f'<td>{esc(b.get("brand",""))}</td>'
                        f'<td>{esc((b.get("format") or "").upper())}</td>'
                        f'<td>{esc(b["product"])}{fl}</td>'
                        f'<td>{esc(money(b["price_per_unit"]))}</td>'
@@ -146,8 +147,50 @@ def build():
             f'<div class="card"><div class="oilhead"><span class="dot" style="background:{o["color"]}"></span>'
             f'{esc(o["label"])} &mdash; full price list ({esc(p["date"])}) &middot; '
             f'aggregate {esc(money(p["price_per_unit"]))}/unit</div>'
-            f'<table><tr><th>Website</th><th>Pack</th><th>Product (SKU)</th><th>£/20L</th><th>£/tonne</th></tr>'
+            f'<table><tr><th>Website</th><th>Brand</th><th>Pack</th><th>Product (SKU)</th><th>£/20L</th><th>£/tonne</th></tr>'
             f'{rows_b}</table></div>')
+
+    # ---- price changes: today, and across the trailing week -------------------
+    ch = data.get("changes", {}) or {}
+
+    def moves_table(moves, extra_col=None):
+        if not moves:
+            return '<p class="note">No price changes recorded in this window.</p>'
+        head = ("<tr><th>Website</th><th>Oil</th><th>Brand</th><th>Pack</th>"
+                "<th>From</th><th>To</th><th>Change</th></tr>")
+        body = ""
+        for m in moves:
+            up = m["delta"] > 0
+            cls = "up" if up else "down"
+            arrow = "▲" if up else "▼"
+            body += (f'<tr><td>{esc(m["source"])}</td><td>{esc(m["oil"])}</td>'
+                     f'<td>{esc(m.get("brand",""))}</td><td>{esc((m.get("format") or "").upper())}</td>'
+                     f'<td>{esc(money(m["from"]))}</td><td>{esc(money(m["to"]))}</td>'
+                     f'<td class="{cls}">{arrow} {esc(money(abs(m["delta"])))} '
+                     f'({m["pct"]:+.2f}%)</td></tr>')
+        return f"<table>{head}{body}</table>"
+
+    def summary_line(summary):
+        if not summary:
+            return ""
+        bits = []
+        for oil, s in sorted(summary.items()):
+            movers = ", ".join(s["movers"])
+            bits.append(
+                f'<li><b>{esc(oil.title())}</b>: {s["n_skus_changed"]} SKU(s) moved '
+                f'(<span class="up">{s["n_up"]} up</span>, <span class="down">{s["n_down"]} down</span>), '
+                f'average {s["avg_delta"]:+.2f} ({s["avg_pct"]:+.2f}%) &mdash; '
+                f'moved by: {esc(movers)}</li>')
+        return "<ul class='sumlist'>" + "".join(bits) + "</ul>"
+
+    changes_html = (
+        f'<h2 class="sechead">Price changes</h2>'
+        f'<div class="card"><div class="oilhead">Today &mdash; {esc(ch.get("latest_date") or "n/a")}</div>'
+        f'{summary_line(ch.get("today_summary"))}{moves_table(ch.get("today", []))}</div>'
+        f'<div class="card"><div class="oilhead">Past 7 days '
+        f'({esc(ch.get("week_from") or "")} &rarr; {esc(ch.get("latest_date") or "")})</div>'
+        f'{summary_line(ch.get("week_summary"))}{moves_table(ch.get("week", []))}</div>'
+    )
 
     html = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -180,6 +223,10 @@ def build():
   .note {{ color:var(--muted); font-size:12.5px; margin-top:14px; }}
   .oilhead {{ font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:14px; flex-wrap:wrap; }}
   .flag {{ color:var(--muted); font-weight:400; font-size:12px; }}
+  .up {{ color:#c0392b; font-weight:600; }}
+  .down {{ color:#1e8449; font-weight:600; }}
+  .sumlist {{ margin:4px 0 12px; padding-left:18px; font-size:13px; }}
+  .sumlist li {{ margin-bottom:4px; }}
   .sechead {{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 4px 2px; }}
 </style></head>
 <body><div class="wrap">
@@ -202,8 +249,9 @@ def build():
     <p class="note">Lines are the cross-seller aggregate per oil. The full list of every SKU at every website is below.</p>
   </div>
 
-  <h2 class="sechead">Full price list per oil — every SKU at every website</h2>
+  <h2 class="sechead">Full price list per oil — every SKU at every website (grouped by brand)</h2>
   {bd_sections}
+  {changes_html}
 </div></body></html>"""
 
     with open(OUT, "w", encoding="utf-8") as fh:
