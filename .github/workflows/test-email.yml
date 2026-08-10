@@ -1,0 +1,95 @@
+name: Test email
+
+# Sends a sample price report, on demand, so email can be proved to work without
+# waiting for a seller to move a price.
+#
+#   Actions -> Test email -> Run workflow
+#
+# Needs the SMTP secrets from HANDOVER.md section 4a. If any are missing this
+# reports which ones and exits green without sending.
+#
+# Nothing is committed. The price-move sample is generated from a throwaway copy of
+# the data inside the runner, so the real index is untouched.
+
+on:
+  workflow_dispatch:
+    inputs:
+      to:
+        description: "Send to this address instead of the REPORT_TO secret (optional)"
+        required: false
+        default: ""
+      kind:
+        description: "Which sample to send"
+        required: false
+        default: "both"
+        type: choice
+        options: [both, digest, price-move]
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      REPORT_FROM: ${{ secrets.REPORT_FROM }}
+      # An explicit recipient wins over the stored list, so a test never surprises
+      # the whole distribution list.
+      REPORT_TO: ${{ inputs.to != '' && inputs.to || secrets.REPORT_TO }}
+      KIND: ${{ inputs.kind }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Names only -- never values. Tells you which secret is missing without
+      # printing any of them.
+      - name: Which settings are present
+        run: |
+          for n in SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASSWORD REPORT_FROM REPORT_TO; do
+            if [ -n "${!n}" ]; then echo "  $n: set"; else echo "  $n: MISSING"; fi
+          done
+
+      - name: Send the weekly digest sample
+        if: env.KIND == 'both' || env.KIND == 'digest'
+        run: |
+          python3 scripts/process.py > /dev/null
+          python3 scripts/render_summary.py \
+            --report-out r.md --report-html r.html --force-report
+          python3 scripts/send_report.py --html r.html --text r.md \
+            --subject "[SAMPLE] Cooking oil prices - weekly digest"
+
+      # Simulated movement, written to the runner's copy only. Two sellers cutting
+      # and one raising, which is what a real day of movement tends to look like.
+      - name: Send the price-move sample
+        if: env.KIND == 'both' || env.KIND == 'price-move'
+        run: |
+          python3 - <<'PY'
+          import csv
+          rows = list(csv.DictReader(open("data/observations.csv")))
+          hdr, out = list(rows[0].keys()), list(rows)
+          for r in rows:
+              n = dict(r)
+              n["date"] = "2026-08-11"
+              p = float(r["price_gbp"])
+              if   r["source"] == "Magna Foodservice": n["price_gbp"] = f"{p - 1.50:.2f}"
+              elif r["source"] == "Marfast":           n["price_gbp"] = f"{p - 0.75:.2f}"
+              elif r["source"] == "JJ Foodservice":    n["price_gbp"] = f"{p + 0.40:.2f}"
+              out.append(n)
+          w = csv.DictWriter(open("data/observations.csv", "w", newline=""), fieldnames=hdr)
+          w.writeheader(); w.writerows(out)
+          print("simulated one day of movement (runner copy only)")
+          PY
+          python3 scripts/process.py > /dev/null
+          python3 scripts/render_summary.py --report-out r.md --report-html r.html
+          python3 scripts/send_report.py --html r.html --text r.md \
+            --subject "[SAMPLE] Cooking oil prices moved"
+
+      - name: Confirm nothing was committed
+        run: git status --short && echo "(runner copy only -- the repo is untouched)"
