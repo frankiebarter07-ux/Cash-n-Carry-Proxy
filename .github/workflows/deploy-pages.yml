@@ -42,6 +42,12 @@ concurrency:
 
 jobs:
   publish:
+    # When this is chained off the daily collection, only publish if that collection
+    # actually succeeded -- otherwise a failed run would still trigger a deploy. The
+    # first clause keeps push/manual runs working, where workflow_run is absent.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
