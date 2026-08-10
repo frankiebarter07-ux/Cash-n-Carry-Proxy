@@ -214,10 +214,11 @@ class MagnaAdapter(BaseAdapter):
     name = "Magna Foodservice"
     prefer_rendered = True
     price_label = "Collection"      # page shows "Delivery £28.99 Collection £27.99"
-    selectors = ["p.price ins .woocommerce-Price-amount",
-                 "p.price .woocommerce-Price-amount",
-                 ".summary .woocommerce-Price-amount",
-                 "[class*='woocommerce-Price-amount']"]
+    # mfs-fs-18 = the main product block (related products use mfs-fs-16);
+    # ms-3 = collection, ms-2 = delivery. Backup only -- the label tier is primary,
+    # because these are Bootstrap spacing classes and will not survive a restyle.
+    selectors = ["div.mfs-fs-18.fw-semibold.ms-3 span.woocommerce-Price-amount",
+                 "li:has-text('Collection') div.ms-3 span.woocommerce-Price-amount"]
 
 
 class MarfastAdapter(BaseAdapter):
@@ -582,13 +583,21 @@ def cmd_run(only=None, exclude=None, write=False):
             return None
         try:
             _prepare(pw, url)
-            return pw.evaluate("""(label) => {
-              const re = new RegExp(label + '\\s*:?\\s*£\\s?([0-9]{1,4}(?:\\.[0-9]{2})?)', 'i');
+            # NOTE: use ONLY regex literals here. A previous version built the
+            # pattern with new RegExp('...\\s...') -- in a JS *string* literal
+            # \\s collapses to "s", so the pattern silently never matched and the
+            # adapter fell through to the delivery price.
+            return pw.evaluate(r"""(label) => {
+              const money = /£\s?([0-9]{1,4}(?:\.[0-9]{2})?)/;
+              const lower = label.toLowerCase();
               let best = null, bestLen = Infinity;
               for (const el of document.querySelectorAll('body *')) {
-                const t = (el.textContent || '').replace(/\\s+/g, ' ');
-                if (t.length > 400) continue;
-                const m = re.exec(t);
+                const t = (el.textContent || '').replace(/\s+/g, ' ');
+                if (!t || t.length > 400) continue;
+                const i = t.toLowerCase().indexOf(lower);
+                if (i < 0) continue;
+                const after = t.slice(i + label.length, i + label.length + 24);
+                const m = money.exec(after);
                 if (m && t.length < bestLen) { bestLen = t.length; best = m[1]; }
               }
               return best;
