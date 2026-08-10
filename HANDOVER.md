@@ -151,7 +151,7 @@ The other four sellers keep collecting automatically regardless.
   and in embedded viewers. Chart, per-SKU price list by seller, and price-change
   tables (today + trailing 7 days, showing who moved).
 - **`index.html`** — interactive version (£/unit ↔ £/tonne toggle, tap a point for
-  the SKU breakdown). Needs a normal browser.
+  the SKU breakdown, same price-change tables). Needs a normal browser.
 - **`data/observations.csv`** — the raw record, one row per SKU per day.
 - **`data/series.json`** — computed series, breakdown and changes.
 
@@ -191,9 +191,10 @@ perfectly valid, properly-labelled price that was simply the *wrong* price:
 
 All three are fixed: prices are read from the *displayed* page (`prefer_rendered`),
 anchored on the word **Collection**, and searched only inside the main product block.
-Note that the same confusion catches humans — the hand-entered baseline for Magna's
-KTC Vegetable Oil Tin 20 L was £28.99, which is that page's *delivery* price; it was
-corrected to £28.99 → £27.99 on 2026-08-10.
+Note that the same confusion catches humans, not just parsers: the hand-entered
+baseline for Magna's KTC Vegetable Oil Tin 20 L was £28.99, which is that page's
+*delivery* price. Corrected to the collection price, £27.99, on 2026-08-10 — the
+reason is written into that row's `notes` column in `data/observations.csv`.
 
 **Every few weeks, spot-check two or three SKUs against the live sites.** Read the
 `method` column in `data/adapter_run.json` while you do: `label:Collection@scope` and
@@ -214,8 +215,10 @@ They exist because of real incidents.
    page as a product price, and it sat in the index for days.
 2. **Fail loudly.** No labelled price means *no data written*, plus a visible error.
    An earlier scraper returned nothing for days while the dashboard looked healthy.
-3. **Carry-forward, not gap-filling.** A seller that doesn't report keeps its last
-   price so the index moves only on real changes.
+3. **Carry-forward, not gap-filling — but bounded.** A seller that doesn't report
+   keeps its last price so the index moves only on real changes, for at most
+   `MAX_CARRY_DAYS` (7). After that it lapses out of the average rather than sitting
+   frozen and making *no data* look like *no change*. Do not remove the bound.
 4. **Per-seller averaging before cross-seller averaging**, so a shop listing four
    SKUs doesn't outvote one listing a single SKU.
 
@@ -226,10 +229,16 @@ Full reasoning in `ARCHITECTURE.md`.
 ## 9. Adding a seller or SKU
 
 1. Add it to `config/targets.json` (seller, oil, format, product, URL).
-2. Add an adapter class in `scripts/adapters.py` if the seller is new (copy the
-   closest existing one; most sites are JSON-LD or a selector).
-3. Run *Test adapters* to confirm it reads the right price.
-4. Cross-check against the live site before trusting it.
+2. Add an adapter class in `scripts/adapters.py` if the seller is new. Copy the
+   closest existing one. In practice most B2B sites show a delivery price *and* a
+   collection price together, so start from `MagnaAdapter`: set
+   `price_label = "Collection"` and give `label_scope` the seller's main product
+   container. JSON-LD alone has twice been the wrong number.
+3. Run *Test adapters* with the seller in the `diagnose` box **first** — it prints
+   every price-like element with its CSS path and surrounding label, so you write the
+   adapter from evidence instead of guessing.
+4. Cross-check against the live site before trusting it. A parseable price is not
+   necessarily the right price (§7).
 
 ---
 
