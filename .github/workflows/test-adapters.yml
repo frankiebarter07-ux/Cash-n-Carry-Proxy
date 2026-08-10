@@ -19,10 +19,14 @@ on:
         description: "How many SKUs per seller to diagnose"
         required: false
         default: "1"
+      runner:
+        description: "Where to run: 'ubuntu-latest' (datacenter IP -- Booker will 403) or 'self-hosted' (your own machine, residential IP -- Booker works)"
+        required: false
+        default: "ubuntu-latest"
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     steps:
       - uses: actions/checkout@v4
 

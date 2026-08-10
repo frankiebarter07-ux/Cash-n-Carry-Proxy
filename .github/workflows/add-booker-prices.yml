@@ -1,0 +1,82 @@
+name: Add Booker prices
+
+# Booker blocks datacenter IPs at its CDN edge (HTTP 403 "Access Denied"), so CI
+# can never read it -- but the prices are public in a normal browser. Open the four
+# Booker pages on any device, type the prices into this form, and press Run. The
+# index is rebuilt and committed for you. No terminal needed.
+#
+#   soybean/bib   Code=181801   KTC Vegetable Cooking Oil 20L
+#   soybean/drum  Code=51332    KTC Vegetable Cooking Oil 20L
+#   rapeseed/bib  Code=141775   Chef's Larder Rapeseed Cooking Oil 20L
+#   rapeseed/drum Code=570135   Chef's Larder Rapeseed Cooking Oil 20L
+#
+# Leave a box blank to skip that SKU. Re-running replaces that day's Booker rows,
+# so you can correct a typo by simply submitting again.
+
+on:
+  workflow_dispatch:
+    inputs:
+      veg_bib:
+        description: "Veg BIB (Code 181801) — collection price, e.g. 30.69"
+        required: false
+        default: ""
+      veg_drum:
+        description: "Veg DRUM (Code 51332) — collection price"
+        required: false
+        default: ""
+      rapeseed_bib:
+        description: "Rapeseed BIB (Code 141775) — collection price"
+        required: false
+        default: ""
+      rapeseed_drum:
+        description: "Rapeseed DRUM (Code 570135) — collection price"
+        required: false
+        default: ""
+      price_date:
+        description: "Date for these prices (YYYY-MM-DD, blank = today)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record the prices
+        run: |
+          ARGS=""
+          [ -n "${{ inputs.veg_bib }}" ]       && ARGS="$ARGS --price soybean/bib=${{ inputs.veg_bib }}"
+          [ -n "${{ inputs.veg_drum }}" ]      && ARGS="$ARGS --price soybean/drum=${{ inputs.veg_drum }}"
+          [ -n "${{ inputs.rapeseed_bib }}" ]  && ARGS="$ARGS --price rapeseed/bib=${{ inputs.rapeseed_bib }}"
+          [ -n "${{ inputs.rapeseed_drum }}" ] && ARGS="$ARGS --price rapeseed/drum=${{ inputs.rapeseed_drum }}"
+          if [ -z "$ARGS" ]; then
+            echo "No prices entered -- nothing to do."; exit 0
+          fi
+          DATEARG=""
+          [ -n "${{ inputs.price_date }}" ] && DATEARG="--date ${{ inputs.price_date }}"
+          python3 scripts/manual_prices.py --seller Booker $ARGS $DATEARG
+
+      - name: Rebuild index
+        run: |
+          python3 scripts/process.py
+          python3 scripts/render_static.py
+
+      - name: Commit
+        run: |
+          git config user.name  "oil-price-bot"
+          git config user.email "actions@github.com"
+          git add data/observations.csv data/series.js data/series.json dashboard_static.html
+          if git diff --cached --quiet; then
+            echo "No change."
+          else
+            git commit -m "Booker prices (manual entry): $(date -u +%Y-%m-%d)"
+            git push
+          fi

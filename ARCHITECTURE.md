@@ -182,3 +182,39 @@ Two lessons worth generalising:
   needs residential/business egress or manual entry — see section 7, item 2.
 - `data/observations_legacy.csv` holds the pre-verification history, including
   values that could not be confirmed. Do not merge it back into the live series.
+
+## 11. Collecting from a normal connection (the Booker problem)
+
+Booker returns HTTP 403 "Access Denied" to GitHub's runners because they use
+**datacenter IPs**. Every internet connection carries an IP address, and CDNs treat
+them differently:
+
+- **Residential / business IPs** — home broadband, an office line, a phone's 4G.
+  Real people browse from these, so they are trusted.
+- **Datacenter IPs** — cloud servers (GitHub Actions runs on Azure). No ordinary
+  shopper browses from one, so bot filters block them by default.
+
+The prices are genuinely public; the blocker is *where the request comes from*. Three
+ways to solve it, in order of effort:
+
+**A. Manual entry (works today, zero setup).**
+`.github/workflows/add-booker-prices.yml` is a browser form: read the four Booker
+pages on any device, type the prices in, press Run. It calls
+`scripts/manual_prices.py`, rebuilds the index and commits. Re-running replaces that
+day's Booker rows, so a typo is fixed by submitting again.
+
+**B. Self-hosted runner (full automation, ~15 minutes' setup).**
+Register a machine on your own network as a GitHub Actions runner
+(*Settings → Actions → Runners → New self-hosted runner*), then choose
+`self-hosted` in the workflow's `runner` input. Same workflows, same logs — but the
+requests now leave from a residential IP, so Booker serves the real page. Any
+always-on machine works: an old laptop, a mini-PC, a Raspberry Pi.
+
+**C. Residential egress for a cloud collector.**
+Keep the collector in the cloud but route its traffic through a residential
+connection (office line, 4G/5G dongle, or a residential proxy). More moving parts;
+only worth it at larger scale.
+
+Recommended path: **A now, B when you want it hands-off.** Note that B also removes
+the datacenter-IP risk for every other seller, so it is the single change that most
+improves collection reliability overall.
