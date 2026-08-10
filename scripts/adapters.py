@@ -167,14 +167,25 @@ class BaseAdapter:
     # change on any restyle, the word "Collection" does not.
     price_label = None          # set to "Collection" to enable
 
+    # Containers to search within, tried in order. A product page also shows
+    # *other* products (related, recently viewed, basket) and each of those
+    # carries its own "Collection £x" -- searching the whole page can therefore
+    # return a labelled price belonging to a different SKU. Anything listed here
+    # is only a hint: if none match, the search falls back to the block around the
+    # page's <h1>, which is the main product on any ordinary product page.
+    label_scope: list[str] = []
+
     def from_label(self, url) -> Quote | None:
         if not self.price_label or not self._fetch_labelled:
             return None
-        val = self._fetch_labelled(url, self.price_label)
-        p = money(val)
+        res = self._fetch_labelled(url, self.price_label, self.label_scope)
+        scope = ""
+        if isinstance(res, dict):
+            scope, res = res.get("scope", ""), res.get("value")
+        p = money(res)
         if p is not None:
-            return Quote(p, f"label:{self.price_label}", url,
-                         datetime.now(timezone.utc).isoformat())
+            method = f"label:{self.price_label}" + (f"@{scope}" if scope else "")
+            return Quote(p, method, url, datetime.now(timezone.utc).isoformat())
         return None
 
     # -- tier 3: rendered page + known selector ------------------------------
@@ -214,6 +225,11 @@ class MagnaAdapter(BaseAdapter):
     name = "Magna Foodservice"
     prefer_rendered = True
     price_label = "Collection"      # page shows "Delivery £28.99 Collection £27.99"
+    # Whole-page label search returned £12.49 (a "Delivery £0.00 Collection £12.49"
+    # row belonging to another product) and, on the drum page, the bib's £27.99.
+    # Confine the search to the WooCommerce product summary.
+    label_scope = ["div.summary.entry-summary", "div.mfs-product-detail-meta",
+                   "div.product-detail", "div.product.type-product"]
     # mfs-fs-18 = the main product block (related products use mfs-fs-16);
     # ms-3 = collection, ms-2 = delivery. Backup only -- the label tier is primary,
     # because these are Bootstrap spacing classes and will not survive a restyle.
@@ -232,6 +248,7 @@ class MarfastAdapter(BaseAdapter):
     name = "Marfast"
     prefer_rendered = True
     price_label = "Collection"      # page renders delivery and collection together
+    label_scope = ["div.product-info-main", "div.product-info-price"]  # Magento
     selectors = ["[class*='collection'] .price-wrapper .price",
                  "[data-price-type='finalPrice'] .price",
                  ".price-container.price-final_price .price-wrap"]
@@ -479,11 +496,25 @@ def cmd_selftest():
           _lbl("Delivery £28.99 Collection £27.99") == 27.99)
     check("works when Collection comes first (Marfast layout)",
           _lbl("Collection: £32.79 Delivery: £34.29") == 32.79)
-    a = MagnaAdapter(fetch_labelled=lambda u, l: "27.99",
+    a = MagnaAdapter(fetch_labelled=lambda u, l, s: "27.99",
                      fetch_html=lambda u: '<meta itemprop="price" content="28.99">')
     q = a.fetch({"url": "https://example.test/p"})
     check("label tier beats the stale meta/JSON-LD value",
           q.price_gbp == 27.99 and q.method == "label:Collection")
+
+    print("label scoping (a page shows other products' Collection prices too)")
+    seen = {}
+    def _spy(u, l, s):
+        seen["scopes"] = list(s)
+        return {"value": "31.49", "scope": "product-block"}
+    a = MagnaAdapter(fetch_labelled=_spy)
+    q = a.fetch({"url": "https://example.test/p"})
+    check("adapter's label_scope reaches the fetcher",
+          "div.summary.entry-summary" in seen.get("scopes", []))
+    check("the scope used is recorded as provenance",
+          q.method == "label:Collection@product-block" and q.price_gbp == 31.49)
+    check("Marfast scopes to the Magento product block",
+          "div.product-info-main" in MarfastAdapter.label_scope)
 
     print("Booker embedded JSON (real page text)")
     booker_html = (
@@ -575,9 +606,16 @@ def cmd_run(only=None, exclude=None, write=False):
         except Exception:
             return None
 
-    def fetch_labelled(url, label):
+    def fetch_labelled(url, label, scopes=()):
         """Return the £ value that follows `label` in the tightest element
-        containing both. Handles "Delivery £28.99 Collection £27.99"."""
+        containing both, searched *within the main product block only*.
+
+        Handles "Delivery £28.99 Collection £27.79". The scoping matters as much
+        as the label: a product page also lists related/recently-viewed products,
+        each with its own "Collection £x", and the tightest of those can easily be
+        a different SKU's price. Returns {"value", "scope"} so the chosen root is
+        recorded as provenance alongside the price.
+        """
         pw = page_holder.get("page")
         if not pw:
             return None
@@ -587,11 +625,38 @@ def cmd_run(only=None, exclude=None, write=False):
             # pattern with new RegExp('...\\s...') -- in a JS *string* literal
             # \\s collapses to "s", so the pattern silently never matched and the
             # adapter fell through to the delivery price.
-            return pw.evaluate(r"""(label) => {
-              const money = /£\s?([0-9]{1,4}(?:\.[0-9]{2})?)/;
-              const lower = label.toLowerCase();
+            return pw.evaluate(r"""(args) => {
+              const label  = args.label;
+              const scopes = args.scopes || [];
+              const money  = /£\s?([0-9]{1,4}(?:\.[0-9]{2})?)/;
+              const lower  = label.toLowerCase();
+              const has = (el) =>
+                !!el && (el.textContent || '').toLowerCase().includes(lower);
+
+              // 1. an explicit per-seller container, if one matches and carries
+              //    the label
+              let root = null, how = '';
+              for (const s of scopes) {
+                let el = null;
+                try { el = document.querySelector(s); } catch (e) { el = null; }
+                if (has(el)) { root = el; how = 'scope'; break; }
+              }
+              // 2. otherwise the smallest ancestor of the page's <h1> that also
+              //    contains the label -- i.e. the main product block. Semantic,
+              //    so it survives restyles and works on sites we haven't tuned.
+              if (!root) {
+                const h = document.querySelector('h1, [itemprop="name"]');
+                let el = h ? h.parentElement : null;
+                for (let i = 0; el && i < 10; i++, el = el.parentElement) {
+                  if (has(el)) { root = el; how = 'product-block'; break; }
+                }
+              }
+              // 3. last resort: the whole page (what we used to always do)
+              if (!root) { root = document.body; how = 'page'; }
+
               let best = null, bestLen = Infinity;
-              for (const el of document.querySelectorAll('body *')) {
+              const els = [root].concat(Array.from(root.querySelectorAll('*')));
+              for (const el of els) {
                 const t = (el.textContent || '').replace(/\s+/g, ' ');
                 if (!t || t.length > 400) continue;
                 const i = t.toLowerCase().indexOf(lower);
@@ -600,8 +665,8 @@ def cmd_run(only=None, exclude=None, write=False):
                 const m = money.exec(after);
                 if (m && t.length < bestLen) { bestLen = t.length; best = m[1]; }
               }
-              return best;
-            }""", label)
+              return best === null ? null : { value: best, scope: how };
+            }""", {"label": label, "scopes": list(scopes)})
         except Exception:
             return None
 

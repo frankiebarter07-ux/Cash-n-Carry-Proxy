@@ -189,6 +189,21 @@ So affected adapters set `price_label = "Collection"` and read the value that fo
 that word in the tightest element containing both. **Business meaning is more durable
 than layout.** The tier order is: label → rendered selector → static (JSON-LD/meta).
 
+**The label alone is not enough — it must be scoped.** A product page also shows
+*other* products (related items, recently viewed, basket), and each carries its own
+"Collection £x". Searching the whole page returned Magna's £12.49 (a `Delivery £0.00
+Collection £12.49` row belonging to something else) and, on the drum page, the *bib's*
+£27.99. The search is therefore confined to one root, chosen in this order:
+
+1. a per-seller `label_scope` selector (WooCommerce `div.summary.entry-summary`,
+   Magento `div.product-info-main`) — a hint, skipped if it doesn't match;
+2. **the smallest ancestor of the page's `<h1>` that also contains the label** — the
+   main product block, defined semantically, so it works on untuned sellers too;
+3. the whole page, as a last resort.
+
+Which root was used is recorded in the price's method (`label:Collection@product-block`),
+so a wrong value can be traced without re-running anything.
+
 This tracks the **collection** price throughout, which is what the index is defined
 on. If you ever want delivery instead, change `price_label` — do not change it per
 seller, or the series stops being comparable.
