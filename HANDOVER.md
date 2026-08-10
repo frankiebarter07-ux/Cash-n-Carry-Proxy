@@ -144,7 +144,7 @@ evidence rather than guesswork.
 
 ## 7. The one failure mode to watch for
 
-**A green run is not necessarily a correct run.** Twice, adapters returned a
+**A green run is not necessarily a correct run.** Three times, adapters returned a
 perfectly valid, properly-labelled price that was simply the *wrong* price:
 
 - **Marfast** renders two prices under an identical CSS class — delivery (£34.29)
@@ -152,10 +152,22 @@ perfectly valid, properly-labelled price that was simply the *wrong* price:
   one.
 - **Magna** publishes £28.99 in its JSON-LD while displaying £27.99 on the page —
   stale structured data.
+- **Magna again**, after the label fix: the right label on the *wrong product*. A
+  page also lists related items, each with its own "Collection £x", and one of those
+  (£12.49) was a tighter match than the real one.
 
-Both now read the *displayed* price (`prefer_rendered`). **Every few weeks, spot-check
-two or three SKUs against the live sites.** Guard rails catch nonsense (implausible
-values, >20% jumps are held for review) but they cannot catch a plausible wrong number.
+All three are fixed: prices are read from the *displayed* page (`prefer_rendered`),
+anchored on the word **Collection**, and searched only inside the main product block.
+Note that the same confusion catches humans — the hand-entered baseline for Magna's
+KTC Vegetable Oil Tin 20 L was £28.99, which is that page's *delivery* price; it was
+corrected to £28.99 → £27.99 on 2026-08-10.
+
+**Every few weeks, spot-check two or three SKUs against the live sites.** Read the
+`method` column in `data/adapter_run.json` while you do: `label:Collection@scope` and
+`label:Collection@product-block` are trustworthy, `label:Collection@page` means the
+scoping fell through to a whole-page search and the value deserves a closer look.
+Guard rails catch nonsense (implausible values, >20% jumps held for review) but they
+cannot catch a plausible wrong number.
 
 ---
 
