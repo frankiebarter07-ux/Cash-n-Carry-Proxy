@@ -234,8 +234,8 @@ def build():
   .note {{ color:var(--muted); font-size:12.5px; margin-top:14px; }}
   .oilhead {{ font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:14px; flex-wrap:wrap; }}
   .flag {{ color:var(--muted); font-weight:400; font-size:12px; }}
-  .up {{ color:#c0392b; font-weight:600; }}
-  .down {{ color:#1e8449; font-weight:600; }}
+  .up {{ color:#1e8449; font-weight:600; }}   /* market convention: green up */
+  .down {{ color:#c0392b; font-weight:600; }}
   .sumlist {{ margin:4px 0 12px; padding-left:18px; font-size:13px; }}
   .sumlist li {{ margin-bottom:4px; }}
   .sechead {{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 4px 2px; }}

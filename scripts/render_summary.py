@@ -218,9 +218,9 @@ def render_html(blocks, title):
                 for c in r:
                     colour = ""
                     if c.startswith("▲"):
-                        colour = ";color:#c0392b;font-weight:600"
+                        colour = ";color:#1e8449;font-weight:600"  # up: green
                     elif c.startswith("▼"):
-                        colour = ";color:#1e8449;font-weight:600"
+                        colour = ";color:#c0392b;font-weight:600"  # down: red
                     cells += f'<td style="{td}{colour}">{e(c)}</td>'
                 body += f"<tr>{cells}</tr>"
             out.append(f'<table style="border-collapse:collapse;width:100%;'

@@ -5,27 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UK Cooking Oil Index</title>
 <style>
-  /* Terminal-style: dark by default, dense, numbers in tabular monospace.
-     Light palette kept for anyone who wants it, but dark is the intended look. */
+  /* Trading-screen style: dark by default, dense, figures in tabular numerals.
+     Light palette kept behind the toggle, but dark is the intended look. */
   :root {
     --bg:#0b0c0e; --panel:#121418; --panel2:#16181d; --line:#23262d;
     --grid:#1c1f25; --ink:#e9eaee; --muted:#878d99; --dim:#5d636e;
-    --accent:#ffa028; --up:#ff5f56; --down:#33d17a;
-    /* One monospace face for the whole page, not just the figures. It is what a
-       trading screen actually looks like, it keeps every column aligned, and it
-       avoids the default system-sans stack that makes a page look untouched. */
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Mono", "Segoe UI Mono",
-            "Roboto Mono", "Liberation Mono", Menlo, Consolas, monospace;
+    /* Market convention: green up, red down. */
+    --accent:#ffa028; --up:#33d17a; --down:#ff5f56;
+    /* A rounded geometric sans -- Avenir Next on Apple devices, Century Gothic on
+       Windows. Deliberately NOT the -apple-system/Segoe stack, which is the default
+       every untouched page uses. Figures get tabular-nums so columns still line up
+       without resorting to a typewriter face. */
+    --face: "Avenir Next", Avenir, "Futura", "Century Gothic", "URW Gothic",
+            "Nunito Sans", "Trebuchet MS", sans-serif;
   }
   :root[data-theme="light"] {
     --bg:#f4f4f2; --panel:#ffffff; --panel2:#fafaf8; --line:#dedcd6;
     --grid:#e8e6e0; --ink:#16181d; --muted:#5f646d; --dim:#8b909a;
-    --accent:#b46a00; --up:#c0392b; --down:#1e8449;
+    --accent:#b46a00; --up:#1e8449; --down:#c0392b;
   }
   * { box-sizing:border-box; }
   body {
     margin:0; background:var(--bg); color:var(--ink);
-    font:13.5px/1.5 var(--mono); font-variant-numeric:tabular-nums;
+    font:13.5px/1.5 var(--face); font-variant-numeric:tabular-nums;
     -webkit-font-smoothing:antialiased;
   }
   .wrap { max-width:1180px; margin:0 auto; padding:0 16px 48px; }
@@ -302,7 +304,7 @@
   function draw() {
     const series = buildSeries();
     const muted = css("--muted"), grid = css("--grid"), panel = css("--panel");
-    const mono = css("--mono") ||
+    const mono = css("--face") ||
       "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
 
     // A single observation is drawn flat from the day before, so the line exists.
