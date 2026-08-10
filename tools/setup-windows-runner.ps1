@@ -168,6 +168,17 @@ try {
 Step "Done"
 Write-Host @"
 
+    ONE MORE STEP -- the Booker job stays switched off until you do this:
+
+      On GitHub: Settings -> Secrets and variables -> Actions -> Variables
+      -> New repository variable
+         Name:  BOOKER_RUNNER
+         Value: true
+
+    Until that variable exists the daily job skips Booker on purpose, and the index
+    publishes the other four sellers. (A job pointed at a runner that isn't there
+    does not fail -- it queues for 24 hours and stalls the whole pipeline.)
+
     Confirm it works, without waiting for tomorrow morning:
 
       1. Open the repository on github.com -> Actions tab

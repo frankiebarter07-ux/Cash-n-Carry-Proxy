@@ -9,9 +9,12 @@ name: Daily oil prices
 #
 # Booker blocks datacenter IPs at its CDN edge, so it can ONLY be read from a
 # machine on a normal (residential/business) connection. See ARCHITECTURE.md §11
-# and HANDOVER.md. If the self-hosted runner is offline, that job fails, the other
-# 11 SKUs still collect, and Booker's last price carries forward -- the index stays
-# correct, just staler for that seller.
+# and HANDOVER.md §3.
+#
+# collect-booker is OFF until you set the repository variable BOOKER_RUNNER=true.
+# Until then the index publishes the four cloud sellers, Booker's last price carries
+# forward for 7 days, and then Booker lapses out of the average rather than sitting
+# frozen. Once the runner is installed and the variable set, it rejoins by itself.
 #
 # Any failure opens a GitHub issue, so a silent death is impossible.
 
@@ -48,6 +51,17 @@ jobs:
           path: data/observations.csv
 
   collect-booker:
+    # Runs ONLY once the self-hosted runner exists. Set the repository variable
+    # BOOKER_RUNNER to "true" when you install it (HANDOVER.md §3).
+    #
+    # Why a variable and not just "try it and let it fail": a job whose runner label
+    # matches nothing does not fail, it QUEUES -- for up to 24 hours. `continue-on-
+    # error` never applies, because the job never starts, and `timeout-minutes` only
+    # counts once it does. Since build-and-commit needs this job, the entire index
+    # would stop publishing until the queue expired, every single day. A skipped job
+    # satisfies `needs` immediately, so with the variable unset the pipeline simply
+    # publishes the four cloud sellers and carries on.
+    if: vars.BOOKER_RUNNER == 'true'
     runs-on: self-hosted
     # Never block the pipeline: if the runner is offline or Booker changes, the
     # rest of the index still updates.
@@ -167,7 +181,16 @@ jobs:
 
   alert-on-failure:
     needs: [collect-cloud, collect-booker, build-and-commit]
-    if: always() && (needs.collect-cloud.result != 'success' || needs.build-and-commit.result != 'success' || needs.collect-booker.result != 'success')
+    # Booker is allowed to be 'skipped' (no self-hosted runner configured yet) --
+    # only a genuine failure counts. Without the skipped exclusion this would open a
+    # "collection problem" issue every single day, which is how real alerts get
+    # ignored.
+    if: >-
+      always() && (
+        needs.collect-cloud.result != 'success' ||
+        needs.build-and-commit.result != 'success' ||
+        (needs.collect-booker.result != 'success' && needs.collect-booker.result != 'skipped')
+      )
     runs-on: ubuntu-latest
     steps:
       - name: Open an issue so the failure is visible

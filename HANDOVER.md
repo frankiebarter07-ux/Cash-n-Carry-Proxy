@@ -105,6 +105,16 @@ cd path\to\Cash-n-Carry-Proxy
 .\tools\setup-windows-runner.ps1 -Token AXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
+**3. Switch the Booker job on.** *Settings → Secrets and variables → Actions →
+Variables → New repository variable*, named `BOOKER_RUNNER`, value `true`.
+
+Until that variable is set, the Booker job is **skipped** and the index publishes the
+other four sellers. This is deliberate and it is not a nicety: a job whose runner
+label matches nothing does not fail, it *queues* — for up to 24 hours — and because
+the publishing job waits on it, the whole index would stop updating every day. A
+skipped job satisfies that wait instantly. So never point the Booker job at
+`self-hosted` without a runner actually registered.
+
 The script installs Git and Python if missing, downloads the current runner,
 registers it, and installs it as a Windows service set to start on boot — so it
 survives power cuts and Windows Update reboots. Read its header before running: it
