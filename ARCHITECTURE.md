@@ -153,15 +153,27 @@ seller can't be read politely, drop it or collect it manually.
 
 ## 9a. Live findings (2026-08-10, GitHub runner)
 
-First live adapter run, 11/15 SKUs quoted. What it proved:
+Final state after three rounds of fixes — **11/11 cloud SKUs read correctly**; the
+only outstanding gap is Booker, which is an access problem, not a parsing one.
 
 | Seller | Result | Diagnosis |
 |--------|--------|-----------|
-| **JJ Foodservice** | ✅ 3/3 via JSON-LD, prices match browser exactly | Working. The "hardest" site was the easiest. |
-| **Brakes (Sysco)** | ✅ 2/2 via selector, prices match exactly | Working. |
-| **Booker** | ❌ 0/4 | **HTTP 403, "Access Denied", 307-byte edge block.** IP-reputation filtering against the datacenter IP. Not a selector problem — no code fix exists. |
-| **Marfast** | ⚠️ 3/3 but WRONG price | Page renders two prices (£34.29 / £32.79) with an identical class path; `meta[itemprop=price]` returns the higher (delivery). Collection is the lower. |
-| **Magna** | ⚠️ 3/3 but WRONG price | JSON-LD carries £28.99 while the page displays £27.99 — structured data is stale/list price. |
+| **JJ Foodservice** | ✅ 3/3 via JSON-LD, matches the browser exactly | Working. The "hardest" site was the easiest. |
+| **Brakes (Sysco)** | ✅ 2/2 via selector, matches exactly | Working. |
+| **Marfast** | ✅ 3/3 via `label:Collection@scope` | Fixed. Was returning the *delivery* price (£34.29 not £32.79) — both prices share an identical class path, so only the label distinguishes them. |
+| **Magna** | ✅ 3/3 via `label:Collection@scope` | Fixed in two steps: label anchoring, then scoping. Whole-page label search still returned other products' prices (£12.49 from a `Delivery £0.00` row; the bib's price on the drum page). |
+| **Booker** | ❌ 0/4 | **HTTP 403, "Access Denied", ~400-byte edge block.** A probe of 11 endpoints — including `robots.txt` — was blocked 11/11, which proves the filter is on the *IP*, not the path. Parsing is already solved (§ `price_from_booker_embedded`); only access is missing. Needs a self-hosted runner. |
+
+Three fixes, each invisible until specifically looked for:
+
+1. **Delivery vs collection** — a properly labelled price that is the wrong price.
+2. **A JS escaping bug** — the pattern was built as `new RegExp(label + '\s*…')` inside
+   a JS *string* literal, where `\s` collapses to `s`. It matched nothing, so the label
+   tier silently never fired and the adapter quietly used the next tier down.
+3. **Unscoped label search** — the right label, on the wrong product. See §9b.
+
+Each of these produced a green run. That is the whole reason for §2's Rule 2 and for
+the validation gate: the gate *held* the £12.49, so no bad value was ever published.
 
 Two lessons worth generalising:
 1. **A successful fetch is not a correct fetch.** Marfast and Magna both returned a

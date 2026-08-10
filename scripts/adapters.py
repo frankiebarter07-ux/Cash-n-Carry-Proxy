@@ -24,6 +24,7 @@ import json
 import os
 import re
 import sys
+import time
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 
@@ -572,12 +573,19 @@ def cmd_run(only=None, exclude=None, write=False):
             return None
 
     page_holder = {}
+    SKU_BUDGET = 75          # seconds one SKU may consume across all its tiers
+
+    def _out_of_time():
+        """True once this SKU has had its share. A slow seller costs us that
+        seller's price for a day; it must never cost us the whole run."""
+        started = page_holder.get("started")
+        return started is not None and (time.monotonic() - started) > SKU_BUDGET
 
     def _prepare(pw, url):
         """Navigate, dismiss consent banners, wait for the price to actually load."""
         if page_holder.get("at") == url:
             return True
-        pw.goto(url, wait_until="domcontentloaded", timeout=45000)
+        pw.goto(url, wait_until="domcontentloaded", timeout=30000)
         for sel in ("button:has-text('Accept')", "button:has-text('Allow all')",
                     "#onetrust-accept-btn-handler", "button:has-text('I accept')"):
             try:
@@ -598,7 +606,7 @@ def cmd_run(only=None, exclude=None, write=False):
     def fetch_page_html(url):
         """Full HTML after rendering -- lets embedded-JSON parsing use the browser."""
         pw = page_holder.get("page")
-        if not pw:
+        if not pw or _out_of_time():
             return None
         try:
             _prepare(pw, url)
@@ -617,7 +625,7 @@ def cmd_run(only=None, exclude=None, write=False):
         recorded as provenance alongside the price.
         """
         pw = page_holder.get("page")
-        if not pw:
+        if not pw or _out_of_time():
             return None
         try:
             _prepare(pw, url)
@@ -672,7 +680,7 @@ def cmd_run(only=None, exclude=None, write=False):
 
     def fetch_rendered(url, selector):
         pw = page_holder.get("page")
-        if not pw:
+        if not pw or _out_of_time():
             return None
         try:
             _prepare(pw, url)
@@ -689,6 +697,7 @@ def cmd_run(only=None, exclude=None, write=False):
         pwctx = sync_playwright().start()
         browser = pwctx.chromium.launch(headless=True)
         ctx = browser.new_context(user_agent=UA, locale="en-GB")
+        ctx.set_default_timeout(20000)     # no browser call waits indefinitely
         page_holder["page"] = ctx.new_page()
         print("Playwright available -- rendered tier enabled\n")
     except Exception:
@@ -714,11 +723,14 @@ def cmd_run(only=None, exclude=None, write=False):
         print(seller)
         for sku in v["skus"]:
             page_holder.pop("at", None)   # force navigation for each SKU
+            page_holder["started"] = time.monotonic()
             try:
                 q = ad.fetch(sku)
             except AdapterError as e:
                 failures.append(str(e))
-                print(f"  ✗ {sku['oil']}/{sku['format']}: {e}")
+                took = time.monotonic() - page_holder["started"]
+                note = "  (SKU time budget spent)" if took > SKU_BUDGET else ""
+                print(f"  ✗ {sku['oil']}/{sku['format']}: {e}{note}")
                 continue
             why = validate(q.price_gbp)
             flag = "" if not why else f"  [HELD: {why}]"

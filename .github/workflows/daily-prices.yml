@@ -27,6 +27,9 @@ permissions:
 jobs:
   collect-cloud:
     runs-on: ubuntu-latest
+    # A hung page must not hold the runner for hours -- a slow seller should cost
+    # us that seller's prices for a day, nothing more. Carry-forward covers the gap.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -37,6 +40,7 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium
       - name: Collect (all sellers except Booker)
+        timeout-minutes: 15
         run: python3 scripts/adapters.py --run --write --exclude "Booker"
       - uses: actions/upload-artifact@v4
         with:

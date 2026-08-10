@@ -125,8 +125,8 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-08-10",
-            "price_per_unit": 30.8,
-            "price_per_tonne": 1679.28,
+            "price_per_unit": 30.7,
+            "price_per_tonne": 1673.83,
             "n_obs": 5,
             "n_used": 5,
             "n_excluded": 0,
@@ -211,8 +211,8 @@ window.OIL_SERIES = {
                 "product": "KTC Vegetable Oil Tin 20ltr",
                 "brand": "KTC",
                 "format": "drum",
-                "price_per_unit": 28.99,
-                "price_per_tonne": 1580.7,
+                "price_per_unit": 27.99,
+                "price_per_tonne": 1526.17,
                 "as_of": "2026-08-10",
                 "stale": false,
                 "excluded": false

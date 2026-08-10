@@ -27,6 +27,7 @@ on:
 jobs:
   test:
     runs-on: ${{ inputs.runner }}
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -46,6 +47,7 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Live fetch all 15 SKUs
+        timeout-minutes: 15
         run: python3 scripts/adapters.py --run || true
 
       - name: Probe Booker for any reachable price endpoint

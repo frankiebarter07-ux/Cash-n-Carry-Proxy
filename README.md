@@ -19,8 +19,8 @@ No blends, no supermarket retail, no logins: every price tracked is publicly vis
 |---|---|---|---|
 | JJ Foodservice | drum | bib, drum | Cloud — JSON-LD ✅ |
 | Brakes (Sysco) | bib | bib | Cloud — selector ✅ |
-| Marfast | drum | bib, drum | Cloud — displayed price |
-| Magna Foodservice | drum | bib, drum | Cloud — displayed price |
+| Marfast | drum | bib, drum | Cloud — Collection label ✅ |
+| Magna Foodservice | drum | bib, drum | Cloud — Collection label ✅ |
 | **Booker** | bib, drum | bib, drum | **Self-hosted runner** (blocks datacenter IPs) |
 
 Exact products and URLs: [`config/targets.json`](config/targets.json).
