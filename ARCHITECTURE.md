@@ -151,6 +151,26 @@ seller can't be read politely, drop it or collect it manually.
 - `data/series.json` — the computed series, including `breakdown` (every SKU at every
   seller) and `changes` (today + trailing 7 days, with who moved).
 
+## 9a. Live findings (2026-08-10, GitHub runner)
+
+First live adapter run, 11/15 SKUs quoted. What it proved:
+
+| Seller | Result | Diagnosis |
+|--------|--------|-----------|
+| **JJ Foodservice** | ✅ 3/3 via JSON-LD, prices match browser exactly | Working. The "hardest" site was the easiest. |
+| **Brakes (Sysco)** | ✅ 2/2 via selector, prices match exactly | Working. |
+| **Booker** | ❌ 0/4 | **HTTP 403, "Access Denied", 307-byte edge block.** IP-reputation filtering against the datacenter IP. Not a selector problem — no code fix exists. |
+| **Marfast** | ⚠️ 3/3 but WRONG price | Page renders two prices (£34.29 / £32.79) with an identical class path; `meta[itemprop=price]` returns the higher (delivery). Collection is the lower. |
+| **Magna** | ⚠️ 3/3 but WRONG price | JSON-LD carries £28.99 while the page displays £27.99 — structured data is stale/list price. |
+
+Two lessons worth generalising:
+1. **A successful fetch is not a correct fetch.** Marfast and Magna both returned a
+   properly labelled price that was simply the wrong one. Validation must compare
+   against a human-verified baseline, not just check the value is parseable.
+2. **Structured data can be stale.** JSON-LD is stable and easy, but where it
+   disagrees with the displayed price, the displayed price is what the buyer pays —
+   hence the `prefer_rendered` flag on affected adapters.
+
 ## 10. Known gaps
 
 - Adapters are not yet wired to the live sites; the current baseline is
@@ -158,5 +178,7 @@ seller can't be read politely, drop it or collect it manually.
 - Booker's bib/drum mapping is inferred from source-list order — verify against page
   titles.
 - No alerting yet; failures are visible only in CI logs.
+- **Booker cannot be collected from CI** (datacenter IP blocked at the edge). It
+  needs residential/business egress or manual entry — see section 7, item 2.
 - `data/observations_legacy.csv` holds the pre-verification history, including
   values that could not be confirmed. Do not merge it back into the live series.

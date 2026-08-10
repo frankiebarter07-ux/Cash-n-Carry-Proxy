@@ -2,51 +2,129 @@
   "_comment": "Definitive scrape-target matrix: 15 SKUs across 5 UK cash & carry sellers, all with publicly visible pricing (no trade login). Every SKU is 20L. 'format' distinguishes bag-in-box (bib) from drum so like-for-like comparison is possible. URLs extracted from the seller list PDF's embedded link annotations. 'route' is the expected fetch strategy, to be confirmed by tools/check_protection.sh.",
   "currency": "GBP",
   "country": "UK",
-  "pack": { "value": 20, "unit": "L" },
+  "pack": {
+    "value": 20,
+    "unit": "L"
+  },
   "sellers": {
     "JJ Foodservice": {
       "route": "json_api_or_playwright",
       "note": "React SPA; returns 403 to plain fetchers. URLs are BRANCH-SPECIFIC (London-Enfield) -- JJ prices vary by branch, so keep the branch fixed for a consistent series. Look for the internal JSON API in DevTools > Network > Fetch/XHR.",
       "skus": [
-        { "oil": "rapeseed", "format": "drum", "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L", "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL068/" },
-        { "oil": "soybean", "format": "bib", "product": "KTC Vegetable Cooking Oil BIB 1x20L", "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL072/" },
-        { "oil": "soybean", "format": "drum", "product": "KTC Vegetable Cooking Oil Drum 1x20L", "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL013/" }
+        {
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "KTC Chef's Choice Rapeseed Oil Drum 1x20L",
+          "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL068/"
+        },
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Cooking Oil BIB 1x20L",
+          "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL072/"
+        },
+        {
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Cooking Oil Drum 1x20L",
+          "url": "https://www.jjfoodservice.com/product/London-Enfield/OIL013/"
+        }
       ]
     },
     "Brakes (Sysco)": {
       "route": "playwright",
       "note": "Check for Akamai. Note the rapeseed SKU here is p/85064 (bag-in-box), not p/9802 which was used earlier.",
       "skus": [
-        { "oil": "soybean", "format": "bib", "product": "KTC Vegetable Oil (Bottle in Box) 20L", "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753" },
-        { "oil": "rapeseed", "format": "bib", "product": "Sysco Classic Extended Life Rapeseed Oil 20L", "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/85064" }
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Oil (Bottle in Box) 20L",
+          "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/ktc-vegetable-oil-bottle-in-box-20l/p/85753"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "bib",
+          "product": "Sysco Classic Extended Life Rapeseed Oil 20L",
+          "url": "https://www.brake.co.uk/dry-store/oil/vegetable-oil/vegetable-oil/sysco-classic-extended-life-rapeseed-oil/p/85064"
+        }
       ]
     },
     "Booker": {
-      "route": "playwright",
-      "note": "Direct per-product URLs (Code=...). These replace the category-listing keyword match, which silently returned no price in CI. Format mapping (bib/drum) is inferred from the order in the source list -- verify against each page title.",
+      "route": "blocked_from_datacenter",
+      "note": "BLOCKED from datacenter IPs. Diagnosed 2026-08-10 on a GitHub runner: HTTP 403, title 'Access Denied', 307-byte edge block page -- no HTML, no price, nothing to select. This is IP reputation filtering at the CDN edge, NOT a selector problem, so no code change fixes it. Needs residential/business egress (office line, home box, 4G) or manual collection. Prices ARE publicly visible from a normal connection.",
       "skus": [
-        { "oil": "soybean", "format": "bib", "product": "KTC Vegetable Cooking Oil 20 Litres (Booker 181801)", "url": "https://www.booker.co.uk/products/product?Code=181801&itemHierarchy=KTC_Vegetable_Cooking_Oil_20_Litres" },
-        { "oil": "soybean", "format": "drum", "product": "KTC Vegetable Cooking Oil 20 Litres (Booker 51332)", "url": "https://www.booker.co.uk/products/product?Code=51332&itemHierarchy=KTC_Vegetable_Cooking_Oil_20_Litres" },
-        { "oil": "rapeseed", "format": "bib", "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (Booker 141775)", "url": "https://www.booker.co.uk/products/product?Code=141775&itemHierarchy=Chef%27s_Larder_Rapeseed_Cooking_Oil_20_Litres" },
-        { "oil": "rapeseed", "format": "drum", "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (Booker 570135)", "url": "https://www.booker.co.uk/products/product?Code=570135&itemHierarchy=Chef%27s_Larder_Rapeseed_Cooking_Oil_20_Litres" }
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Cooking Oil 20 Litres (Booker 181801)",
+          "url": "https://www.booker.co.uk/products/product?Code=181801&itemHierarchy=KTC_Vegetable_Cooking_Oil_20_Litres"
+        },
+        {
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Cooking Oil 20 Litres (Booker 51332)",
+          "url": "https://www.booker.co.uk/products/product?Code=51332&itemHierarchy=KTC_Vegetable_Cooking_Oil_20_Litres"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "bib",
+          "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (Booker 141775)",
+          "url": "https://www.booker.co.uk/products/product?Code=141775&itemHierarchy=Chef%27s_Larder_Rapeseed_Cooking_Oil_20_Litres"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "Chef's Larder Rapeseed Cooking Oil 20 Litres (Booker 570135)",
+          "url": "https://www.booker.co.uk/products/product?Code=570135&itemHierarchy=Chef%27s_Larder_Rapeseed_Cooking_Oil_20_Litres"
+        }
       ]
     },
     "Marfast": {
       "route": "html_or_jsonld",
       "note": "Magento-style store; URLs are flat (no /ambient-food-products/oils/ prefix as previously recorded).",
       "skus": [
-        { "oil": "rapeseed", "format": "drum", "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)", "url": "https://marfast.co.uk/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html" },
-        { "oil": "soybean", "format": "bib", "product": "KTC (Bottle In Box) 20ltr Vegetable Oil", "url": "https://marfast.co.uk/ktc-bottle-in-box-20ltr-vegetable-oil-box.html" },
-        { "oil": "soybean", "format": "drum", "product": "KTC Vegetable Oil 20ltr (Drum)", "url": "https://marfast.co.uk/ktc-vegetable-oil-20ltr-drum.html" }
+        {
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "KTC Chef's Choice Rapeseed Oil 20ltr (Drum)",
+          "url": "https://marfast.co.uk/ktc-chef-s-choice-rapeseed-oil-20ltr-drum.html"
+        },
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC (Bottle In Box) 20ltr Vegetable Oil",
+          "url": "https://marfast.co.uk/ktc-bottle-in-box-20ltr-vegetable-oil-box.html"
+        },
+        {
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Oil 20ltr (Drum)",
+          "url": "https://marfast.co.uk/ktc-vegetable-oil-20ltr-drum.html"
+        }
       ]
     },
     "Magna Foodservice": {
       "route": "jsonld",
       "note": "WooCommerce store; JSON-LD offers.price expected. 'tin' in the URL is the drum SKU.",
       "skus": [
-        { "oil": "soybean", "format": "bib", "product": "KTC Vegetable Oil Box 20ltr", "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/" },
-        { "oil": "soybean", "format": "drum", "product": "KTC Vegetable Oil Tin 20ltr", "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-tin-20ltr/" },
-        { "oil": "rapeseed", "format": "drum", "product": "KTC Extended Life Rapeseed Oil 20ltr", "url": "https://www.magnafoodservice.co.uk/product/ktc-rapeseed-oil-20ltr/" }
+        {
+          "oil": "soybean",
+          "format": "bib",
+          "product": "KTC Vegetable Oil Box 20ltr",
+          "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-box-20ltr/"
+        },
+        {
+          "oil": "soybean",
+          "format": "drum",
+          "product": "KTC Vegetable Oil Tin 20ltr",
+          "url": "https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-tin-20ltr/"
+        },
+        {
+          "oil": "rapeseed",
+          "format": "drum",
+          "product": "KTC Extended Life Rapeseed Oil 20ltr",
+          "url": "https://www.magnafoodservice.co.uk/product/ktc-rapeseed-oil-20ltr/"
+        }
       ]
     }
   }

@@ -170,9 +170,15 @@ class BaseAdapter:
                              datetime.now(timezone.utc).isoformat())
         return None
 
+    # When True, read the displayed (rendered) price first. Needed where the
+    # static/JSON-LD figure is not the collection price we track.
+    prefer_rendered = False
+
     def fetch(self, sku: dict) -> Quote:
         url = sku["url"]
-        for step in (self.from_static, self.from_rendered):
+        order = ((self.from_rendered, self.from_static) if self.prefer_rendered
+                 else (self.from_static, self.from_rendered))
+        for step in order:
             q = step(url)
             if q:
                 return q
@@ -180,17 +186,32 @@ class BaseAdapter:
 
 
 class MagnaAdapter(BaseAdapter):
-    """WooCommerce -- JSON-LD expected. Easiest; build/verify first."""
+    """WooCommerce.
+
+    Diagnostics showed JSON-LD carries £28.99 while the page displays £27.99 --
+    the structured data is stale/list price. Read the displayed price instead.
+    """
     name = "Magna Foodservice"
-    selectors = ["p.price .woocommerce-Price-amount", ".summary .woocommerce-Price-amount",
-                 "[itemprop='price']"]
+    prefer_rendered = True
+    selectors = ["p.price ins .woocommerce-Price-amount",
+                 "p.price .woocommerce-Price-amount",
+                 ".summary .woocommerce-Price-amount",
+                 "[class*='woocommerce-Price-amount']"]
 
 
 class MarfastAdapter(BaseAdapter):
-    """Magento-style, likely server-rendered."""
+    """Magento.
+
+    Diagnostics showed the page renders TWO prices with an identical class path
+    (£34.29 and £32.79). meta[itemprop=price] returns the higher one; the
+    collection price we track is the lower. Selectors below target the
+    collection block; the next diagnose run confirms the distinguishing label.
+    """
     name = "Marfast"
-    selectors = ["[data-price-type='finalPrice'] .price", ".price-wrapper .price",
-                 "[itemprop='price']"]
+    prefer_rendered = True
+    selectors = ["[class*='collection'] .price-wrapper .price",
+                 "[data-price-type='finalPrice'] .price",
+                 ".price-container.price-final_price .price-wrap"]
 
 
 class BookerAdapter(BaseAdapter):
@@ -452,9 +473,11 @@ def cmd_diagnose(seller_filter=None, limit=1):
     JS = """() => {
       const out = [];
       const re = /£\\s?\\d{1,4}(?:\\.\\d{2})?/;
+      const seen = new Set();
       document.querySelectorAll('body *').forEach(el => {
-        if (el.children.length) return;
-        const t = (el.textContent || '').trim();
+        // allow small composite nodes (WooCommerce wraps the £ in its own span)
+        if (el.children.length > 2) return;
+        const t = (el.textContent || '').trim().replace(/\\s+/g, ' ');
         if (!t || t.length > 60 || !re.test(t)) return;
         const path = [];
         let n = el;
@@ -464,10 +487,18 @@ def cmd_diagnose(seller_filter=None, limit=1):
               ? '.' + n.className.trim().split(/\\s+/).slice(0,3).join('.') : ''));
           n = n.parentElement;
         }
-        // nearest text label above this element, to tell collection vs delivery
+        const key = t + '|' + path.join('>');
+        if (seen.has(key)) return;
+        seen.add(key);
+        // climb for a labelling ancestor -- this is what distinguishes
+        // "Collection" from "Delivery" on catering sites
         let label = '';
         let p = el.parentElement;
-        if (p) label = (p.textContent || '').trim().slice(0, 70).replace(/\\s+/g, ' ');
+        for (let i = 0; i < 5 && p; i++) {
+          const pt = (p.textContent || '').trim().replace(/\\s+/g, ' ');
+          if (pt.length > t.length + 3 && pt.length < 160) { label = pt; break; }
+          p = p.parentElement;
+        }
         out.push({ text: t, path: path.join(' > '), label });
       });
       return out.slice(0, 40);
