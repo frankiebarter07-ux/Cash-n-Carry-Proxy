@@ -11,7 +11,11 @@
     --bg:#0b0c0e; --panel:#121418; --panel2:#16181d; --line:#23262d;
     --grid:#1c1f25; --ink:#e9eaee; --muted:#878d99; --dim:#5d636e;
     --accent:#ffa028; --up:#ff5f56; --down:#33d17a;
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    /* One monospace face for the whole page, not just the figures. It is what a
+       trading screen actually looks like, it keeps every column aligned, and it
+       avoids the default system-sans stack that makes a page look untouched. */
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Mono", "Segoe UI Mono",
+            "Roboto Mono", "Liberation Mono", Menlo, Consolas, monospace;
   }
   :root[data-theme="light"] {
     --bg:#f4f4f2; --panel:#ffffff; --panel2:#fafaf8; --line:#dedcd6;
@@ -21,37 +25,37 @@
   * { box-sizing:border-box; }
   body {
     margin:0; background:var(--bg); color:var(--ink);
-    font:14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font:13.5px/1.5 var(--mono); font-variant-numeric:tabular-nums;
     -webkit-font-smoothing:antialiased;
   }
   .wrap { max-width:1180px; margin:0 auto; padding:0 16px 48px; }
-  .num { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+  .num { font-variant-numeric:tabular-nums; }
 
   /* ---- top bar ---- */
   .topbar {
     display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
     border-bottom:2px solid var(--accent); padding:14px 0 9px; margin-bottom:2px;
   }
-  .brand { font-size:15px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+  .brand { font-size:15px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
   .brand span { color:var(--accent); }
   .meta {
-    font-family:var(--mono); font-size:11px; color:var(--muted);
+    font-size:11px; color:var(--muted);
     letter-spacing:.05em; text-transform:uppercase; margin-right:auto;
   }
   .themebtn {
-    font:inherit; font-size:11px; font-family:var(--mono); color:var(--muted); cursor:pointer;
+    font:inherit; font-size:11px; color:var(--muted); cursor:pointer;
     background:transparent; border:1px solid var(--line); padding:3px 8px; letter-spacing:.06em;
   }
-  .fallback { font-size:11px; color:var(--dim); padding:6px 0 0; font-family:var(--mono); }
+  .fallback { font-size:11px; color:var(--dim); padding:6px 0 0; }
   .fallback a { color:var(--muted); }
 
   /* ---- quote strip ---- */
   .quotes { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:2px; margin:12px 0; }
   .q { background:var(--panel); border-left:3px solid var(--qc,var(--accent)); padding:12px 14px; }
   .q .name { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
-  .q .px { font-family:var(--mono); font-size:30px; line-height:1.15; margin-top:3px; font-variant-numeric:tabular-nums; }
-  .q .chg { font-family:var(--mono); font-size:13px; margin-top:1px; }
-  .q .sub { font-family:var(--mono); font-size:10.5px; color:var(--dim); margin-top:6px; letter-spacing:.05em; text-transform:uppercase; }
+  .q .px { font-size:30px; line-height:1.15; margin-top:3px; font-variant-numeric:tabular-nums; }
+  .q .chg { font-size:13px; margin-top:1px; }
+  .q .sub { font-size:10.5px; color:var(--dim); margin-top:6px; letter-spacing:.05em; text-transform:uppercase; }
   .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
 
   /* ---- panels ---- */
@@ -65,7 +69,7 @@
   .seg { display:inline-flex; border:1px solid var(--line); }
   .seg button {
     appearance:none; border:0; border-right:1px solid var(--line); background:transparent;
-    color:var(--muted); font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+    color:var(--muted); font-size:11px; letter-spacing:.06em;
     padding:4px 10px; cursor:pointer; text-transform:uppercase;
   }
   .seg button:last-child { border-right:0; }
@@ -79,15 +83,14 @@
   .chip {
     display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
     border:1px solid var(--line); background:var(--panel2); padding:4px 10px;
-    font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--ink);
+    font-size:11px; letter-spacing:.05em; color:var(--ink);
     text-transform:uppercase;
   }
   .chip[aria-pressed="false"] { opacity:.35; }
   .chip .dot { width:9px; height:9px; flex:0 0 auto; }
   .tip {
     position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
-    background:var(--ink); color:var(--bg); padding:7px 9px; font-family:var(--mono);
-    font-size:11px; line-height:1.5; max-width:260px; z-index:5;
+    background:var(--ink); color:var(--bg); padding:7px 9px; font-size:11px; line-height:1.5; max-width:260px; z-index:5;
   }
 
   /* ---- tables ---- */
@@ -98,25 +101,25 @@
     white-space:nowrap;
   }
   td { padding:6px 10px 6px 0; border-bottom:1px solid var(--grid); font-size:13px; }
-  td.n { font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td.n { font-variant-numeric:tabular-nums; white-space:nowrap; }
   tr.ex td { opacity:.45; text-decoration:line-through; }
   .fl { color:var(--dim); font-size:11px; }
   .scroll { overflow-x:auto; }
 
   .detail { display:none; margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
   .dhead { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px;
-           font-family:var(--mono); margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
+           margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
   .dhead .dot { width:9px; height:9px; }
   .subhead {
     font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
     margin:16px 0 6px; font-weight:600;
   }
   .subhead:first-child { margin-top:0; }
-  .sum { font-family:var(--mono); font-size:12px; color:var(--muted); margin:0 0 8px; }
-  .none { font-family:var(--mono); font-size:12px; color:var(--dim); margin:0; }
+  .sum { font-size:12px; color:var(--muted); margin:0 0 8px; }
+  .none { font-size:12px; color:var(--dim); margin:0; }
   .foot {
-    font-family:var(--mono); font-size:10.5px; color:var(--dim); line-height:1.7;
-    letter-spacing:.04em; margin-top:14px; text-transform:uppercase;
+    font-size:11px; color:var(--dim); line-height:1.7;
+    letter-spacing:.03em; margin-top:14px;
   }
 </style>
 </head>
@@ -299,7 +302,8 @@
   function draw() {
     const series = buildSeries();
     const muted = css("--muted"), grid = css("--grid"), panel = css("--panel");
-    const mono = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
+    const mono = css("--mono") ||
+      "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
 
     // A single observation is drawn flat from the day before, so the line exists.
     series.forEach(s => {
@@ -436,11 +440,8 @@
     const n = dates.size;
     $("asof").textContent =
       `Cash & carry · collection · as of ${DATA.generated} · ${n} session${n === 1 ? "" : "s"}`;
-    $("foot").innerHTML =
-      `▲ price rise &nbsp;·&nbsp; ▼ price fall &nbsp;·&nbsp; ` +
-      `5 UK sellers, one 20L pack per oil, collection price incl. discounts<br>` +
-      `Cross-seller mean, outliers beyond ${DATA.std_dev_threshold}σ excluded &nbsp;·&nbsp; ` +
-      `£/tonne from published densities &nbsp;·&nbsp; movement proxy, not a trading price`;
+    $("foot").textContent =
+      "All Unit prices are 20L drums or bibs, collection prices only";
   }
 
   renderChannels(); renderQuotes(); renderLegend(); renderChanges(); renderMeta(); draw();
