@@ -1,70 +1,77 @@
 #!/usr/bin/env bash
-# Identify which bot-protection / WAF (if any) each seller site runs.
-# Run this from your OWN machine -- it needs normal internet access.
+# Check every tracked product URL: is it reachable, is it bot-protected, and is the
+# price present in the raw HTML (or JSON-LD)?
 #
-#   bash tools/check_protection.sh
+# Run from your OWN machine (needs normal internet):
+#     bash tools/check_protection.sh
 #
-# Reads the response headers and cookies and matches them against known
-# fingerprints. Nothing is scraped; it only makes one HEAD/GET per site.
+# Reads the 15 SKUs from config/targets.json. One request per URL, 2s apart.
+# Nothing is stored -- this only reports what each site returns.
 
 UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+TARGETS="$ROOT/config/targets.json"
 
-SITES=(
-  "https://www.jjfoodservice.com/"
-  "https://www.brake.co.uk/"
-  "https://www.booker.co.uk/"
-  "https://marfast.co.uk/"
-  "https://www.magnafoodservice.co.uk/"
-)
+command -v python3 >/dev/null || { echo "python3 required"; exit 1; }
 
 identify() {
-  local h="$1"
-  local hits=""
-  grep -qiE '^server:.*cloudflare|^cf-ray:'            <<<"$h" && hits+="Cloudflare "
-  grep -qiE 'cf_clearance|__cf_bm'                      <<<"$h" && hits+="Cloudflare-BotMgmt "
-  grep -qiE '^server:.*akamai|ak_bmsc|bm_sv|^x-akamai'  <<<"$h" && hits+="Akamai "
-  grep -qiE 'datadome'                                  <<<"$h" && hits+="DataDome "
-  grep -qiE 'incap_ses|visid_incap|^x-iinfo'            <<<"$h" && hits+="Imperva/Incapsula "
-  grep -qiE '_px[a-z]*=|^x-px'                          <<<"$h" && hits+="PerimeterX/HUMAN "
-  grep -qiE '^x-sucuri'                                 <<<"$h" && hits+="Sucuri "
-  grep -qiE '^server:.*(awselb|cloudfront)|^x-amz-cf'   <<<"$h" && hits+="AWS-CloudFront "
-  grep -qiE '^x-shopify|^server:.*shopify'              <<<"$h" && hits+="Shopify "
-  grep -qiE '^x-powered-by:.*wordpress|wp-content'      <<<"$h" && hits+="WordPress/Woo "
-  [ -z "$hits" ] && hits="(no known WAF signature)"
+  local h="$1" hits=""
+  grep -qiE '^server:.*cloudflare|^cf-ray:'           <<<"$h" && hits+="Cloudflare "
+  grep -qiE 'cf_clearance|__cf_bm'                     <<<"$h" && hits+="CF-BotMgmt "
+  grep -qiE '^server:.*akamai|ak_bmsc|bm_sv|^x-akamai' <<<"$h" && hits+="Akamai "
+  grep -qiE 'datadome'                                 <<<"$h" && hits+="DataDome "
+  grep -qiE 'incap_ses|visid_incap|^x-iinfo'           <<<"$h" && hits+="Imperva "
+  grep -qiE '_px[a-z]*=|^x-px'                         <<<"$h" && hits+="PerimeterX "
+  grep -qiE '^x-sucuri'                                <<<"$h" && hits+="Sucuri "
+  grep -qiE '^x-shopify|^server:.*shopify'             <<<"$h" && hits+="Shopify "
+  grep -qiE 'wp-content|^link:.*wp-json'               <<<"$h" && hits+="WordPress/Woo "
+  [ -z "$hits" ] && hits="none detected"
   echo "$hits"
 }
 
-for url in "${SITES[@]}"; do
-  host=$(sed -E 's#https?://([^/]+).*#\1#' <<<"$url")
-  echo "=============================================================="
-  echo "  $host"
-  echo "=============================================================="
-  hdr=$(curl -sS -A "$UA" -L --max-time 25 -o /tmp/body.$$ -D - "$url" 2>&1)
-  code=$(grep -m1 -oE 'HTTP/[0-9.]+ [0-9]{3}' <<<"$hdr" | tail -1)
+# seller<TAB>oil/format<TAB>url
+python3 - "$TARGETS" <<'PY' > /tmp/_targets.tsv
+import json,sys
+d=json.load(open(sys.argv[1]))
+for s,v in d["sellers"].items():
+    for k in v["skus"]:
+        print(f"{s}\t{k['oil']}/{k['format']}\t{k['url']}")
+PY
 
-  echo "  status      : ${code:-no response}"
-  echo "  server      : $(grep -i '^server:' <<<"$hdr" | tail -1 | tr -d '\r' | cut -c1-60)"
-  echo "  protection  : $(identify "$hdr")"
+pass=0; fail=0
+while IFS=$'\t' read -r seller sku url; do
+  body=$(mktemp)
+  hdr=$(curl -sS -A "$UA" -L --max-time 30 -o "$body" -D - "$url" 2>&1)
+  code=$(grep -m1 -oE 'HTTP/[0-9.]+ [0-9]{3}' <<<"$hdr" | tail -1 | awk '{print $2}')
 
-  # A JS-challenge page is small and says "just a moment" / "checking your browser"
-  if grep -qiE 'just a moment|checking your browser|enable javascript and cookies|attention required' /tmp/body.$$ 2>/dev/null; then
-    echo "  !! CHALLENGE PAGE returned (interstitial, not real content)"
+  echo "----------------------------------------------------------------"
+  echo "$seller  [$sku]"
+  echo "  url        : ${url:0:78}"
+  echo "  status     : ${code:-NO RESPONSE}"
+  echo "  protection : $(identify "$hdr")"
+
+  if grep -qiE 'just a moment|checking your browser|attention required|enable javascript and cookies' "$body" 2>/dev/null; then
+    echo "  !! CHALLENGE PAGE (interstitial, not real content)"
   fi
-  # Does the raw HTML already contain a price? (i.e. no JS needed)
-  if grep -qE '£[0-9]+\.[0-9]{2}' /tmp/body.$$ 2>/dev/null; then
-    echo "  prices in raw HTML: YES (server-rendered -- easy)"
+  if grep -qE '£ ?[0-9]+\.[0-9]{2}' "$body" 2>/dev/null; then
+    echo "  PRICE IN HTML: YES -> $(grep -oE '£ ?[0-9]+\.[0-9]{2}' "$body" | sort -u | head -4 | tr '\n' ' ')"
+    pass=$((pass+1))
   else
-    echo "  prices in raw HTML: no (JS-rendered, or gated/homepage)"
+    echo "  PRICE IN HTML: no (JS-rendered, gated, or blocked)"
+    fail=$((fail+1))
   fi
-  # JSON-LD present?
-  if grep -qi 'application/ld+json' /tmp/body.$$ 2>/dev/null; then
-    echo "  JSON-LD present   : YES (preferred parse target)"
-  fi
-  rm -f /tmp/body.$$
-  echo
-  sleep 2
-done
+  grep -qi 'application/ld+json' "$body" 2>/dev/null && echo "  JSON-LD    : present (preferred parse target)"
+  grep -qiE 'add to (basket|cart)|sign in|log in to (see|view)' "$body" 2>/dev/null \
+    && echo "  page hints : $(grep -oiE 'log in to (see|view) price|sign in|add to basket' "$body" | sort -u | head -2 | tr '\n' ' ')"
 
-echo "Tip: run again against a PRODUCT url (not the homepage) to see whether that"
-echo "page server-renders its price. And use DevTools > Network > Fetch/XHR on the"
-echo "live page to spot an internal JSON API -- that beats scraping HTML entirely."
+  rm -f "$body"
+  sleep 2
+done < /tmp/_targets.tsv
+
+echo "================================================================"
+echo "  $pass of $((pass+fail)) product pages exposed a price in raw HTML"
+echo "================================================================"
+echo "Next: for any that failed, open the page in Chrome > DevTools > Network >"
+echo "Fetch/XHR and look for a JSON request carrying the price -- that endpoint is"
+echo "far more stable than scraping HTML."
+rm -f /tmp/_targets.tsv
