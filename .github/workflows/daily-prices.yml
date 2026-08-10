@@ -52,7 +52,8 @@ jobs:
     # Never block the pipeline: if the runner is offline or Booker changes, the
     # rest of the index still updates.
     continue-on-error: true
-    timeout-minutes: 15
+    # Generous: the first run on a new machine also installs Python and Chromium.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -63,7 +64,10 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install chromium
       - name: Collect Booker only
-        run: python3 scripts/adapters.py --run --write --only "Booker"
+        # `python`, not `python3` -- this job runs on a self-hosted Windows box,
+        # where no `python3` executable exists. setup-python provides `python` on
+        # every platform, so this stays correct if the runner is ever moved.
+        run: python scripts/adapters.py --run --write --only "Booker"
       - uses: actions/upload-artifact@v4
         with:
           name: obs-booker

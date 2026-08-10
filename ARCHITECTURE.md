@@ -45,8 +45,13 @@ Aggregation is deliberately two-stage, then smoothed:
    listing four SKUs doesn't outvote a shop listing one.
 2. **Across sellers** — drop any seller more than **2 standard deviations** from the
    cross-seller mean (only when ≥ 3 sellers), then average the rest.
-3. **Carry-forward (LOCF)** — a seller that didn't report today keeps its last known
-   price, so the index moves only on *real* price changes, never on missing data.
+3. **Carry-forward (LOCF), bounded** — a seller that didn't report today keeps its
+   last known price, so the index moves only on *real* price changes, never on missing
+   data. But only for `MAX_CARRY_DAYS` (7): after that the seller **lapses** — dropped
+   from the aggregate, still listed in the breakdown as "stopped reporting". Unbounded
+   carry-forward would let a permanently blocked seller sit frozen at its last price
+   and keep pulling the mean, so *"no data"* would render as *"no change"*. A seller
+   rejoins automatically as soon as it reports again.
 
 Normalisation: prices are standardised to the oil's fixed pack (20 L) and also
 expressed in **£/tonne** using published densities, so oils are comparable.
@@ -64,13 +69,19 @@ listed. (Verified: the identical KTC 20 L was £30.69 inc-VAT at one seller and
 | 3 | **CSS selector + Playwright** | Medium — breaks on redesign | JS-rendered price, no API found |
 | 4 | *(never)* bare-£ regex | — | Prohibited by Rule 1 |
 
-Expected route per seller (confirm with `tools/check_protection.sh`):
+Actual route per seller, as built and verified on 2026-08-10:
 
-- **Magna Foodservice** — WooCommerce → JSON-LD *(easiest, build first)*
-- **Marfast** — Magento-style, likely server-rendered → JSON-LD or selector
-- **Booker** — direct product URLs, JS-rendered → Playwright
-- **Brakes (Sysco)** — Playwright; check for Akamai
-- **JJ Foodservice** — React SPA, 403s plain fetch → find the JSON API *(highest value)*
+| Seller | Route | Note |
+|---|---|---|
+| **JJ Foodservice** | JSON-LD | The React SPA was predicted to be hardest; it was the easiest. No JSON API needed. |
+| **Brakes (Sysco)** | CSS selector | No Akamai challenge encountered. |
+| **Marfast** | Collection label, scoped to `div.product-info-main` | Magento. JSON-LD/meta give the *delivery* price — do not use them here. |
+| **Magna Foodservice** | Collection label, scoped to `div.summary.entry-summary` | WooCommerce. JSON-LD is stale *and* names the wrong figure; the predicted "easiest, build first" route was wrong twice over. |
+| **Booker** | Embedded JSON in the product document | Parser done and tested; blocked by IP, needs the self-hosted runner. |
+
+Worth noting how badly the *predictions* in this section scored: the site expected to
+need an internal API needed none, and the two expected to be trivial produced every
+wrong number in the project. Probe before designing.
 
 **JJ caveat:** its URLs are **branch-specific** (`/London-Enfield/`) and prices vary
 by branch. Keep the branch fixed or the series drifts for no real reason.
@@ -222,13 +233,15 @@ seller, or the series stops being comparable.
 
 ## 10. Known gaps
 
-- Adapters are not yet wired to the live sites; the current baseline is
-  browser-verified by hand (2026-08-10).
-- Booker's bib/drum mapping is inferred from source-list order — verify against page
-  titles.
-- No alerting yet; failures are visible only in CI logs.
 - **Booker cannot be collected from CI** (datacenter IP blocked at the edge). It
-  needs residential/business egress or manual entry — see section 7, item 2.
+  needs residential/business egress or manual entry — see §7 item 2 and §11.
+- Booker's bib/drum mapping is inferred from source-list order — verify against page
+  titles the first time the self-hosted runner reads it.
+- The label tier depends on sellers continuing to use the word "Collection". If one
+  relabels it ("Depot price", "Click & collect"), that adapter fails loudly rather
+  than returning the wrong number — but it does need a human to update the label.
+- Only one pack size (20 L) per oil, so the index cannot see price moves that show up
+  first in smaller packs.
 - `data/observations_legacy.csv` holds the pre-verification history, including
   values that could not be confirmed. Do not merge it back into the live series.
 
@@ -254,10 +267,11 @@ day's Booker rows, so a typo is fixed by submitting again.
 
 **B. Self-hosted runner (full automation, ~15 minutes' setup).**
 Register a machine on your own network as a GitHub Actions runner
-(*Settings → Actions → Runners → New self-hosted runner*), then choose
-`self-hosted` in the workflow's `runner` input. Same workflows, same logs — but the
-requests now leave from a residential IP, so Booker serves the real page. Any
-always-on machine works: an old laptop, a mini-PC, a Raspberry Pi.
+(*Settings → Actions → Runners → New self-hosted runner*). Same workflows, same logs
+— but the requests now leave from a normal IP, so Booker serves the real page. Any
+always-on machine works: an office PC, an old laptop, a mini-PC, a Raspberry Pi.
+`tools/setup-windows-runner.ps1` does the whole install on Windows; HANDOVER.md §3
+covers it, including the security rules that come with a self-hosted runner.
 
 **C. Residential egress for a cloud collector.**
 Keep the collector in the cloud but route its traffic through a residential
