@@ -154,6 +154,7 @@
       <div class="tip" id="tip"></div>
     </div>
     <div class="legend" id="legend"></div>
+    <p class="none" id="histNote"></p>
     <div class="detail" id="detail"></div>
   </div>
 
@@ -307,12 +308,10 @@
     const mono = css("--face") ||
       "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
 
-    // A single observation is drawn flat from the day before, so the line exists.
-    series.forEach(s => {
-      s.linePts = s.points.length === 1
-        ? [{ t: s.points[0].t - DAY, v: s.points[0].v }, s.points[0]]
-        : s.points;
-    });
+    // Never invent a point. A single observation is drawn as a single marker: a
+    // flat line back to a fabricated "yesterday" reads as two days of data, which
+    // is precisely the confusion this index exists to avoid.
+    series.forEach(s => { s.linePts = s.points; });
 
     const vals = [], times = [];
     series.forEach(s => s.linePts.forEach(p => { vals.push(p.v); times.push(p.t); }));
@@ -342,13 +341,16 @@
       svg += `<text x="${X(t).toFixed(1)}" y="${VH - pad.b + 20}" fill="${muted}" font-size="11" text-anchor="middle">${esc(lab)}</text>`;
     });
     series.forEach(s => {
-      const line = s.linePts.slice().sort((a, b) => a.t - b.t)
-        .map(p => `${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
-      svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
+      if (s.linePts.length > 1) {
+        const line = s.linePts.slice().sort((a, b) => a.t - b.t)
+          .map(p => `${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
+        svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
+      }
       s.points.forEach(p => {
         const excl = p.n_excluded ? ` · ${p.n_excluded} EXCL` : "";
         const info = `${s.label.toUpperCase()} · ${p.date} · ${money(p.v)} · ${p.n_used}/${p.n_obs} SELLERS${excl}`;
-        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="4.5" fill="${s.color}" stroke="${panel}" stroke-width="1.5" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
+        const r = s.points.length === 1 ? 6 : 4.5;
+        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${r}" fill="${s.color}" stroke="${panel}" stroke-width="1.5" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
       });
     });
     host.innerHTML = svg + "</svg>";
@@ -442,6 +444,9 @@
     const n = dates.size;
     $("asof").textContent =
       `Cash & carry · collection · as of ${DATA.generated} · ${n} session${n === 1 ? "" : "s"}`;
+    $("histNote").textContent = n > 1 ? "" :
+      "One session recorded so far. The index adds a point per day — a trend needs " +
+      "a few weeks. Nothing is drawn for days that were not collected.";
     $("foot").textContent =
       "All Unit prices are 20L drums or bibs, collection prices only";
   }

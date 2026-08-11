@@ -41,9 +41,8 @@ def build_chart(oils, metric):
         if not pts:
             continue
         series = [(datetime.fromisoformat(p["date"]), p[metric]) for p in pts]
-        if len(series) == 1:  # flat line back one day so it's visible
-            t, v = series[0]
-            series = [(t - DAY, v), (t, v)]
+        # Never fabricate a point. A single observation is one marker: a flat line
+        # back to an invented "yesterday" reads as two days of data.
         lines.append((o["color"], o["label"], series))
     if not lines:
         return "<p>No data.</p>"
@@ -86,12 +85,13 @@ def build_chart(oils, metric):
                f'transform="rotate(-90 20 {cy})">{cap}</text>')
     # series
     for color, label, series in lines:
-        pts = " ".join(f"{round(X(t),1)},{round(Y(v),1)}" for t, v in series)
-        svg.append(f'<polyline points="{pts}" fill="none" stroke="{color}" '
-                   f'stroke-width="2.6" stroke-linejoin="round"/>')
-        t, v = series[-1]
-        svg.append(f'<circle class="mk" cx="{round(X(t),1)}" cy="{round(Y(v),1)}" '
-                   f'r="5.5" fill="{color}"/>')
+        if len(series) > 1:                       # nothing to join with one point
+            pts = " ".join(f"{round(X(t),1)},{round(Y(v),1)}" for t, v in series)
+            svg.append(f'<polyline points="{pts}" fill="none" stroke="{color}" '
+                       f'stroke-width="2.6" stroke-linejoin="round"/>')
+        for t, v in series:
+            svg.append(f'<circle class="mk" cx="{round(X(t),1)}" cy="{round(Y(v),1)}" '
+                       f'r="{6 if len(series) == 1 else 4.5}" fill="{color}"/>')
     svg.append("</svg>")
     return "\n".join(svg)
 
@@ -248,7 +248,7 @@ def build():
     <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Price per standard unit</div>
     {chart}
     <div class="legend">{legend}</div>
-    <p class="note">Single snapshot so far, drawn as a flat line from the previous day so every line is visible. Each point is the cross-seller mean after dropping anomalies beyond {data["std_dev_threshold"]} SD.</p>
+    <p class="note">One session recorded so far &mdash; the index adds a point per day, so a trend needs a few weeks. Each point is the cross-seller mean after dropping anomalies beyond {data["std_dev_threshold"]} SD; nothing is drawn for days that were not collected.</p>
   </div>
 
   <div class="card">
