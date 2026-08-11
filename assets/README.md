@@ -4,37 +4,16 @@
 
 | File | What it is | Used for | Status |
 |---|---|---|---|
-| `olleco-logo.png` | horizontal mark, transparent | header on both dashboards, browser-tab icon | ✅ in place |
-| `olleco-logo-white.png` | **reversed / white-out** mark | the dark theme, if present | ⬜ optional |
+| `olleco-logo.png` | horizontal mark, transparent | the header on both dashboards | ✅ in place |
+| `olleco-square.jpg` | square mark | the browser-tab icon | ✅ in place |
 
 To replace either, overwrite the file keeping the same name — nothing else changes.
 
-### Why a reversed version is worth adding
+### One version is enough
 
-The standard mark is Cyprus on transparent. Against the dark theme's ground that
-measures **1.53:1** — the lettering is effectively invisible. So on dark it is placed
-on a white lockup.
-
-Drop a reversed (white-out) version in as `olleco-logo-white.png` and the page uses
-it on the dark theme automatically, with no lockup and no code change. The light
-theme keeps the standard mark either way. Nothing breaks if you never add it.
-
-**PNG only, by preference.** The square JPEG version was dropped: JPEG cannot hold
-transparency, so its white background is baked in and shows as a white block on any
-coloured ground.
-
-The tab icon is the same wide mark, which browsers scale to fit a square — legible
-but small. If a sharper tab icon is wanted later, add a **square** PNG with
-transparent padding as `assets/olleco-icon.png` and point the `<link rel="icon">` at
-it in `index.html` and `scripts/render_static.py`.
-
-The mark is dark teal, so on the dark theme it sits on a **white lockup** — a rounded
-white panel behind it. That is ordinary brand practice where background contrast is
-insufficient, and it means the standard mark serves both themes with no reversed
-version needed. On the light theme the lockup is removed.
-
-If a reversed (white-out) version is ever preferred on dark, add it and swap the
-`src` in `index.html`, then remove the `background`/`padding` rule on `.brand img`.
+The page is **light only**, so the standard mark sits directly on white with no
+lockup and no reversed version needed. The `olleco-logo-white.png` slot described in
+earlier revisions is gone along with the dark theme.
 
 ## 2. The brand colours — done
 

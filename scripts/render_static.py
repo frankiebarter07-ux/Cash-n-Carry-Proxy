@@ -211,26 +211,25 @@ def build():
      square favicon slot and reads as a stretched sliver. -->
 <link rel="icon" href="assets/olleco-square.jpg">
 <style>
-  /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White. */
-  :root {{ --bg:#F5F7F4; --panel:#FFFFFF; --ink:#00433F; --muted:#4C6B67;
-           --grid:#EAEFEC; --line:#DBE3DF; --lime:#CBD300; --brand:#00433F; }}
-  @media (prefers-color-scheme: dark) {{
-    :root {{ --bg:#00201D; --panel:#002E2A; --ink:#EDF3F1; --muted:#8FB2AD;
-             --grid:#073B36; --line:#0A4F49; --lime:#CBD300; --brand:#CBD300; }}
-  }}
+  /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White. Light only, to
+     match index.html -- the mark is drawn for light grounds. */
+  :root {{ --bg:#EDF2F0; --panel:#FFFFFF; --ink:#0B2E2B; --muted:#5A736F;
+           --grid:#E9F0ED; --line:#DCE7E3; --lime:#CBD300; --brand:#00433F;
+           --shadow:0 1px 2px rgba(0,67,63,.05), 0 10px 30px rgba(0,67,63,.07); }}
   * {{ box-sizing:border-box; }}
   body {{ margin:0; background:var(--bg); color:var(--ink);
     font:14.5px/1.5 Arial,Helvetica,"Helvetica Neue",sans-serif; }}
   .wrap {{ max-width:1000px; margin:0 auto; padding:26px 20px 60px; }}
-  h1 {{ font-size:21px; margin:0 0 4px; }}
-  .brandbar {{ display:flex; align-items:center; gap:10px;
-               border-bottom:3px solid var(--lime); padding-bottom:9px; margin-bottom:16px; }}
-  .brandbar img {{ height:26px; width:auto; background:#FFFFFF;
-                   padding:5px 10px; border-radius:9px; }}
+  h1 {{ font-size:20px; margin:0 0 4px; color:var(--brand);
+        letter-spacing:.02em; }}
+  .brandbar {{ display:flex; align-items:center; gap:11px;
+               border-bottom:4px solid var(--lime); padding-bottom:12px; margin-bottom:18px; }}
+  .brandbar img {{ height:30px; width:auto; }}
   .brandbar .wordmark {{ font-size:23px; font-weight:700; letter-spacing:-.02em;
                          text-transform:lowercase; color:var(--ink); line-height:1; }}
   .sub {{ color:var(--muted); font-size:14px; margin:0 0 18px; }}
-  .card {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; margin-top:14px; }}
+  .card {{ background:var(--panel); border-radius:18px; padding:18px 20px;
+           margin-top:14px; box-shadow:var(--shadow); }}
   svg {{ width:100%; height:auto; display:block; }}
   svg .grid {{ stroke:var(--grid); stroke-width:1; }}
   svg .ax {{ fill:var(--muted); font-size:13px; font-family:inherit; }}

@@ -4,204 +4,168 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Olleco — UK Cooking Oil Index</title>
-<!-- Arial is an Olleco brand face and ships on every device, so no webfont is
-     downloaded. This page now makes NO external requests at all: it renders the
-     same on a locked-down corporate network, and there is no CDN that can break
-     it. That matters more than usual for a system nobody will be maintaining. -->
-<!-- The SQUARE mark for the tab: the wide logo gets letterboxed into a
-     square favicon slot and reads as a stretched sliver. -->
+<!-- The SQUARE mark for the tab: the wide logo gets letterboxed into a square
+     favicon slot and reads as a stretched sliver. -->
 <link rel="icon" href="assets/olleco-square.jpg">
+<!-- Arial is an Olleco brand face and ships on every device. This page makes NO
+     external requests at all: same on a locked-down network, works offline from a
+     saved copy, and no CDN can break it. -->
 <style>
-  /* Trading-screen style: dark by default, dense, figures in tabular numerals.
-     Light palette kept behind the toggle, but dark is the intended look. */
   :root {
-    /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White.
-       The dark ground is Cyprus taken down in value, so the whole screen sits in
-       the brand's own hue rather than a generic black. */
-    --bg:#00201D; --panel:#002E2A; --panel2:#00352F; --line:#0A4F49;
-    --grid:#073B36; --ink:#EDF3F1; --muted:#8FB2AD; --dim:#77A29D;
-    /* ------------------------------------------------------------------ *
-     * OLLECO BRAND — the official values. Every accent derives from
-     * --brand, so one edit rebrands the whole page.
-     * ------------------------------------------------------------------ */
-    --brand:#CBD300;          /* Rio Grande */
-    --on-brand:#00332F;       /* text sitting ON the brand colour */
-    --lime:#CBD300;           /* the header rule, in both themes */
-    --accent:var(--brand);
-    /* Market convention, deliberately NOT brand colours -- these must read
-       instantly, and both are held well clear of the lime accent in hue so a
-       rise can never be mistaken for the brand highlight. */
-    --up:#4ADE80; --down:#FF6B6B;
-    /* Arial -- an Olleco brand face, and present on every device, so the page
-       needs no webfont. Figures use tabular-nums so price columns stay aligned. */
-    --face: Arial, Helvetica, "Helvetica Neue", sans-serif;
-    /* Radius scale. The logo is a rounded geometric mark, so hard corners fought
-       the identity; these soften the page without giving up the density. */
-    --r-lg:16px;    /* panels */
-    --r-md:12px;    /* quote tiles, tooltips, breakdown blocks */
-    --r-sm:9px;     /* logo lockup */
-    --r-pill:999px; /* segmented controls, chips, small buttons */
-  }
-  :root[data-theme="light"] {
-    --bg:#F5F7F4; --panel:#FFFFFF; --panel2:#FAFBF8; --line:#DBE3DF;
-    --grid:#EAEFEC; --ink:#00433F; --muted:#4C6B67; --dim:#5F7B77;
-    --brand:#00433F;          /* Cyprus reads as the accent on white */
-    --on-brand:#FFFFFF; --lime:#CBD300; --accent:var(--brand);
+    /* Olleco: Cyprus #00433F, Rio Grande #CBD300, White. Light only -- the mark is
+       drawn for light grounds and the identity is white-forward. */
+    --cyprus:#00433F;
+    --cyprus-700:#00332F;      /* deeper, for the tile gradient */
+    --lime:#CBD300;
+    --ink:#0B2E2B;             /* body text: Cyprus-derived, softer than black */
+    --heading:#00433F;
+    --muted:#5A736F;
+    --dim:#7C918D;
+    --bg:#EDF2F0;              /* tinted ground, so white panels lift off it */
+    --panel:#FFFFFF;
+    --panel2:#F5F9F7;          /* inset surfaces */
+    --line:#DCE7E3;
+    --grid:#E9F0ED;
     --up:#1E8449; --down:#C0392B;
+    --on-cyprus:#FFFFFF;
+    --up-on-cyprus:#7BE8A6; --down-on-cyprus:#FF8A80;
+    --face: Arial, Helvetica, "Helvetica Neue", sans-serif;
+    --r-lg:18px; --r-md:14px; --r-sm:10px; --r-pill:999px;
+    --shadow: 0 1px 2px rgba(0,67,63,.05), 0 10px 30px rgba(0,67,63,.07);
+    --shadow-sm: 0 1px 2px rgba(0,67,63,.06);
   }
   * { box-sizing:border-box; }
   body {
     margin:0; background:var(--bg); color:var(--ink);
-    font:13.5px/1.5 var(--face); font-variant-numeric:tabular-nums;
+    font:14px/1.55 var(--face); font-variant-numeric:tabular-nums;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap { max-width:1180px; margin:0 auto; padding:0 16px 48px; }
-  .num { font-variant-numeric:tabular-nums; }
+  .wrap { max-width:1180px; margin:0 auto; padding:0 20px 56px; }
 
-  /* ---- top bar ---- */
-  .topbar {
-    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-    border-bottom:3px solid var(--lime); padding:16px 0 11px; margin-bottom:6px;
-  }
-  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
-  /* Logo visibility is driven entirely by which files actually loaded, marked as
-     classes on <html>. If none load, the wordmark stands in.
-       olleco-logo.png        the standard mark  -- required
-       olleco-logo-white.png  reversed/white-out -- optional, preferred on dark
-     The standard mark is Cyprus on transparent: 1.53:1 against this background,
-     i.e. invisible. So on dark it gets a white lockup, unless a reversed mark
-     exists, in which case that is used cleanly with no panel. */
-  .brand img { height:26px; width:auto; display:none; }
-  :root.logo-ok    .logo-std  { display:inline; }
-  :root.logo-ok    .wordmark  { display:none; }
-  :root.logo-ok:not([data-theme="light"]) .logo-std {
-    background:#FFFFFF; padding:5px 10px; border-radius:var(--r-sm);
-  }
-  :root.logo-rev-ok:not([data-theme="light"]) .logo-std { display:none; }
-  :root.logo-rev-ok:not([data-theme="light"]) .logo-rev { display:inline; }
-  :root.logo-rev-ok:not([data-theme="light"]) .wordmark { display:none; }
-  .brand .wordmark { font-size:23px; font-weight:700; letter-spacing:-.02em;
-                     text-transform:lowercase; color:var(--ink); line-height:1; }
-  .brand .wordmark::after {           /* the lime mark, as a dot rather than a drawing */
-    content:"•"; color:var(--lime); margin-left:2px; font-size:23px;
-  }
-  .brand .rule { width:1px; height:20px; background:var(--line); }
-  .title { font-size:14px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
-  .meta {
-    font-size:11px; color:var(--muted);
-    letter-spacing:.05em; text-transform:uppercase; margin-right:auto;
-  }
-  .themebtn {
-    font:inherit; font-size:11px; color:var(--muted); cursor:pointer;
-    background:transparent; border:1px solid var(--line); padding:4px 12px;
-    letter-spacing:.06em; border-radius:var(--r-pill);
-  }
-  .fallback { font-size:11px; color:var(--dim); padding:6px 0 0; }
+  /* ---- masthead: white, with the lime as the brand's signature rule ---- */
+  .masthead { background:var(--panel); border-bottom:4px solid var(--lime);
+              box-shadow:var(--shadow-sm); margin-bottom:22px; }
+  .masthead-in { max-width:1180px; margin:0 auto; padding:16px 20px;
+                 display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:11px; text-decoration:none; }
+  .brand img { height:30px; width:auto; display:none; }
+  :root.logo-ok .brand img { display:inline; }
+  :root.logo-ok .wordmark { display:none; }
+  .wordmark { font-size:25px; font-weight:700; letter-spacing:-.02em;
+              text-transform:lowercase; color:var(--cyprus); line-height:1; }
+  .wordmark::after { content:"\2022"; color:var(--lime); margin-left:2px; }
+  .vrule { width:1px; height:26px; background:var(--line); }
+  .title { font-size:13px; font-weight:700; letter-spacing:.13em;
+           text-transform:uppercase; color:var(--heading); }
+  .meta { font-size:11px; color:var(--muted); letter-spacing:.05em;
+          text-transform:uppercase; margin-left:auto; text-align:right; }
+  .fallback { font-size:11px; color:var(--dim); margin:0 0 14px; }
   .fallback a { color:var(--muted); }
 
-  /* ---- quote strip ---- */
-  .quotes { display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:10px; margin:14px 0; }
-  .q { background:var(--panel); border-left:4px solid var(--qc,var(--accent));
-       padding:14px 16px; border-radius:var(--r-md); }
-  .q .name { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
-  .q .px { font-size:30px; line-height:1.15; margin-top:3px; font-variant-numeric:tabular-nums; }
-  .q .chg { font-size:13px; margin-top:1px; }
-  .q .sub { font-size:10.5px; color:var(--dim); margin-top:6px; letter-spacing:.05em; text-transform:uppercase; }
+  /* ---- quote tiles: Cyprus-filled, so the brand carries the headline ---- */
+  .quotes { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+            gap:14px; margin:0 0 14px; }
+  .q { background:linear-gradient(160deg,var(--cyprus) 0%,var(--cyprus-700) 100%);
+       color:var(--on-cyprus); padding:18px 20px 16px; border-radius:var(--r-md);
+       box-shadow:var(--shadow); position:relative; overflow:hidden; }
+  .q::after {                                   /* a lime edge, the brand's tell */
+    content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:var(--qc,var(--lime));
+  }
+  .q .name { font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+             color:var(--lime); font-weight:700; }
+  .q .px { font-size:34px; line-height:1.1; margin-top:6px; font-weight:700;
+           letter-spacing:-.015em; }
+  .q .chg { font-size:13px; margin-top:3px; font-weight:700; }
+  .q .sub { font-size:10.5px; color:#A9C7C3; margin-top:9px; letter-spacing:.06em;
+            text-transform:uppercase; }
+  .q .up { color:var(--up-on-cyprus); } .q .down { color:var(--down-on-cyprus); }
+  .q .flat { color:#A9C7C3; }
   .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
 
   /* ---- panels ---- */
-  .panel { background:var(--panel); border:1px solid var(--line);
-           padding:16px 18px 18px; margin-top:10px; border-radius:var(--r-lg); }
-  .phead {
-    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-    font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
-    border-bottom:1px solid var(--line); padding-bottom:9px; margin-bottom:12px;
-  }
+  .panel { background:var(--panel); padding:18px 20px 20px; margin-top:14px;
+           border-radius:var(--r-lg); box-shadow:var(--shadow); }
+  .phead { display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+           font-size:11px; letter-spacing:.13em; text-transform:uppercase;
+           color:var(--heading); font-weight:700;
+           border-bottom:1px solid var(--line); padding-bottom:11px; margin-bottom:14px; }
   .phead .spacer { margin-left:auto; }
-  .seg { display:inline-flex; flex-wrap:wrap; border:1px solid var(--line);
-         border-radius:var(--r-pill); overflow:hidden; }
-  .seg button {
-    appearance:none; border:0; border-right:1px solid var(--line); background:transparent;
-    color:var(--muted); font-size:11px; letter-spacing:.06em;
-    padding:5px 13px; cursor:pointer; text-transform:uppercase;
-  }
-  .seg button:last-child { border-right:0; }
-  .seg button[aria-pressed="true"] { background:var(--accent); color:var(--on-brand); font-weight:600; }
+  .seg { display:inline-flex; flex-wrap:wrap; background:var(--panel2);
+         border:1px solid var(--line); border-radius:var(--r-pill); overflow:hidden; }
+  .seg button { appearance:none; border:0; background:transparent; color:var(--muted);
+                font:inherit; font-size:11px; font-weight:700; letter-spacing:.06em;
+                padding:6px 14px; cursor:pointer; text-transform:uppercase; }
+  .seg button:hover { color:var(--cyprus); }
+  .seg button[aria-pressed="true"] { background:var(--cyprus); color:#fff; }
   [hidden] { display:none !important; }
 
   /* ---- chart ---- */
   .chart-wrap { position:relative; }
   #chartHost svg { width:100%; height:auto; display:block; }
-  .legend { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
-  .chip {
-    display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
-    border:1px solid var(--line); background:var(--panel2); padding:5px 13px;
-    font-size:11px; letter-spacing:.05em; color:var(--ink);
-    text-transform:uppercase; border-radius:var(--r-pill);
-  }
-  .chip[aria-pressed="false"] { opacity:.35; }
-  .chip .dot { width:9px; height:9px; flex:0 0 auto; border-radius:50%; }
-  .tip {
-    position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
-    background:var(--ink); color:var(--bg); padding:8px 11px; font-size:11px;
-    line-height:1.5; max-width:260px; z-index:5; border-radius:var(--r-md);
-    box-shadow:0 6px 18px rgba(0,0,0,.28);
-  }
+  .legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .chip { display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+          user-select:none; border:1px solid var(--line); background:var(--panel2);
+          padding:6px 14px; font:inherit; font-size:11px; font-weight:700;
+          letter-spacing:.06em; color:var(--cyprus); text-transform:uppercase;
+          border-radius:var(--r-pill); }
+  .chip[aria-pressed="false"] { opacity:.4; }
+  .chip .dot { width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+  .tip { position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+         background:var(--cyprus); color:#fff; padding:9px 12px; font-size:11px;
+         line-height:1.5; max-width:270px; z-index:5; border-radius:var(--r-sm);
+         box-shadow:0 8px 24px rgba(0,67,63,.22); }
 
   /* ---- tables ---- */
   table { width:100%; border-collapse:collapse; }
-  th {
-    text-align:left; font-size:10px; letter-spacing:.1em; text-transform:uppercase;
-    color:var(--dim); font-weight:600; padding:6px 10px 6px 0; border-bottom:1px solid var(--line);
-    white-space:nowrap;
-  }
-  td { padding:6px 10px 6px 0; border-bottom:1px solid var(--grid); font-size:13px; }
-  td.n { font-variant-numeric:tabular-nums; white-space:nowrap; }
+  th { text-align:left; font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+       color:var(--muted); font-weight:700; padding:8px 12px 8px 0;
+       border-bottom:2px solid var(--line); white-space:nowrap; }
+  td { padding:9px 12px 9px 0; border-bottom:1px solid var(--grid); font-size:13.5px; }
+  td.n { font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:700; }
   tr.ex td { opacity:.45; text-decoration:line-through; }
-  .fl { color:var(--dim); font-size:11px; }
+  .fl { color:var(--dim); font-size:11px; font-weight:400; }
   .scroll { overflow-x:auto; }
 
-  .detail { display:none; margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
-  .dblock { margin-bottom:14px; background:var(--panel2); border-radius:var(--r-md);
-             padding:12px 14px; }
+  .detail { display:none; margin-top:16px; }
+  .dblock { background:var(--panel2); border-radius:var(--r-md); padding:14px 16px;
+            margin-bottom:12px; }
   .dblock:last-child { margin-bottom:0; }
-  .dhead { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px;
-           margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
-  .dhead .dot { width:9px; height:9px; border-radius:50%; }
-  .dclose { margin-left:auto; appearance:none; background:transparent; cursor:pointer;
-            border:1px solid var(--line); color:var(--muted); font:inherit; font-size:11px;
-            padding:3px 12px; line-height:1.4; border-radius:var(--r-pill); }
-  .dclose:hover { color:var(--ink); border-color:var(--muted); }
-  .hint { font-size:11px; color:var(--dim); margin:10px 0 0; }
-  .subhead {
-    font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
-    margin:16px 0 6px; font-weight:600;
-  }
+  .dhead { display:flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:12px;
+           font-weight:700; margin-bottom:10px; text-transform:uppercase;
+           letter-spacing:.07em; color:var(--heading); }
+  .dhead .dot { width:10px; height:10px; border-radius:50%; }
+  .dclose { margin-left:auto; appearance:none; background:var(--panel); cursor:pointer;
+            border:1px solid var(--line); color:var(--muted); font:inherit;
+            font-size:10.5px; font-weight:700; letter-spacing:.06em;
+            padding:4px 13px; border-radius:var(--r-pill); text-transform:uppercase; }
+  .dclose:hover { color:var(--cyprus); border-color:var(--muted); }
+  .subhead { font-size:10.5px; letter-spacing:.13em; text-transform:uppercase;
+             color:var(--heading); margin:18px 0 8px; font-weight:700; }
   .subhead:first-child { margin-top:0; }
-  .sum { font-size:12px; color:var(--muted); margin:0 0 8px; }
-  .none { font-size:12px; color:var(--dim); margin:0; }
-  .foot {
-    font-size:11px; color:var(--dim); line-height:1.7;
-    letter-spacing:.03em; margin-top:14px;
-  }
+  .sum { font-size:12.5px; color:var(--muted); margin:0 0 10px; }
+  .none { font-size:12.5px; color:var(--dim); margin:0; }
+  .hint { font-size:11px; color:var(--dim); margin:12px 0 0; }
+  .foot { font-size:11.5px; color:var(--muted); line-height:1.7; margin-top:18px;
+          padding-top:16px; border-top:2px solid var(--lime); }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="topbar">
+<div class="masthead">
+  <div class="masthead-in">
     <a class="brand" href="./">
-      <img class="logo-std" src="assets/olleco-logo.png" alt="Olleco"
+      <img src="assets/olleco-logo.png" alt="Olleco"
            onload="document.documentElement.classList.add('logo-ok')">
-      <img class="logo-rev" src="assets/olleco-logo-white.png" alt=""
-           onload="document.documentElement.classList.add('logo-rev-ok')">
       <span class="wordmark" id="wordmark">olleco</span>
     </a>
-    <span class="rule"></span>
+    <span class="vrule"></span>
     <div class="title">UK Cooking Oil Index</div>
     <div class="meta" id="asof">&nbsp;</div>
-    <button class="themebtn" id="themeToggle">THEME</button>
   </div>
+</div>
+
+<div class="wrap">
   <!-- Plain HTML on purpose: if this page's JavaScript fails, a link drawn by that
        same JavaScript would be no use to the reader. -->
   <p class="fallback">JavaScript blocked? <a href="dashboard_static.html">Plain version</a></p>
@@ -239,7 +203,7 @@
 
   <div class="panel">
     <div class="phead"><span>Price changes</span><span class="spacer"></span>
-      <span class="num" id="chgWindow"></span></div>
+      <span id="chgWindow"></span></div>
     <div id="changesBody"></div>
   </div>
 
@@ -303,14 +267,6 @@
   const signed = v => (v > 0 ? "+" : v < 0 ? "−" : "") + money(Math.abs(v)).replace("£", "£");
   const cls = d => d > 0 ? "up" : d < 0 ? "down" : "flat";
   const arrow = d => d > 0 ? "▲" : d < 0 ? "▼" : "■";
-
-  $("themeToggle").addEventListener("click", () => {
-    const r = document.documentElement;
-    const cur = r.getAttribute("data-theme")
-      || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "dark");
-    r.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
-    draw();
-  });
 
   const activeChannels = () =>
     state.channel === "both" ? ["cash_carry", "retail"] : [state.channel];
