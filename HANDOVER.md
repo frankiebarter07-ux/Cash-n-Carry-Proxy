@@ -257,6 +257,42 @@ Drop `--dry-run` to actually send one to yourself.
 
 ---
 
+## 4b. Subscriptions — and why the addresses are NOT in this repository
+
+The dashboard has a **Receive market reports** form. It composes an email to
+`oilindex@olleco.co.uk` asking for an address to be added, and whoever runs the
+index appends it to the **`REPORT_TO` secret**.
+
+> ⚠️ **Set `SUBSCRIBE_TO` in `index.html` to a real, monitored mailbox.**
+> `oilindex@olleco.co.uk` is a placeholder. If that address does not exist,
+> subscription requests bounce and nobody finds out.
+
+**Why it works this way, rather than storing addresses in the repo:**
+
+1. **This repository is public.** Anything committed here is world-readable, by
+   anyone, permanently — git history keeps it even after deletion. Subscriber email
+   addresses are personal data; publishing them would be a UK GDPR breach and would
+   expose customers to spam and phishing. There is no "secure place" in a public
+   repo. There is no such thing.
+2. **A GitHub Pages site is static.** There is no server to receive a form, so a
+   page here *cannot* write to the repository however the form is built.
+
+The distribution list therefore lives in the `REPORT_TO` Actions secret, which is
+encrypted, never printed in logs, and not exposed to forks. That is the secure
+place, and it already exists.
+
+**Adding a subscriber:** *Settings → Secrets and variables → Actions → `REPORT_TO`
+→ Update*, and append the address, comma-separated. Takes about twenty seconds.
+
+**If subscriptions become frequent enough that this is a chore**, the options in
+increasing order of effort are: a private mailing list or Microsoft 365 distribution
+group set as the single `REPORT_TO` value (best — the company manages membership
+with its own tools, and no code changes); a hosted form provider such as Formspree
+writing to a private inbox; or making this repository private again and adding a
+small serverless endpoint. **Do not** solve it by committing addresses to the repo.
+
+---
+
 ## 5. Reading the output
 
 **The easiest way, and the one to show people:** the published dashboard URL

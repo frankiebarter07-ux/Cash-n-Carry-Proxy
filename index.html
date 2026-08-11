@@ -59,6 +59,8 @@
            text-transform:uppercase; color:var(--heading); }
   .meta { font-size:11px; color:var(--muted); letter-spacing:.05em;
           text-transform:uppercase; margin-left:auto; text-align:right; }
+  .strapline { font-size:16px; color:var(--heading); margin:2px 0 16px;
+               font-weight:700; letter-spacing:-.005em; max-width:62ch; }
   .fallback { font-size:11px; color:var(--dim); margin:0 0 14px; }
   .fallback a { color:var(--muted); }
 
@@ -148,6 +150,29 @@
   .hint { font-size:11px; color:var(--dim); margin:12px 0 0; }
   .foot { font-size:11.5px; color:var(--muted); line-height:1.7; margin-top:18px;
           padding-top:16px; border-top:2px solid var(--lime); }
+
+  /* ---- subscribe ---- */
+  .subscribe { background:linear-gradient(160deg,var(--cyprus) 0%,var(--cyprus-700) 100%);
+               color:#fff; display:flex; gap:26px; align-items:center; flex-wrap:wrap;
+               justify-content:space-between; }
+  .subscribe .s-title { font-size:11px; letter-spacing:.13em; text-transform:uppercase;
+                        color:var(--lime); font-weight:700; }
+  .subscribe .s-copy { font-size:15px; margin:6px 0 0; max-width:46ch; font-weight:700; }
+  .subscribe .s-sub { font-size:12px; margin:5px 0 0; color:#A9C7C3; max-width:52ch;
+                      font-weight:400; }
+  .s-form { display:flex; gap:9px; flex-wrap:wrap; align-items:center; }
+  .s-form input { font:inherit; font-size:14px; padding:11px 16px; min-width:250px;
+                  border:1px solid rgba(255,255,255,.28); border-radius:var(--r-pill);
+                  background:rgba(255,255,255,.08); color:#fff; }
+  .s-form input::placeholder { color:#8FB2AD; }
+  .s-form input:focus { outline:2px solid var(--lime); outline-offset:1px;
+                        background:rgba(255,255,255,.14); }
+  .s-form button { font:inherit; font-size:12px; font-weight:700; letter-spacing:.07em;
+                   text-transform:uppercase; padding:12px 22px; cursor:pointer;
+                   border:0; border-radius:var(--r-pill);
+                   background:var(--lime); color:var(--cyprus); }
+  .s-form button:hover { filter:brightness(1.07); }
+  .s-note { font-size:12px; margin:10px 0 0; color:var(--lime); flex-basis:100%; }
 </style>
 </head>
 <body>
@@ -169,6 +194,8 @@
   <!-- Plain HTML on purpose: if this page's JavaScript fails, a link drawn by that
        same JavaScript would be no use to the reader. -->
   <p class="fallback">JavaScript blocked? <a href="dashboard_static.html">Plain version</a></p>
+
+  <p class="strapline">Daily updates on the collection price of Cooking Oils being sold via Cash and Carry</p>
 
   <div class="quotes" id="quotes"></div>
 
@@ -196,7 +223,6 @@
       <div class="tip" id="tip"></div>
     </div>
     <div class="legend" id="legend"></div>
-    <p class="hint">Tap a point for that oil's seller breakdown. Both oils can be open at once; tap again to close.</p>
     <p class="none" id="histNote"></p>
     <div class="detail" id="detail"></div>
   </div>
@@ -205,6 +231,21 @@
     <div class="phead"><span>Price changes</span><span class="spacer"></span>
       <span id="chgWindow"></span></div>
     <div id="changesBody"></div>
+  </div>
+
+  <div class="panel subscribe">
+    <div>
+      <div class="s-title">Receive market reports</div>
+      <p class="s-copy">Get an email whenever a cash-and-carry moves a price, plus a weekly summary.</p>
+      <p class="s-sub">Nothing is sent on quiet days &mdash; silence means no seller changed a listed price.</p>
+    </div>
+    <form class="s-form" id="subForm">
+      <label for="subEmail" class="sr-only" style="position:absolute;left:-9999px">Email address</label>
+      <input type="email" id="subEmail" placeholder="you@company.com"
+             autocomplete="email" required>
+      <button type="submit">Subscribe</button>
+    </form>
+    <p class="s-note" id="subNote"></p>
   </div>
 
   <p class="foot" id="foot">&nbsp;</p>
@@ -306,15 +347,11 @@
       const chg = base
         ? `<span class="${cls(d)}">${arrow(d)} ${signed(d)} (${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(pct).toFixed(2)}%)</span>`
         : `<span class="flat">■ no earlier session</span>`;
-      const since = base
-        ? `vs ${new Date(base.date + "T00:00:00Z").toLocaleDateString("en-GB",
-             { day: "2-digit", month: "short" })}`
-        : "no comparison";
       html += `<div class="q" style="--qc:${o.color}">
         <div class="name">${esc(o.label)}</div>
         <div class="px num">${esc(money(last[state.unit]))}</div>
         <div class="chg">${chg}</div>
-        <div class="sub">${sp.value}${esc(sp.unit)} · ${last.n_used} sellers · ${esc(since)}</div>
+        <div class="sub">${sp.value} ${esc(sp.unit)}</div>
       </div>`;
     }
     $("quotes").innerHTML = html;
@@ -555,18 +592,42 @@
 
   // ---- header + footer -----------------------------------------------------
   function renderMeta() {
+    const ch = DATA.changes || {};
     const dates = new Set();
     Object.values(DATA.oils).forEach(o =>
       Object.values(o.channels || {}).forEach(pts => pts.forEach(p => dates.add(p.date))));
     const n = dates.size;
-    $("asof").textContent =
-      `Cash & carry · collection · as of ${DATA.generated} · ${n} session${n === 1 ? "" : "s"}`;
+    const d = new Date((ch.latest_date || DATA.generated) + "T00:00:00Z");
+    $("asof").textContent = "Updated " + d.toLocaleDateString("en-GB",
+      { day: "numeric", month: "long", year: "numeric" });
     $("histNote").textContent = n > 1 ? "" :
       "One session recorded so far. The index adds a point per day — a trend needs " +
       "a few weeks. Nothing is drawn for days that were not collected.";
     $("foot").textContent =
       "All Unit prices are 20L drums or bibs, collection prices only";
   }
+
+  // ---- subscribe -----------------------------------------------------------
+  // A static page has no server, so nothing can be stored here. The form composes
+  // an email instead: the address goes to a monitored mailbox, and whoever runs
+  // the index adds it to the REPORT_TO secret. That secret -- NOT this repository
+  // -- is the distribution list. See HANDOVER.md section 4b.
+  const SUBSCRIBE_TO = "oilindex@olleco.co.uk";   // <-- must be a real monitored mailbox
+
+  $("subForm").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const addr = $("subEmail").value.trim();
+    if (!addr) return;
+    const subject = encodeURIComponent("Cooking oil index - subscription request");
+    const body = encodeURIComponent(
+      "Please add this address to the cooking oil index distribution list:\n\n"
+      + addr + "\n");
+    window.location.href = `mailto:${SUBSCRIBE_TO}?subject=${subject}&body=${body}`;
+    $("subNote").textContent =
+      "Opening your email app \u2014 press send to confirm. If nothing opens, email "
+      + SUBSCRIBE_TO + " with the address you want added.";
+    $("subEmail").value = "";
+  });
 
   renderChannels(); renderQuotes(); renderLegend(); renderChanges(); renderMeta(); draw();
 })();
