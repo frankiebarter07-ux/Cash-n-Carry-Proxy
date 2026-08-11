@@ -59,11 +59,22 @@ jobs:
       # site to a known list means adding a file to the repo can never accidentally
       # expose it.
       - name: Assemble the site
+        shell: bash
         run: |
           mkdir -p site/data
           cp index.html dashboard_static.html site/
           cp data/series.js data/series.json site/data/
           cp data/observations.csv site/data/
+          # Brand assets, if they have been added (see assets/README.md). The site
+          # publishes a fixed list, so without this the logo would sit in the repo
+          # and never reach the live page.
+          if compgen -G "assets/*.png" > /dev/null || compgen -G "assets/*.svg" > /dev/null; then
+            mkdir -p site/assets
+            cp assets/*.png assets/*.svg site/assets/ 2>/dev/null || true
+            echo "brand assets published:"; ls site/assets
+          else
+            echo "no brand assets yet -- header falls back to the OLLECO wordmark"
+          fi
           # index.html is the interactive view; dashboard_static.html is the
           # no-JavaScript fallback for locked-down or mobile browsers.
           ls -R site

@@ -10,8 +10,14 @@
   :root {
     --bg:#0b0c0e; --panel:#121418; --panel2:#16181d; --line:#23262d;
     --grid:#1c1f25; --ink:#e9eaee; --muted:#878d99; --dim:#5d636e;
-    /* Market convention: green up, red down. */
-    --accent:#ffa028; --up:#33d17a; --down:#ff5f56;
+    /* ------------------------------------------------------------------ *
+     * OLLECO BRAND — replace --brand with the exact value from the brand
+     * pack. Every accent on the page derives from it, so one edit rebrands
+     * the whole thing. The value below is a PLACEHOLDER green chosen to sit
+     * correctly against this palette; it is NOT Olleco's specified colour.
+     * ------------------------------------------------------------------ */
+    --brand:#3faa53;
+    --accent:var(--brand); --up:#33d17a; --down:#ff5f56;
     /* A rounded geometric sans -- Avenir Next on Apple devices, Century Gothic on
        Windows. Deliberately NOT the -apple-system/Segoe stack, which is the default
        every untouched page uses. Figures get tabular-nums so columns still line up
@@ -22,7 +28,7 @@
   :root[data-theme="light"] {
     --bg:#f4f4f2; --panel:#ffffff; --panel2:#fafaf8; --line:#dedcd6;
     --grid:#e8e6e0; --ink:#16181d; --muted:#5f646d; --dim:#8b909a;
-    --accent:#b46a00; --up:#1e8449; --down:#c0392b;
+    --brand:#1f7a3d; --accent:var(--brand); --up:#1e8449; --down:#c0392b;
   }
   * { box-sizing:border-box; }
   body {
@@ -38,8 +44,17 @@
     display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
     border-bottom:2px solid var(--accent); padding:14px 0 9px; margin-bottom:2px;
   }
-  .brand { font-size:15px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
-  .brand span { color:var(--accent); }
+  .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
+  .brand img { height:26px; width:auto; display:none; }        /* shown once it loads */
+  .brand .wordmark { font-size:16px; font-weight:700; letter-spacing:.18em;
+                     text-transform:uppercase; color:var(--brand); }
+  .brand .rule { width:1px; height:20px; background:var(--line); }
+  .title { font-size:14px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
+  /* Two files so the mark reads correctly on either background. If the brand pack
+     has only one, copy it to both names -- see assets/README.md. */
+  .logo-dark { display:none; }
+  :root[data-theme="light"] .logo-light { display:none !important; }
+  :root[data-theme="light"] .logo-dark  { display:inline !important; }
   .meta {
     font-size:11px; color:var(--muted);
     letter-spacing:.05em; text-transform:uppercase; margin-right:auto;
@@ -129,7 +144,15 @@
 <div class="wrap">
 
   <div class="topbar">
-    <div class="brand">UK Cooking Oil <span>Index</span></div>
+    <a class="brand" href="./">
+      <img class="logo-light" src="assets/olleco-logo-white.png" alt="Olleco"
+           onload="this.style.display='inline';document.getElementById('wordmark').style.display='none'">
+      <img class="logo-dark" src="assets/olleco-logo.png" alt="Olleco"
+           onload="this.style.display='inline';document.getElementById('wordmark').style.display='none'">
+      <span class="wordmark" id="wordmark">Olleco</span>
+    </a>
+    <span class="rule"></span>
+    <div class="title">UK Cooking Oil Index</div>
     <div class="meta" id="asof">&nbsp;</div>
     <button class="themebtn" id="themeToggle">THEME</button>
   </div>
