@@ -50,22 +50,31 @@ def money(v):
     return f"£{v:,.2f}" if v < 100 else f"£{v:,.0f}"
 
 
+def when(iso):
+    """2026-08-11 -> 11 Aug 2026. Reports are read by people, not parsers."""
+    try:
+        return date.fromisoformat(iso).strftime("%-d %b %Y")
+    except (TypeError, ValueError):
+        return iso or "n/a"
+
+
 # --------------------------------------------------------------------------- #
 # content
 # --------------------------------------------------------------------------- #
 def moves_blocks(moves, limit=None):
     if not moves:
-        return [("p", "No price changes in this window.")]
+        return [("p", "No movements.")]
     shown = moves[:limit] if limit else moves
     rows = []
     for m in shown:
         arrow = "▲" if m["delta"] > 0 else "▼"
-        rows.append([m["source"], m["oil"], (m.get("format") or "").upper(),
+        rows.append([m["source"], m["oil"].capitalize(),
+                     (m.get("format") or "").capitalize(),
                      money(m["from"]), money(m["to"]),
                      f'{arrow} {money(abs(m["delta"]))} ({m["pct"]:+.2f}%)'])
     blocks = [("table", ["Seller", "Oil", "Pack", "From", "To", "Change"], rows)]
     if limit and len(moves) > limit:
-        blocks.append(("p", f"…and {len(moves) - limit} more."))
+        blocks.append(("p", f"{len(moves) - limit} further movements not shown."))
     return blocks
 
 
@@ -76,11 +85,11 @@ def summary_bullets(summary):
     out = []
     for oil in sorted(summary):
         s = summary[oil]
-        direction = "up" if s["avg_delta"] > 0 else "down"
-        out.append(f'{oil}: {s["n_skus_changed"]} SKU(s) moved, average {direction} '
-                   f'{money(abs(s["avg_delta"]))} ({s["avg_pct"]:+.2f}%) — '
-                   f'{s["n_up"]} up, {s["n_down"]} down. '
-                   f'Moved by: {", ".join(s["movers"])}.')
+        sign = "+" if s["avg_delta"] > 0 else "−"
+        out.append(f'{oil.capitalize()} — {s["n_skus_changed"]} SKUs, '
+                   f'avg {sign}{money(abs(s["avg_delta"]))} ({s["avg_pct"]:+.2f}%), '
+                   f'{s["n_up"]} up / {s["n_down"]} down. '
+                   f'Movers: {", ".join(s["movers"])}.')
     return [("bullets", out)] if out else []
 
 
@@ -94,8 +103,7 @@ def current_blocks(data):
         rows.append([oil["label"], f'{sp["value"]} {sp["unit"]}',
                      money(p["price_per_unit"]), money(p["price_per_tonne"]),
                      str(p["n_used"])])
-    return [("table", ["Oil", "Pack", "£ per pack", "£ per tonne",
-                       "Sellers counted"], rows)]
+    return [("table", ["Oil", "Pack", "£/pack", "£/tonne", "Sellers"], rows)]
 
 
 def lapsed_blocks(data):
@@ -107,58 +115,47 @@ def lapsed_blocks(data):
                 seen[l["source"]] = l
     if not seen:
         return []
-    who = "; ".join(f'{l["source"]} (last seen {l["last_seen"]}, '
-                    f'{l["days_ago"]} days ago)' for l in seen.values())
-    return [("p", f"⚠️ Not counted in these figures: {who}. A seller drops out after "
-                  f"7 days without a fresh price, so a blocked site cannot sit frozen "
-                  f"in the index pretending nothing has moved.")]
+    who = "; ".join(f'{l["source"]} (last reported {when(l["last_seen"])}, '
+                    f'{l["days_ago"]} days)' for l in seen.values())
+    return [("p", f"Excluded from the average: {who}.")]
 
 
 def summary_doc(data):
     ch = data.get("changes", {}) or {}
-    when = ch.get("latest_date") or data.get("generated", "unknown")
-    return ([("h", 1, "Cooking oil price index — current"),
-             ("p", f"Rebuilt automatically. Latest data: {when}."),
-             ("p", "UK cash-and-carry collection prices for rapeseed and vegetable "
-                   "(soybean) oil. A movement proxy — it answers are wholesale oil "
-                   "prices moving, and who moved first?, not what will I pay?"),
-             ("h", 2, "Where it stands")]
+    day = when(ch.get("latest_date") or data.get("generated"))
+    return ([("h", 1, "UK Cooking Oil Index"),
+             ("p", f"Collection prices, 20 L packs, five UK cash-and-carry sellers. "
+                   f"Updated {day}."),
+             ("h", 2, "Index level")]
             + current_blocks(data) + lapsed_blocks(data)
-            + [("h", 2, "What moved today")]
+            + [("h", 2, f"Movements — {day}")]
             + summary_bullets(ch.get("today_summary")) + moves_blocks(ch.get("today"))
-            + [("h", 2, f'Trailing week (since {ch.get("week_from") or "n/a"})')]
+            + [("h", 2, f'Week to {day}')]
             + summary_bullets(ch.get("week_summary"))
             + moves_blocks(ch.get("week"), limit=15)
             + [("rule",),
-               ("p", "Full detail: dashboard_static.html (opens anywhere, no "
-                     "JavaScript) or index.html (interactive). Raw record: "
-                     "data/observations.csv. How it works and what to do when it "
-                     "breaks: HANDOVER.md.")])
+               ("p", "Per-SKU detail: index.html, or dashboard_static.html without "
+                     "JavaScript. Underlying record: data/observations.csv.")])
 
 
 def report_doc(data, is_digest):
-    """The pushed message. Shorter than SUMMARY.md: what moved, and who moved it."""
+    """The pushed message: what moved, and who moved it."""
     ch = data.get("changes", {}) or {}
     today, week = ch.get("today") or [], ch.get("week") or []
-    when = ch.get("latest_date") or data.get("generated", "")
+    day = when(ch.get("latest_date") or data.get("generated"))
 
-    if today:
-        blocks = [("h", 2, f"Prices moved — {when}")]
-        blocks += summary_bullets(ch.get("today_summary")) + moves_blocks(today)
-    else:
-        blocks = [("h", 2, f"Weekly digest — {when}"), ("p", "No price changed today.")]
+    blocks = [("h", 2, f"UK Cooking Oil Index — {day}"), ("h", 3, "Movements")]
+    blocks += (summary_bullets(ch.get("today_summary")) + moves_blocks(today)
+               if today else [("p", "No movements.")])
 
-    blocks += [("h", 3, "Where it stands")] + current_blocks(data) + lapsed_blocks(data)
+    blocks += [("h", 3, "Index level")] + current_blocks(data) + lapsed_blocks(data)
 
     if is_digest:
-        blocks += [("h", 3, f'Trailing week (since {ch.get("week_from") or "n/a"})')]
-        blocks += (summary_bullets(ch.get("week_summary"))
-                   or [("p", "Flat across the week.")])
-        blocks += moves_blocks(week, limit=10)
+        blocks += [("h", 3, f"Week to {day}")]
+        blocks += summary_bullets(ch.get("week_summary")) + moves_blocks(week, limit=10)
 
     blocks += [("rule",),
-               ("p", "Posted automatically by the daily collection. "
-                     "Silence means no seller changed a listed price.")]
+               ("p", "Collection prices, 20 L packs, five UK cash-and-carry sellers.")]
     return blocks
 
 
@@ -259,8 +256,9 @@ def main():
     notify = bool(moved or is_digest or args.force_report)
     if notify:
         blocks = report_doc(data, is_digest or args.force_report)
-        subject = ("Cooking oil prices moved" if moved
-                   else "Cooking oil prices — weekly digest")
+        subject = (f"UK Cooking Oil Index — movements {when(ch.get('latest_date'))}"
+                   if moved else
+                   f"UK Cooking Oil Index — week to {when(ch.get('latest_date'))}")
         if args.report_out:
             with open(args.report_out, "w", encoding="utf-8") as fh:
                 fh.write(render_md(blocks))
@@ -276,8 +274,9 @@ def main():
 
     out = os.environ.get("GITHUB_OUTPUT")
     if out:
-        subject = ("Cooking oil prices moved" if moved
-                   else "Cooking oil prices — weekly digest")
+        subject = (f"UK Cooking Oil Index — movements {when(ch.get('latest_date'))}"
+                   if moved else
+                   f"UK Cooking Oil Index — week to {when(ch.get('latest_date'))}")
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(f"notify={'true' if notify else 'false'}\n")
             fh.write(f"subject={subject}\n")
