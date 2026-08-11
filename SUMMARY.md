@@ -9,7 +9,7 @@ UK cash-and-carry collection prices for rapeseed and vegetable (soybean) oil. A 
 | Oil | Pack | £ per pack | £ per tonne | Sellers counted |
 |---|---|---|---|---|
 | Rapeseed | 20 L | £34.35 | £1,877 | 5 |
-| Soybean (pure veg) | 20 L | £29.83 | £1,626 | 6 |
+| Soybean (pure veg) | 20 L | £30.70 | £1,674 | 5 |
 
 ## What moved today
 

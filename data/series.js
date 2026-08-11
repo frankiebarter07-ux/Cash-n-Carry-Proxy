@@ -3,7 +3,7 @@ window.OIL_SERIES = {
   "generated": "2026-08-11",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 28,
+  "raw_count": 27,
   "changes": {
     "latest_date": "2026-08-11",
     "week_from": "2026-08-04",
@@ -236,32 +236,18 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-08-09",
-            "price_per_unit": 27.24,
-            "price_per_tonne": 1485.28,
-            "n_obs": 2,
-            "n_used": 2,
+            "price_per_unit": 28.99,
+            "price_per_tonne": 1580.7,
+            "n_obs": 1,
+            "n_used": 1,
             "n_excluded": 0,
-            "n_fresh": 2,
+            "n_fresh": 1,
             "sources": [
-              "CK Fast Foods",
               "Magna Foodservice"
             ],
             "lapsed": [],
             "excluded": [],
             "breakdown": [
-              {
-                "source": "CK Fast Foods",
-                "product": "KTC Vegetable Oil 20L Yellow Drum",
-                "brand": "KTC",
-                "format": "",
-                "price_per_unit": 25.49,
-                "price_per_tonne": 1389.86,
-                "as_of": "2026-08-09",
-                "stale": false,
-                "age_days": 0,
-                "lapsed": false,
-                "excluded": false
-              },
               {
                 "source": "Magna Foodservice",
                 "product": "KTC Vegetable Oil (Bottle in Box) 20L (Magna)",
@@ -279,16 +265,15 @@ window.OIL_SERIES = {
           },
           {
             "date": "2026-08-10",
-            "price_per_unit": 29.83,
-            "price_per_tonne": 1626.5,
-            "n_obs": 6,
-            "n_used": 6,
+            "price_per_unit": 30.7,
+            "price_per_tonne": 1673.83,
+            "n_obs": 5,
+            "n_used": 5,
             "n_excluded": 0,
             "n_fresh": 5,
             "sources": [
               "Booker",
               "Brakes (Sysco)",
-              "CK Fast Foods",
               "JJ Foodservice",
               "Magna Foodservice",
               "Marfast"
@@ -332,19 +317,6 @@ window.OIL_SERIES = {
                 "as_of": "2026-08-10",
                 "stale": false,
                 "age_days": 0,
-                "lapsed": false,
-                "excluded": false
-              },
-              {
-                "source": "CK Fast Foods",
-                "product": "KTC Vegetable Oil 20L Yellow Drum",
-                "brand": "KTC",
-                "format": "",
-                "price_per_unit": 25.49,
-                "price_per_tonne": 1389.86,
-                "as_of": "2026-08-09",
-                "stale": true,
-                "age_days": 1,
                 "lapsed": false,
                 "excluded": false
               },
@@ -430,16 +402,15 @@ window.OIL_SERIES = {
           },
           {
             "date": "2026-08-11",
-            "price_per_unit": 29.83,
-            "price_per_tonne": 1626.5,
-            "n_obs": 6,
-            "n_used": 6,
+            "price_per_unit": 30.7,
+            "price_per_tonne": 1673.83,
+            "n_obs": 5,
+            "n_used": 5,
             "n_excluded": 0,
             "n_fresh": 4,
             "sources": [
               "Booker",
               "Brakes (Sysco)",
-              "CK Fast Foods",
               "JJ Foodservice",
               "Magna Foodservice",
               "Marfast"
@@ -483,19 +454,6 @@ window.OIL_SERIES = {
                 "as_of": "2026-08-11",
                 "stale": false,
                 "age_days": 0,
-                "lapsed": false,
-                "excluded": false
-              },
-              {
-                "source": "CK Fast Foods",
-                "product": "KTC Vegetable Oil 20L Yellow Drum",
-                "brand": "KTC",
-                "format": "",
-                "price_per_unit": 25.49,
-                "price_per_tonne": 1389.86,
-                "as_of": "2026-08-09",
-                "stale": true,
-                "age_days": 2,
                 "lapsed": false,
                 "excluded": false
               },
