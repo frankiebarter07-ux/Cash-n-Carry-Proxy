@@ -207,6 +207,8 @@ def build():
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cash &amp; Carry Cooking Oil Price Proxy — static</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
 <style>
   /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White. */
   :root {{ --bg:#F5F7F4; --panel:#FFFFFF; --ink:#00433F; --muted:#4C6B67;
@@ -217,12 +219,13 @@ def build():
   }}
   * {{ box-sizing:border-box; }}
   body {{ margin:0; background:var(--bg); color:var(--ink);
-    font:14.5px/1.5 "Avenir Next",Avenir,"Century Gothic","Nunito Sans","Trebuchet MS",sans-serif; }}
+    font:14.5px/1.5 "Open Sans","Segoe UI",Roboto,Helvetica,Arial,sans-serif; }}
   .wrap {{ max-width:1000px; margin:0 auto; padding:26px 20px 60px; }}
   h1 {{ font-size:21px; margin:0 0 4px; }}
   .brandbar {{ display:flex; align-items:center; gap:10px;
                border-bottom:3px solid var(--lime); padding-bottom:9px; margin-bottom:16px; }}
-  .brandbar img {{ height:26px; width:auto; }}
+  .brandbar img {{ height:26px; width:auto; background:#FFFFFF;
+                   padding:5px 9px; border-radius:7px; }}
   .brandbar .wordmark {{ font-size:23px; font-weight:700; letter-spacing:-.02em;
                          text-transform:lowercase; color:var(--ink); line-height:1; }}
   .sub {{ color:var(--muted); font-size:14px; margin:0 0 18px; }}
