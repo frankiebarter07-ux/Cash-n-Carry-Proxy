@@ -4,16 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Olleco — UK Cooking Oil Index</title>
-<!-- Open Sans, the brand face. Served from Google Fonts because this build has no
-     network access to fetch the files for self-hosting. It is the page's only
-     external dependency: if the CDN is blocked or slow the fallback stack below
-     renders and nothing else is affected. To remove the dependency, drop the woff2
-     files into assets/fonts/ and swap this for an @font-face block. -->
+<!-- Arial is an Olleco brand face and ships on every device, so no webfont is
+     downloaded. This page now makes NO external requests at all: it renders the
+     same on a locked-down corporate network, and there is no CDN that can break
+     it. That matters more than usual for a system nobody will be maintaining. -->
 <link rel="icon" type="image/png" href="assets/olleco-logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
 <style>
   /* Trading-screen style: dark by default, dense, figures in tabular numerals.
      Light palette kept behind the toggle, but dark is the intended look. */
@@ -24,10 +19,8 @@
     --bg:#00201D; --panel:#002E2A; --panel2:#00352F; --line:#0A4F49;
     --grid:#073B36; --ink:#EDF3F1; --muted:#8FB2AD; --dim:#77A29D;
     /* ------------------------------------------------------------------ *
-     * OLLECO BRAND — replace --brand with the exact value from the brand
-     * pack. Every accent on the page derives from it, so one edit rebrands
-     * the whole thing. The value below is a PLACEHOLDER green chosen to sit
-     * correctly against this palette; it is NOT Olleco's specified colour.
+     * OLLECO BRAND — the official values. Every accent derives from
+     * --brand, so one edit rebrands the whole page.
      * ------------------------------------------------------------------ */
     --brand:#CBD300;          /* Rio Grande */
     --on-brand:#00332F;       /* text sitting ON the brand colour */
@@ -37,9 +30,9 @@
        instantly, and both are held well clear of the lime accent in hue so a
        rise can never be mistaken for the brand highlight. */
     --up:#4ADE80; --down:#FF6B6B;
-    /* Open Sans -- the Olleco brand face. Figures use tabular-nums so price
-       columns stay aligned without a typewriter face. */
-    --face: "Open Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    /* Arial -- an Olleco brand face, and present on every device, so the page
+       needs no webfont. Figures use tabular-nums so price columns stay aligned. */
+    --face: Arial, Helvetica, "Helvetica Neue", sans-serif;
   }
   :root[data-theme="light"] {
     --bg:#F5F7F4; --panel:#FFFFFF; --panel2:#FAFBF8; --line:#DBE3DF;
@@ -75,9 +68,6 @@
   }
   .brand .rule { width:1px; height:20px; background:var(--line); }
   .title { font-size:14px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
-  /* Two files so the mark reads correctly on either background. If the brand pack
-     has only one, copy it to both names -- see assets/README.md. */
-
   .meta {
     font-size:11px; color:var(--muted);
     letter-spacing:.05em; text-transform:uppercase; margin-right:auto;

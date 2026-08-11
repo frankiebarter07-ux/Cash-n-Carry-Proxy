@@ -43,21 +43,20 @@ Up/down are deliberately **not** brand colours. They are the market convention
 (green up, red down), held clear of the lime in hue so a price rise cannot read as a
 brand highlight.
 
-## 3. The typeface — Open Sans
+## 3. The typeface — Arial
 
-Loaded from Google Fonts in both dashboards. It is **the only external dependency
-in the whole system**; if the CDN is blocked, the fallback stack renders and nothing
-else is affected.
+Both dashboards are set in **Arial**, a brand face, with Helvetica as the fallback.
 
-To remove that dependency — worth doing if the company's network filters CDNs, or
-if you simply want the site self-contained:
+Nothing is downloaded, which means **neither page makes a single external request**.
+They render identically on a locked-down corporate network, work offline from a
+saved copy, and there is no CDN that can break them — worth more here than a more
+distinctive face, given nobody will be maintaining this day to day.
 
-1. Download Open Sans from <https://fonts.google.com/specimen/Open+Sans> and put the
-   `.woff2` files in `assets/fonts/`.
-2. Replace the `<link>` tags with an `@font-face` block pointing at them.
-3. Add `assets/fonts/` to the copy step in `.github/workflows/deploy-pages.yml`.
+An earlier build used Open Sans from Google Fonts. That has been removed: with Arial
+first in the stack the webfont would never have rendered anyway, so the request was
+pure cost. If the brand pack turns out to specify Open Sans for digital work, put it
+back by adding the `<link>` tags and putting `"Open Sans"` ahead of Arial in `--face`
+in `index.html`, and in the `body` rule in `scripts/render_static.py`.
 
-Open Sans is licensed under the SIL Open Font License, so embedding and self-hosting
-are both permitted. **If the brand pack specifies a different face**, check its
-licence before putting it on the site: most commercial fonts (Gotham, Brandon,
-Avenir and similar) require a separate webfont licence, and this site is public.
+**If the brand pack names a different face**, check its licence before using it here:
+most commercial fonts need a separate webfont licence, and this site is public.
