@@ -68,9 +68,10 @@ jobs:
           # Brand assets, if they have been added (see assets/README.md). The site
           # publishes a fixed list, so without this the logo would sit in the repo
           # and never reach the live page.
-          if compgen -G "assets/*.png" > /dev/null || compgen -G "assets/*.svg" > /dev/null; then
+          if compgen -G "assets/*.[pPsSjJwWiI]*" > /dev/null; then
             mkdir -p site/assets
-            cp assets/*.png assets/*.svg site/assets/ 2>/dev/null || true
+            cp assets/*.png assets/*.svg assets/*.jpg assets/*.jpeg \
+               assets/*.webp assets/*.ico site/assets/ 2>/dev/null || true
             echo "brand assets published:"; ls site/assets
           else
             echo "no brand assets yet -- header falls back to the OLLECO wordmark"

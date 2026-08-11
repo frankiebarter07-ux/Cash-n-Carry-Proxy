@@ -1,31 +1,22 @@
 # Brand assets
 
-## 1. The logo — one file needed
+## 1. The logo — in place ✅
 
-Save the Olleco mark here as exactly:
+| File | What it is | Used for |
+|---|---|---|
+| `olleco-logo.png` | horizontal mark, 260×107, transparent | the header on both dashboards |
+| `olleco-square.jpg` | square mark, 400×400, white background | the browser-tab icon |
 
-```
-assets/olleco-logo.png
-```
+Both were supplied by the owner on 2026-08-11. To replace either, overwrite the file
+keeping the same name — nothing else needs changing.
 
-Until it exists the header shows the word **olleco** set in the brand colours. The
-page is not broken, just unbranded.
+The mark is dark teal, so on the dark theme it sits on a **white lockup** — a rounded
+white panel behind it. That is ordinary brand practice where background contrast is
+insufficient, and it means the standard mark serves both themes with no reversed
+version needed. On the light theme the lockup is removed.
 
-**Only one file is required.** The standard dark-teal mark works on both themes: on
-the dark ground it is placed on a white lockup (a rounded white panel behind the
-mark), which is ordinary brand practice and avoids needing a reversed version.
-
-- PNG or SVG. For SVG, name it `olleco-logo.svg` and change the two `src`
-  attributes — one in `index.html`, one in `scripts/render_static.py`.
-- Roughly **300–600 px wide**, transparent background. It renders at 26 px tall, so
-  anything smaller looks soft on a retina screen.
-- Commit it. The publish workflow copies this folder to the live site, so it appears
-  on the next deploy.
-
-**Uploading from a phone or iPad:** save the image, then on GitHub go to the
-`assets` folder → *Add file* → *Upload files* → drop it in → *Commit changes*. Make
-sure the committed filename is exactly `olleco-logo.png` — GitHub keeps whatever
-name the file already had.
+If a reversed (white-out) version is ever preferred on dark, add it and swap the
+`src` in `index.html`, then remove the `background`/`padding` rule on `.brand img`.
 
 ## 2. The brand colours — done
 
