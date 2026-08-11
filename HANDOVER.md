@@ -338,6 +338,29 @@ cannot catch a plausible wrong number.
 
 ---
 
+## 7a. The index contains unverified pre-index rows
+
+At the owner's request the series starts **9 August 2026**, backfilled from
+`data/observations_legacy.csv`. Those rows predate the labelled-source rule and are
+marked `UNVERIFIED pre-index backfill` in the `notes` column. Specifically:
+
+| Row | Why it is not trustworthy |
+|---|---|
+| CK Fast Foods soybean £25.49 | Seller removed from the index; price came from a login-walled page and could never be confirmed. Identical to the penny for 11 consecutive days. |
+| Magna soybean £28.99 | This is Magna's **delivery** price. The product page reads `Delivery £28.99 Collection £27.99`, and this index is defined on collection. |
+
+**Consequences to be aware of when reading the chart:**
+
+- The step from 9 to 10 August is **not a market move**. It is the index going from
+  two sellers to six as real collection began.
+- CK Fast Foods is carried forward from 9 August, so it sits in the average on days
+  it never reported, and lapses out after 7 days (§2) — producing a second step then.
+
+To remove the backfill, delete the rows whose `notes` begin `UNVERIFIED` from
+`data/observations.csv` and re-run `scripts/process.py`.
+
+---
+
 ## 8. Design rules — do not remove these
 
 They exist because of real incidents.
