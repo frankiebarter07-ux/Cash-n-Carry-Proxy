@@ -207,7 +207,9 @@ def build():
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cash &amp; Carry Cooking Oil Price Proxy — static</title>
-<link rel="icon" type="image/png" href="assets/olleco-logo.png">
+<!-- The SQUARE mark for the tab: the wide logo gets letterboxed into a
+     square favicon slot and reads as a stretched sliver. -->
+<link rel="icon" href="assets/olleco-square.jpg">
 <style>
   /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White. */
   :root {{ --bg:#F5F7F4; --panel:#FFFFFF; --ink:#00433F; --muted:#4C6B67;
@@ -224,11 +226,11 @@ def build():
   .brandbar {{ display:flex; align-items:center; gap:10px;
                border-bottom:3px solid var(--lime); padding-bottom:9px; margin-bottom:16px; }}
   .brandbar img {{ height:26px; width:auto; background:#FFFFFF;
-                   padding:5px 9px; border-radius:7px; }}
+                   padding:5px 10px; border-radius:9px; }}
   .brandbar .wordmark {{ font-size:23px; font-weight:700; letter-spacing:-.02em;
                          text-transform:lowercase; color:var(--ink); line-height:1; }}
   .sub {{ color:var(--muted); font-size:14px; margin:0 0 18px; }}
-  .card {{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; margin-top:16px; }}
+  .card {{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; margin-top:14px; }}
   svg {{ width:100%; height:auto; display:block; }}
   svg .grid {{ stroke:var(--grid); stroke-width:1; }}
   svg .ax {{ fill:var(--muted); font-size:13px; font-family:inherit; }}

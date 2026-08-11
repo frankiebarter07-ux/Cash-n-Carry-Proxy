@@ -8,7 +8,9 @@
      downloaded. This page now makes NO external requests at all: it renders the
      same on a locked-down corporate network, and there is no CDN that can break
      it. That matters more than usual for a system nobody will be maintaining. -->
-<link rel="icon" type="image/png" href="assets/olleco-logo.png">
+<!-- The SQUARE mark for the tab: the wide logo gets letterboxed into a
+     square favicon slot and reads as a stretched sliver. -->
+<link rel="icon" href="assets/olleco-square.jpg">
 <style>
   /* Trading-screen style: dark by default, dense, figures in tabular numerals.
      Light palette kept behind the toggle, but dark is the intended look. */
@@ -33,6 +35,12 @@
     /* Arial -- an Olleco brand face, and present on every device, so the page
        needs no webfont. Figures use tabular-nums so price columns stay aligned. */
     --face: Arial, Helvetica, "Helvetica Neue", sans-serif;
+    /* Radius scale. The logo is a rounded geometric mark, so hard corners fought
+       the identity; these soften the page without giving up the density. */
+    --r-lg:16px;    /* panels */
+    --r-md:12px;    /* quote tiles, tooltips, breakdown blocks */
+    --r-sm:9px;     /* logo lockup */
+    --r-pill:999px; /* segmented controls, chips, small buttons */
   }
   :root[data-theme="light"] {
     --bg:#F5F7F4; --panel:#FFFFFF; --panel2:#FAFBF8; --line:#DBE3DF;
@@ -52,8 +60,8 @@
 
   /* ---- top bar ---- */
   .topbar {
-    display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
-    border-bottom:3px solid var(--lime); padding:14px 0 9px; margin-bottom:2px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    border-bottom:3px solid var(--lime); padding:16px 0 11px; margin-bottom:6px;
   }
   .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
   /* Logo visibility is driven entirely by which files actually loaded, marked as
@@ -67,7 +75,7 @@
   :root.logo-ok    .logo-std  { display:inline; }
   :root.logo-ok    .wordmark  { display:none; }
   :root.logo-ok:not([data-theme="light"]) .logo-std {
-    background:#FFFFFF; padding:5px 9px; border-radius:7px;
+    background:#FFFFFF; padding:5px 10px; border-radius:var(--r-sm);
   }
   :root.logo-rev-ok:not([data-theme="light"]) .logo-std { display:none; }
   :root.logo-rev-ok:not([data-theme="light"]) .logo-rev { display:inline; }
@@ -85,14 +93,16 @@
   }
   .themebtn {
     font:inherit; font-size:11px; color:var(--muted); cursor:pointer;
-    background:transparent; border:1px solid var(--line); padding:3px 8px; letter-spacing:.06em;
+    background:transparent; border:1px solid var(--line); padding:4px 12px;
+    letter-spacing:.06em; border-radius:var(--r-pill);
   }
   .fallback { font-size:11px; color:var(--dim); padding:6px 0 0; }
   .fallback a { color:var(--muted); }
 
   /* ---- quote strip ---- */
-  .quotes { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:2px; margin:12px 0; }
-  .q { background:var(--panel); border-left:3px solid var(--qc,var(--accent)); padding:12px 14px; }
+  .quotes { display:grid; grid-template-columns:repeat(auto-fit,minmax(235px,1fr)); gap:10px; margin:14px 0; }
+  .q { background:var(--panel); border-left:4px solid var(--qc,var(--accent));
+       padding:14px 16px; border-radius:var(--r-md); }
   .q .name { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
   .q .px { font-size:30px; line-height:1.15; margin-top:3px; font-variant-numeric:tabular-nums; }
   .q .chg { font-size:13px; margin-top:1px; }
@@ -100,18 +110,20 @@
   .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
 
   /* ---- panels ---- */
-  .panel { background:var(--panel); border:1px solid var(--line); padding:14px 16px 16px; margin-top:2px; }
+  .panel { background:var(--panel); border:1px solid var(--line);
+           padding:16px 18px 18px; margin-top:10px; border-radius:var(--r-lg); }
   .phead {
     display:flex; align-items:center; gap:14px; flex-wrap:wrap;
     font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
     border-bottom:1px solid var(--line); padding-bottom:9px; margin-bottom:12px;
   }
   .phead .spacer { margin-left:auto; }
-  .seg { display:inline-flex; flex-wrap:wrap; border:1px solid var(--line); }
+  .seg { display:inline-flex; flex-wrap:wrap; border:1px solid var(--line);
+         border-radius:var(--r-pill); overflow:hidden; }
   .seg button {
     appearance:none; border:0; border-right:1px solid var(--line); background:transparent;
     color:var(--muted); font-size:11px; letter-spacing:.06em;
-    padding:4px 10px; cursor:pointer; text-transform:uppercase;
+    padding:5px 13px; cursor:pointer; text-transform:uppercase;
   }
   .seg button:last-child { border-right:0; }
   .seg button[aria-pressed="true"] { background:var(--accent); color:var(--on-brand); font-weight:600; }
@@ -120,18 +132,20 @@
   /* ---- chart ---- */
   .chart-wrap { position:relative; }
   #chartHost svg { width:100%; height:auto; display:block; }
-  .legend { display:flex; flex-wrap:wrap; gap:2px; margin-top:10px; }
+  .legend { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
   .chip {
     display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
-    border:1px solid var(--line); background:var(--panel2); padding:4px 10px;
+    border:1px solid var(--line); background:var(--panel2); padding:5px 13px;
     font-size:11px; letter-spacing:.05em; color:var(--ink);
-    text-transform:uppercase;
+    text-transform:uppercase; border-radius:var(--r-pill);
   }
   .chip[aria-pressed="false"] { opacity:.35; }
-  .chip .dot { width:9px; height:9px; flex:0 0 auto; }
+  .chip .dot { width:9px; height:9px; flex:0 0 auto; border-radius:50%; }
   .tip {
     position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
-    background:var(--ink); color:var(--bg); padding:7px 9px; font-size:11px; line-height:1.5; max-width:260px; z-index:5;
+    background:var(--ink); color:var(--bg); padding:8px 11px; font-size:11px;
+    line-height:1.5; max-width:260px; z-index:5; border-radius:var(--r-md);
+    box-shadow:0 6px 18px rgba(0,0,0,.28);
   }
 
   /* ---- tables ---- */
@@ -148,14 +162,15 @@
   .scroll { overflow-x:auto; }
 
   .detail { display:none; margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
-  .dblock { margin-bottom:18px; }
+  .dblock { margin-bottom:14px; background:var(--panel2); border-radius:var(--r-md);
+             padding:12px 14px; }
   .dblock:last-child { margin-bottom:0; }
   .dhead { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px;
            margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
-  .dhead .dot { width:9px; height:9px; }
+  .dhead .dot { width:9px; height:9px; border-radius:50%; }
   .dclose { margin-left:auto; appearance:none; background:transparent; cursor:pointer;
             border:1px solid var(--line); color:var(--muted); font:inherit; font-size:11px;
-            padding:2px 8px; line-height:1.4; }
+            padding:3px 12px; line-height:1.4; border-radius:var(--r-pill); }
   .dclose:hover { color:var(--ink); border-color:var(--muted); }
   .hint { font-size:11px; color:var(--dim); margin:10px 0 0; }
   .subhead {
@@ -456,13 +471,15 @@
       if (s.linePts.length > 1) {
         const line = s.linePts.slice().sort((a, b) => a.t - b.t)
           .map(p => `${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
-        svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
+        svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
       }
       s.points.forEach(p => {
         const excl = p.n_excluded ? ` · ${p.n_excluded} EXCL` : "";
         const info = `${s.label.toUpperCase()} · ${p.date} · ${money(p.v)} · ${p.n_used}/${p.n_obs} SELLERS${excl}`;
-        const r = s.points.length === 1 ? 6 : 4.5;
-        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${r}" fill="${s.color}" stroke="${panel}" stroke-width="1.5" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
+        // >=8px hit target per the dataviz mark spec, and a surface-coloured ring
+        // so overlapping markers stay separable.
+        const r = s.points.length === 1 ? 7 : 5;
+        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${r}" fill="${s.color}" stroke="${panel}" stroke-width="2" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
       });
     });
     host.innerHTML = svg + "</svg>";
