@@ -56,11 +56,22 @@
     border-bottom:3px solid var(--lime); padding:14px 0 9px; margin-bottom:2px;
   }
   .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
-  .brand img { height:26px; width:auto; display:none; }        /* shown once it loads */
-  /* The mark is dark teal, so on the dark ground it sits on a white lockup --
-     standard brand practice, and it means only ONE logo file is needed. */
-  .brand img { background:#FFFFFF; padding:5px 9px; border-radius:7px; }
-  :root[data-theme="light"] .brand img { background:none; padding:0; }
+  /* Logo visibility is driven entirely by which files actually loaded, marked as
+     classes on <html>. If none load, the wordmark stands in.
+       olleco-logo.png        the standard mark  -- required
+       olleco-logo-white.png  reversed/white-out -- optional, preferred on dark
+     The standard mark is Cyprus on transparent: 1.53:1 against this background,
+     i.e. invisible. So on dark it gets a white lockup, unless a reversed mark
+     exists, in which case that is used cleanly with no panel. */
+  .brand img { height:26px; width:auto; display:none; }
+  :root.logo-ok    .logo-std  { display:inline; }
+  :root.logo-ok    .wordmark  { display:none; }
+  :root.logo-ok:not([data-theme="light"]) .logo-std {
+    background:#FFFFFF; padding:5px 9px; border-radius:7px;
+  }
+  :root.logo-rev-ok:not([data-theme="light"]) .logo-std { display:none; }
+  :root.logo-rev-ok:not([data-theme="light"]) .logo-rev { display:inline; }
+  :root.logo-rev-ok:not([data-theme="light"]) .wordmark { display:none; }
   .brand .wordmark { font-size:23px; font-weight:700; letter-spacing:-.02em;
                      text-transform:lowercase; color:var(--ink); line-height:1; }
   .brand .wordmark::after {           /* the lime mark, as a dot rather than a drawing */
@@ -165,8 +176,10 @@
 
   <div class="topbar">
     <a class="brand" href="./">
-      <img src="assets/olleco-logo.png" alt="Olleco"
-           onload="this.style.display='inline';document.getElementById('wordmark').style.display='none'">
+      <img class="logo-std" src="assets/olleco-logo.png" alt="Olleco"
+           onload="document.documentElement.classList.add('logo-ok')">
+      <img class="logo-rev" src="assets/olleco-logo-white.png" alt=""
+           onload="document.documentElement.classList.add('logo-rev-ok')">
       <span class="wordmark" id="wordmark">olleco</span>
     </a>
     <span class="rule"></span>

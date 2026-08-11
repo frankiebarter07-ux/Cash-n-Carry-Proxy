@@ -27,6 +27,7 @@ on:
       - "index.html"
       - "dashboard_static.html"
       - "data/series.*"
+      - "assets/**"          # without this, replacing the logo never republishes
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch: {}
 

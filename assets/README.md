@@ -2,12 +2,22 @@
 
 ## 1. The logo — in place ✅
 
-| File | What it is | Used for |
-|---|---|---|
-| `olleco-logo.png` | horizontal mark, 260×107, transparent | the header on both dashboards, and the browser-tab icon |
+| File | What it is | Used for | Status |
+|---|---|---|---|
+| `olleco-logo.png` | horizontal mark, transparent | header on both dashboards, browser-tab icon | ✅ in place |
+| `olleco-logo-white.png` | **reversed / white-out** mark | the dark theme, if present | ⬜ optional |
 
-Supplied by the owner on 2026-08-11. To replace it, overwrite the file keeping the
-same name — nothing else needs changing.
+To replace either, overwrite the file keeping the same name — nothing else changes.
+
+### Why a reversed version is worth adding
+
+The standard mark is Cyprus on transparent. Against the dark theme's ground that
+measures **1.53:1** — the lettering is effectively invisible. So on dark it is placed
+on a white lockup.
+
+Drop a reversed (white-out) version in as `olleco-logo-white.png` and the page uses
+it on the dark theme automatically, with no lockup and no code change. The light
+theme keeps the standard mark either way. Nothing breaks if you never add it.
 
 **PNG only, by preference.** The square JPEG version was dropped: JPEG cannot hold
 transparency, so its white background is baked in and shows as a white block on any
