@@ -1,6 +1,6 @@
 # Cooking oil price index — current
 
-Rebuilt automatically. Latest data: 2026-08-10.
+Rebuilt automatically. Latest data: 2026-08-11.
 
 UK cash-and-carry collection prices for rapeseed and vegetable (soybean) oil. A movement proxy — it answers are wholesale oil prices moving, and who moved first?, not what will I pay?
 
@@ -15,7 +15,7 @@ UK cash-and-carry collection prices for rapeseed and vegetable (soybean) oil. A 
 
 No price changes in this window.
 
-## Trailing week (since 2026-08-03)
+## Trailing week (since 2026-08-04)
 
 No price changes in this window.
 
