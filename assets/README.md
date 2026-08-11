@@ -4,11 +4,19 @@
 
 | File | What it is | Used for |
 |---|---|---|
-| `olleco-logo.png` | horizontal mark, 260×107, transparent | the header on both dashboards |
-| `olleco-square.jpg` | square mark, 400×400, white background | the browser-tab icon |
+| `olleco-logo.png` | horizontal mark, 260×107, transparent | the header on both dashboards, and the browser-tab icon |
 
-Both were supplied by the owner on 2026-08-11. To replace either, overwrite the file
-keeping the same name — nothing else needs changing.
+Supplied by the owner on 2026-08-11. To replace it, overwrite the file keeping the
+same name — nothing else needs changing.
+
+**PNG only, by preference.** The square JPEG version was dropped: JPEG cannot hold
+transparency, so its white background is baked in and shows as a white block on any
+coloured ground.
+
+The tab icon is the same wide mark, which browsers scale to fit a square — legible
+but small. If a sharper tab icon is wanted later, add a **square** PNG with
+transparent padding as `assets/olleco-icon.png` and point the `<link rel="icon">` at
+it in `index.html` and `scripts/render_static.py`.
 
 The mark is dark teal, so on the dark theme it sits on a **white lockup** — a rounded
 white panel behind it. That is ordinary brand practice where background contrast is
