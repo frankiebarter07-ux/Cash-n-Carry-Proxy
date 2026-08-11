@@ -146,9 +146,16 @@
   .scroll { overflow-x:auto; }
 
   .detail { display:none; margin-top:14px; border-top:1px solid var(--line); padding-top:12px; }
+  .dblock { margin-bottom:18px; }
+  .dblock:last-child { margin-bottom:0; }
   .dhead { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:12px;
            margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em; }
   .dhead .dot { width:9px; height:9px; }
+  .dclose { margin-left:auto; appearance:none; background:transparent; cursor:pointer;
+            border:1px solid var(--line); color:var(--muted); font:inherit; font-size:11px;
+            padding:2px 8px; line-height:1.4; }
+  .dclose:hover { color:var(--ink); border-color:var(--muted); }
+  .hint { font-size:11px; color:var(--dim); margin:10px 0 0; }
   .subhead {
     font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
     margin:16px 0 6px; font-weight:600;
@@ -206,6 +213,7 @@
       <div class="tip" id="tip"></div>
     </div>
     <div class="legend" id="legend"></div>
+    <p class="hint">Tap a point for that oil's seller breakdown. Both oils can be open at once; tap again to close.</p>
     <p class="none" id="histNote"></p>
     <div class="detail" id="detail"></div>
   </div>
@@ -467,7 +475,7 @@
   }
   host.addEventListener("click", ev => {
     const c = ev.target.closest("circle[data-info]");
-    if (c) { showTip(c); renderDetail(c.dataset.oil, c.dataset.ch, c.dataset.date); }
+    if (c) { showTip(c); toggleDetail(c.dataset.oil, c.dataset.ch, c.dataset.date); }
     else tip.style.opacity = 0;
   });
   host.addEventListener("mouseover", ev => {
@@ -477,10 +485,42 @@
   host.addEventListener("mouseleave", () => { tip.style.opacity = 0; });
 
   // ---- per-SKU constituents behind a point --------------------------------
-  function renderDetail(oil, ch, date) {
-    const o = DATA.oils[oil]; if (!o) return;
+  // Keyed by oil+channel so each oil can be open independently -- comparing the
+  // two side by side is the point of the breakdown, and a single shared panel
+  // made that impossible.
+  const openDetails = new Map();
+
+  function toggleDetail(oil, ch, date) {
+    const k = oil + "|" + ch;
+    if (openDetails.get(k) === date) openDetails.delete(k);
+    else openDetails.set(k, date);
+    renderDetails();
+  }
+
+  function renderDetails() {
+    const el = $("detail");
+    if (!openDetails.size) { el.innerHTML = ""; el.style.display = "none"; return; }
+    // Render in the oils' own order, not the order they happened to be clicked.
+    const html = Object.keys(DATA.oils)
+      .flatMap(oil => activeChannels()
+        .filter(ch => openDetails.has(oil + "|" + ch))
+        .map(ch => detailBlock(oil, ch, openDetails.get(oil + "|" + ch))))
+      .join("");
+    el.innerHTML = html;
+    el.style.display = html ? "block" : "none";
+  }
+
+  $("detail").addEventListener("click", ev => {
+    const b = ev.target.closest("button[data-close]");
+    if (!b) return;
+    openDetails.delete(b.getAttribute("data-close"));
+    renderDetails();
+  });
+
+  function detailBlock(oil, ch, date) {
+    const o = DATA.oils[oil]; if (!o) return "";
     const pt = (o.channels[ch] || []).find(p => p.date === date);
-    if (!pt || !pt.breakdown) return;
+    if (!pt || !pt.breakdown) return "";
     const rows = pt.breakdown.map(b => {
       const flags = [];
       if (b.stale) flags.push(`carried ${b.as_of.slice(5)}`);
@@ -493,12 +533,12 @@
              `<td class="n">${esc(money(b.price_per_unit))}</td>` +
              `<td class="n">${esc(money(b.price_per_tonne))}</td></tr>`;
     }).join("");
-    $("detail").innerHTML =
+    return `<div class="dblock">` +
       `<div class="dhead"><span class="dot" style="background:${o.color}"></span>` +
-      `${esc(o.label)} · ${esc(date)} · ${esc(money(pt.price_per_unit))} · ${pt.n_used} sellers</div>` +
+      `${esc(o.label)} · ${esc(date)} · ${esc(money(pt.price_per_unit))} · ${pt.n_used} sellers` +
+      `<button class="dclose" data-close="${esc(oil + "|" + ch)}">close</button></div>` +
       `<div class="scroll"><table><tr><th>Seller</th><th>Brand</th><th>Pack</th>` +
-      `<th>SKU</th><th>£/pack</th><th>£/tonne</th></tr>${rows}</table></div>`;
-    $("detail").style.display = "block";
+      `<th>SKU</th><th>£/pack</th><th>£/tonne</th></tr>${rows}</table></div></div>`;
   }
 
   // ---- price changes -------------------------------------------------------
