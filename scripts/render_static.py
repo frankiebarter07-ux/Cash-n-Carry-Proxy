@@ -249,7 +249,7 @@ def build():
   .down {{ color:#c0392b; font-weight:600; }}
   .sumlist {{ margin:4px 0 12px; padding-left:18px; font-size:13px; }}
   .sumlist li {{ margin-bottom:4px; }}
-  .sechead {{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 4px 2px; }}
+  .sechead {{ font-size:12px; letter-spacing:0; color:var(--muted); margin:28px 4px 2px; }}
 </style></head>
 <body><div class="wrap">
   <div class="brandbar">
@@ -261,14 +261,14 @@ def build():
   <p class="sub">UK B2B index — reliable wholesale / cash-and-carry sellers, one fixed pack size per oil. Static view (no JavaScript) generated {esc(data["generated"])}.</p>
 
   <div class="card">
-    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Price per standard unit</div>
+    <div style="font-size:11px;letter-spacing:0;color:var(--muted);margin-bottom:8px">Price per standard unit</div>
     {chart}
     <div class="legend">{legend}</div>
     <p class="note">One session recorded so far &mdash; the index adds a point per day, so a trend needs a few weeks. Each point is the cross-seller mean after dropping anomalies beyond {data["std_dev_threshold"]} SD; nothing is drawn for days that were not collected.</p>
   </div>
 
   <div class="card">
-    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">Both units &amp; seller counts</div>
+    <div style="font-size:11px;letter-spacing:0;color:var(--muted);margin-bottom:8px">Both units &amp; seller counts</div>
     <table>
       <tr><th>Oil / fat</th><th>Unit</th><th>£ / unit</th><th>£ / tonne</th><th>Sellers</th></tr>
       {rows}

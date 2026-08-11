@@ -55,10 +55,8 @@
               text-transform:lowercase; color:var(--cyprus); line-height:1; }
   .wordmark::after { content:"\2022"; color:var(--lime); margin-left:2px; }
   .vrule { width:1px; height:26px; background:var(--line); }
-  .title { font-size:13px; font-weight:700; letter-spacing:.13em;
-           text-transform:uppercase; color:var(--heading); }
-  .meta { font-size:11px; color:var(--muted); letter-spacing:.05em;
-          text-transform:uppercase; margin-left:auto; text-align:right; }
+  .title { font-size:13px; font-weight:700; letter-spacing:0; color:var(--heading); }
+  .meta { font-size:12px; color:var(--muted); letter-spacing:0; margin-left:auto; text-align:right; }
   .strapline { font-size:16px; color:var(--heading); margin:2px 0 16px;
                font-weight:700; letter-spacing:-.005em; max-width:62ch; }
   .fallback { font-size:11px; color:var(--dim); margin:0 0 14px; }
@@ -74,13 +72,12 @@
     content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
     background:var(--qc,var(--lime));
   }
-  .q .name { font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  .q .name { font-size:12.5px;
              color:var(--lime); font-weight:700; }
   .q .px { font-size:34px; line-height:1.1; margin-top:6px; font-weight:700;
            letter-spacing:-.015em; }
   .q .chg { font-size:13px; margin-top:3px; font-weight:700; }
-  .q .sub { font-size:10.5px; color:#A9C7C3; margin-top:9px; letter-spacing:.06em;
-            text-transform:uppercase; }
+  .q .sub { font-size:11.5px; color:#A9C7C3; margin-top:9px; letter-spacing:0; }
   .q .up { color:var(--up-on-cyprus); } .q .down { color:var(--down-on-cyprus); }
   .q .flat { color:#A9C7C3; }
   .up { color:var(--up); } .down { color:var(--down); } .flat { color:var(--muted); }
@@ -89,15 +86,14 @@
   .panel { background:var(--panel); padding:18px 20px 20px; margin-top:14px;
            border-radius:var(--r-lg); box-shadow:var(--shadow); }
   .phead { display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-           font-size:11px; letter-spacing:.13em; text-transform:uppercase;
-           color:var(--heading); font-weight:700;
+           font-size:14px; color:var(--heading); font-weight:700;
            border-bottom:1px solid var(--line); padding-bottom:11px; margin-bottom:14px; }
   .phead .spacer { margin-left:auto; }
   .seg { display:inline-flex; flex-wrap:wrap; background:var(--panel2);
          border:1px solid var(--line); border-radius:var(--r-pill); overflow:hidden; }
   .seg button { appearance:none; border:0; background:transparent; color:var(--muted);
-                font:inherit; font-size:11px; font-weight:700; letter-spacing:.06em;
-                padding:6px 14px; cursor:pointer; text-transform:uppercase; }
+                font:inherit; font-size:11px; font-weight:700; letter-spacing:0;
+                padding:6px 14px; cursor:pointer; }
   .seg button:hover { color:var(--cyprus); }
   .seg button[aria-pressed="true"] { background:var(--cyprus); color:#fff; }
   [hidden] { display:none !important; }
@@ -109,8 +105,7 @@
   .chip { display:inline-flex; align-items:center; gap:8px; cursor:pointer;
           user-select:none; border:1px solid var(--line); background:var(--panel2);
           padding:6px 14px; font:inherit; font-size:11px; font-weight:700;
-          letter-spacing:.06em; color:var(--cyprus); text-transform:uppercase;
-          border-radius:var(--r-pill); }
+          color:var(--cyprus); border-radius:var(--r-pill); }
   .chip[aria-pressed="false"] { opacity:.4; }
   .chip .dot { width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
   .tip { position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
@@ -120,7 +115,7 @@
 
   /* ---- tables ---- */
   table { width:100%; border-collapse:collapse; }
-  th { text-align:left; font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  th { text-align:left; font-size:11.5px;
        color:var(--muted); font-weight:700; padding:8px 12px 8px 0;
        border-bottom:2px solid var(--line); white-space:nowrap; }
   td { padding:9px 12px 9px 0; border-bottom:1px solid var(--grid); font-size:13.5px; }
@@ -134,15 +129,15 @@
             margin-bottom:12px; }
   .dblock:last-child { margin-bottom:0; }
   .dhead { display:flex; align-items:center; gap:9px; flex-wrap:wrap; font-size:12px;
-           font-weight:700; margin-bottom:10px; text-transform:uppercase;
-           letter-spacing:.07em; color:var(--heading); }
+           font-weight:700; margin-bottom:10px;
+           letter-spacing:0; color:var(--heading); }
   .dhead .dot { width:10px; height:10px; border-radius:50%; }
   .dclose { margin-left:auto; appearance:none; background:var(--panel); cursor:pointer;
             border:1px solid var(--line); color:var(--muted); font:inherit;
-            font-size:10.5px; font-weight:700; letter-spacing:.06em;
-            padding:4px 13px; border-radius:var(--r-pill); text-transform:uppercase; }
+            font-size:10.5px; font-weight:700; letter-spacing:0;
+            padding:4px 13px; border-radius:var(--r-pill); }
   .dclose:hover { color:var(--cyprus); border-color:var(--muted); }
-  .subhead { font-size:10.5px; letter-spacing:.13em; text-transform:uppercase;
+  .subhead { font-size:13px;
              color:var(--heading); margin:18px 0 8px; font-weight:700; }
   .subhead:first-child { margin-top:0; }
   .sum { font-size:12.5px; color:var(--muted); margin:0 0 10px; }
@@ -155,7 +150,7 @@
   .subscribe { background:linear-gradient(160deg,var(--cyprus) 0%,var(--cyprus-700) 100%);
                color:#fff; display:flex; gap:26px; align-items:center; flex-wrap:wrap;
                justify-content:space-between; }
-  .subscribe .s-title { font-size:11px; letter-spacing:.13em; text-transform:uppercase;
+  .subscribe .s-title { font-size:13px;
                         color:var(--lime); font-weight:700; }
   .subscribe .s-copy { font-size:15px; margin:6px 0 0; max-width:46ch; font-weight:700; }
   .s-form { display:flex; gap:9px; flex-wrap:wrap; align-items:center; }
@@ -165,8 +160,7 @@
   .s-form input::placeholder { color:#8FB2AD; }
   .s-form input:focus { outline:2px solid var(--lime); outline-offset:1px;
                         background:rgba(255,255,255,.14); }
-  .s-form button { font:inherit; font-size:12px; font-weight:700; letter-spacing:.07em;
-                   text-transform:uppercase; padding:12px 22px; cursor:pointer;
+  .s-form button { font:inherit; font-size:12px; font-weight:700; letter-spacing:0; padding:12px 22px; cursor:pointer;
                    border:0; border-radius:var(--r-pill);
                    background:var(--lime); color:var(--cyprus); }
   .s-form button:hover { filter:brightness(1.07); }
@@ -464,8 +458,8 @@
         svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
       }
       s.points.forEach(p => {
-        const excl = p.n_excluded ? ` · ${p.n_excluded} EXCL` : "";
-        const info = `${s.label.toUpperCase()} · ${p.date} · ${money(p.v)} · ${p.n_used}/${p.n_obs} SELLERS${excl}`;
+        const excl = p.n_excluded ? ` · ${p.n_excluded} excluded` : "";
+        const info = `${s.label} · ${p.date} · ${money(p.v)} · ${p.n_used}/${p.n_obs} SELLERS${excl}`;
         // >=8px hit target per the dataviz mark spec, and a surface-coloured ring
         // so overlapping markers stay separable.
         const r = s.points.length === 1 ? 7 : 5;
