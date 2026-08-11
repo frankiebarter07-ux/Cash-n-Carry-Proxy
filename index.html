@@ -298,6 +298,8 @@
   // convention (a price RISE is bad for a buyer) reads backwards to a trader.
   const signed = v => (v > 0 ? "+" : v < 0 ? "−" : "") + money(Math.abs(v)).replace("£", "£");
   const cls = d => d > 0 ? "up" : d < 0 ? "down" : "flat";
+  // "bib"/"drum" as recorded -> "Bib"/"Drum", not shouted.
+  const fmtPack = f => !f ? "" : f[0].toUpperCase() + f.slice(1).toLowerCase();
   const arrow = d => d > 0 ? "▲" : d < 0 ? "▼" : "■";
 
   const activeChannels = () =>
@@ -448,7 +450,7 @@
     }
     [...new Set(times)].sort((a, b) => a - b).forEach(t => {
       const lab = new Date(t).toLocaleDateString("en-GB",
-        { day: "2-digit", month: "short" }).toUpperCase();
+        { day: "2-digit", month: "short" });
       svg += `<text x="${X(t).toFixed(1)}" y="${VH - pad.b + 20}" fill="${muted}" font-size="11" text-anchor="middle">${esc(lab)}</text>`;
     });
     series.forEach(s => {
@@ -533,7 +535,7 @@
       if (b.excluded) flags.push("outlier");
       const fl = flags.length ? ` <span class="fl">${esc(flags.join(" · "))}</span>` : "";
       return `<tr class="${b.excluded || b.lapsed ? "ex" : ""}"><td>${esc(b.source)}</td>` +
-             `<td>${esc(b.brand || "")}</td><td>${esc((b.format || "").toUpperCase())}</td>` +
+             `<td>${esc(b.brand || "")}</td><td>${esc(fmtPack(b.format))}</td>` +
              `<td>${esc(b.product)}${fl}</td>` +
              `<td class="n">${esc(money(b.price_per_unit))}</td>` +
              `<td class="n">${esc(money(b.price_per_tonne))}</td></tr>`;
@@ -551,7 +553,7 @@
     if (!moves || !moves.length) return '<p class="none">No changes in this window.</p>';
     const rows = moves.map(m =>
       `<tr><td>${esc(m.source)}</td><td>${esc(m.oil)}</td><td>${esc(m.brand || "")}</td>` +
-      `<td>${esc((m.format || "").toUpperCase())}</td>` +
+      `<td>${esc(fmtPack(m.format))}</td>` +
       `<td class="n">${esc(money(m.from))}</td><td class="n">${esc(money(m.to))}</td>` +
       `<td class="n ${cls(m.delta)}">${arrow(m.delta)} ${esc(signed(m.delta))} ` +
       `(${m.pct > 0 ? "+" : m.pct < 0 ? "−" : ""}${Math.abs(m.pct).toFixed(2)}%)</td></tr>`).join("");
