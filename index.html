@@ -57,8 +57,13 @@
   .vrule { width:1px; height:26px; background:var(--line); }
   .title { font-size:13px; font-weight:700; letter-spacing:0; color:var(--heading); }
   .meta { font-size:12px; color:var(--muted); letter-spacing:0; margin-left:auto; text-align:right; }
-  .strapline { font-size:16px; color:var(--heading); margin:2px 0 16px;
-               font-weight:700; letter-spacing:-.005em; max-width:62ch; }
+  /* One line. The max-width:62ch was forcing a wrap on every screen; the size now
+     scales with the viewport so the sentence stays on a single line, and nowrap
+     holds it there down to 640px. Below that it wraps -- 85 characters cannot fit
+     across a phone at a readable size, and shrinking further would be worse. */
+  .strapline { font-size:clamp(12.5px, 1.5vw, 17px); color:var(--heading);
+               margin:2px 0 16px; font-weight:700; letter-spacing:-.005em; }
+  @media (min-width:640px) { .strapline { white-space:nowrap; } }
   .fallback { font-size:11px; color:var(--dim); margin:0 0 14px; }
   .fallback a { color:var(--muted); }
 
