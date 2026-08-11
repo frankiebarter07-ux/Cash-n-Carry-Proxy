@@ -68,7 +68,7 @@
     border-bottom:1px solid var(--line); padding-bottom:9px; margin-bottom:12px;
   }
   .phead .spacer { margin-left:auto; }
-  .seg { display:inline-flex; border:1px solid var(--line); }
+  .seg { display:inline-flex; flex-wrap:wrap; border:1px solid var(--line); }
   .seg button {
     appearance:none; border:0; border-right:1px solid var(--line); background:transparent;
     color:var(--muted); font-size:11px; letter-spacing:.06em;
@@ -143,6 +143,15 @@
     <div class="phead">
       <span>Index history</span>
       <span class="spacer"></span>
+      <div class="seg" id="rangeSeg">
+        <button data-v="1D">1D</button>
+        <button data-v="7D">7D</button>
+        <button data-v="30D">30D</button>
+        <button data-v="6M">6M</button>
+        <button data-v="YTD">YTD</button>
+        <button data-v="5Y">5Y</button>
+        <button data-v="ALL" aria-pressed="true">All</button>
+      </div>
       <div class="seg" id="unitSeg">
         <button data-v="price_per_unit" aria-pressed="true">£/pack</button>
         <button data-v="price_per_tonne" aria-pressed="false">£/tonne</button>
@@ -177,7 +186,41 @@
   }
 
   const CHANNEL_LABEL = { cash_carry: "Cash & carry", retail: "Retail" };
-  const state = { unit: "price_per_unit", channel: "cash_carry", off: new Set() };
+  const state = { unit: "price_per_unit", channel: "cash_carry",
+                  range: "ALL", off: new Set() };
+
+  // The most recent date anywhere in the data. Ranges are measured back from the
+  // last session, not from today, so the view does not go blank if collection
+  // pauses for a few days.
+  function latestDate() {
+    let latest = null;
+    for (const o of Object.values(DATA.oils))
+      for (const pts of Object.values(o.channels || {}))
+        for (const p of pts) if (!latest || p.date > latest) latest = p.date;
+    return latest;
+  }
+
+  // Inclusive lower bound for the selected range, or null for everything.
+  function rangeStart() {
+    const latest = latestDate();
+    if (!latest || state.range === "ALL") return null;
+    const d = new Date(latest + "T00:00:00Z");
+    if (state.range === "YTD") return new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const back = { "1D": 1, "7D": 7, "30D": 30 }[state.range];
+    if (back != null) { d.setUTCDate(d.getUTCDate() - back); return d; }
+    if (state.range === "6M") { d.setUTCMonth(d.getUTCMonth() - 6); return d; }
+    if (state.range === "5Y") { d.setUTCFullYear(d.getUTCFullYear() - 5); return d; }
+    return null;
+  }
+
+  function inRange(pts) {
+    const from = rangeStart();
+    if (!from) return pts;
+    const kept = pts.filter(p => new Date(p.date + "T00:00:00Z") >= from);
+    // Never show an empty chart: if the window predates all data, fall back to the
+    // single most recent point rather than a blank panel.
+    return kept.length ? kept : pts.slice(-1);
+  }
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g,
@@ -207,7 +250,7 @@
     for (const [oil, o] of Object.entries(DATA.oils)) {
       if (state.off.has(oil)) continue;
       for (const ch of activeChannels()) {
-        const pts = (o.channels && o.channels[ch]) || [];
+        const pts = inRange((o.channels && o.channels[ch]) || []);
         if (!pts.length) continue;
         out.push({
           key: oil + "|" + ch, oil, ch, color: o.color,
@@ -227,21 +270,25 @@
   function renderQuotes() {
     let html = "";
     for (const [oil, o] of Object.entries(DATA.oils)) {
-      const pts = (o.channels || {})[state.channel] || [];
-      if (!pts.length) continue;
-      const last = pts[pts.length - 1], prev = pts[pts.length - 2];
-      const d = prev ? last[state.unit] - prev[state.unit] : 0;
-      const pct = prev && prev[state.unit] ? (d / prev[state.unit]) * 100 : 0;
+      const all = (o.channels || {})[state.channel] || [];
+      if (!all.length) continue;
+      const pts = inRange(all);
+      const last = pts[pts.length - 1], base = pts.length > 1 ? pts[0] : null;
+      const d = base ? last[state.unit] - base[state.unit] : 0;
+      const pct = base && base[state.unit] ? (d / base[state.unit]) * 100 : 0;
       const sp = o.standard_pack;
-      const chg = prev
+      const chg = base
         ? `<span class="${cls(d)}">${arrow(d)} ${signed(d)} (${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(pct).toFixed(2)}%)</span>`
-        : `<span class="flat">■ no prior close</span>`;
+        : `<span class="flat">■ no earlier session</span>`;
+      const since = base
+        ? `vs ${new Date(base.date + "T00:00:00Z").toLocaleDateString("en-GB",
+             { day: "2-digit", month: "short" })}`
+        : "no comparison";
       html += `<div class="q" style="--qc:${o.color}">
         <div class="name">${esc(o.label)}</div>
         <div class="px num">${esc(money(last[state.unit]))}</div>
         <div class="chg">${chg}</div>
-        <div class="sub">${sp.value}${esc(sp.unit)} · ${last.n_used} sellers${
-          last.n_excluded ? " · " + last.n_excluded + " excl" : ""}</div>
+        <div class="sub">${sp.value}${esc(sp.unit)} · ${last.n_used} sellers · ${esc(since)}</div>
       </div>`;
     }
     $("quotes").innerHTML = html;
@@ -263,6 +310,16 @@
       el.appendChild(chip);
     }
   }
+
+  $("rangeSeg").querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      $("rangeSeg").querySelectorAll("button")
+        .forEach(b => b.setAttribute("aria-pressed", "false"));
+      btn.setAttribute("aria-pressed", "true");
+      state.range = btn.dataset.v;
+      renderQuotes(); draw();
+    });
+  });
 
   $("unitSeg").querySelectorAll("button").forEach(btn => {
     btn.addEventListener("click", () => {

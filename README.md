@@ -39,8 +39,9 @@ Exact products and URLs: [`config/targets.json`](config/targets.json).
 - **[`dashboard_static.html`](dashboard_static.html)** — works everywhere, including
   with JavaScript disabled and in embedded viewers. Chart, full per-SKU price list by
   seller, and price-change tables (today + trailing 7 days, showing who moved).
-- **[`index.html`](index.html)** — interactive: £/unit ↔ £/tonne toggle, per-oil
-  on/off, tap a point for the SKU breakdown. Needs a normal browser.
+- **[`index.html`](index.html)** — interactive: range selector (1D/7D/30D/6M/YTD/5Y/All),
+  £/pack ↔ £/tonne toggle, per-oil on/off, tap a point for the SKU breakdown. Needs a
+  normal browser.
 
 ## Method
 
