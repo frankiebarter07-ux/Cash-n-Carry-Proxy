@@ -3,15 +3,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cash &amp; Carry Cooking Oil Price Proxy — static</title>
 <style>
-  :root { --bg:#f7f7f5; --panel:#fff; --ink:#1c1c1e; --muted:#6b6b70; --grid:#e6e6e3; --line:#e3e3e0; }
+  /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White. */
+  :root { --bg:#F5F7F4; --panel:#FFFFFF; --ink:#00433F; --muted:#4C6B67;
+           --grid:#EAEFEC; --line:#DBE3DF; --lime:#CBD300; --brand:#00433F; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#16171a; --panel:#1f2126; --ink:#f2f2f4; --muted:#9a9ba1; --grid:#2b2e35; --line:#2e3138; }
+    :root { --bg:#00201D; --panel:#002E2A; --ink:#EDF3F1; --muted:#8FB2AD;
+             --grid:#073B36; --line:#0A4F49; --lime:#CBD300; --brand:#CBD300; }
   }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink);
-    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+    font:14.5px/1.5 "Avenir Next",Avenir,"Century Gothic","Nunito Sans","Trebuchet MS",sans-serif; }
   .wrap { max-width:1000px; margin:0 auto; padding:26px 20px 60px; }
-  h1 { font-size:22px; margin:0 0 4px; }
+  h1 { font-size:21px; margin:0 0 4px; }
+  .brandbar { display:flex; align-items:center; gap:10px;
+               border-bottom:3px solid var(--lime); padding-bottom:9px; margin-bottom:16px; }
+  .brandbar img { height:26px; width:auto; }
+  .brandbar .wordmark { font-size:23px; font-weight:700; letter-spacing:-.02em;
+                         text-transform:lowercase; color:var(--ink); line-height:1; }
   .sub { color:var(--muted); font-size:14px; margin:0 0 18px; }
   .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; margin-top:16px; }
   svg { width:100%; height:auto; display:block; }
@@ -36,7 +44,12 @@
   .sechead { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 4px 2px; }
 </style></head>
 <body><div class="wrap">
-  <h1>Cash &amp; Carry Cooking Oil Price Proxy</h1>
+  <div class="brandbar">
+    <img src="assets/olleco-logo.png" alt="Olleco"
+         onerror="this.style.display='none'">
+    <span class="wordmark">olleco</span>
+  </div>
+  <h1>UK Cooking Oil Index</h1>
   <p class="sub">UK B2B index — reliable wholesale / cash-and-carry sellers, one fixed pack size per oil. Static view (no JavaScript) generated 2026-08-11.</p>
 
   <div class="card">

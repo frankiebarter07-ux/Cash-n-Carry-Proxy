@@ -8,16 +8,25 @@
   /* Trading-screen style: dark by default, dense, figures in tabular numerals.
      Light palette kept behind the toggle, but dark is the intended look. */
   :root {
-    --bg:#0b0c0e; --panel:#121418; --panel2:#16181d; --line:#23262d;
-    --grid:#1c1f25; --ink:#e9eaee; --muted:#878d99; --dim:#5d636e;
+    /* Olleco palette: Cyprus #00433F, Rio Grande #CBD300, White.
+       The dark ground is Cyprus taken down in value, so the whole screen sits in
+       the brand's own hue rather than a generic black. */
+    --bg:#00201D; --panel:#002E2A; --panel2:#00352F; --line:#0A4F49;
+    --grid:#073B36; --ink:#EDF3F1; --muted:#8FB2AD; --dim:#77A29D;
     /* ------------------------------------------------------------------ *
      * OLLECO BRAND — replace --brand with the exact value from the brand
      * pack. Every accent on the page derives from it, so one edit rebrands
      * the whole thing. The value below is a PLACEHOLDER green chosen to sit
      * correctly against this palette; it is NOT Olleco's specified colour.
      * ------------------------------------------------------------------ */
-    --brand:#3faa53;
-    --accent:var(--brand); --up:#33d17a; --down:#ff5f56;
+    --brand:#CBD300;          /* Rio Grande */
+    --on-brand:#00332F;       /* text sitting ON the brand colour */
+    --lime:#CBD300;           /* the header rule, in both themes */
+    --accent:var(--brand);
+    /* Market convention, deliberately NOT brand colours -- these must read
+       instantly, and both are held well clear of the lime accent in hue so a
+       rise can never be mistaken for the brand highlight. */
+    --up:#4ADE80; --down:#FF6B6B;
     /* A rounded geometric sans -- Avenir Next on Apple devices, Century Gothic on
        Windows. Deliberately NOT the -apple-system/Segoe stack, which is the default
        every untouched page uses. Figures get tabular-nums so columns still line up
@@ -26,9 +35,11 @@
             "Nunito Sans", "Trebuchet MS", sans-serif;
   }
   :root[data-theme="light"] {
-    --bg:#f4f4f2; --panel:#ffffff; --panel2:#fafaf8; --line:#dedcd6;
-    --grid:#e8e6e0; --ink:#16181d; --muted:#5f646d; --dim:#8b909a;
-    --brand:#1f7a3d; --accent:var(--brand); --up:#1e8449; --down:#c0392b;
+    --bg:#F5F7F4; --panel:#FFFFFF; --panel2:#FAFBF8; --line:#DBE3DF;
+    --grid:#EAEFEC; --ink:#00433F; --muted:#4C6B67; --dim:#5F7B77;
+    --brand:#00433F;          /* Cyprus reads as the accent on white */
+    --on-brand:#FFFFFF; --lime:#CBD300; --accent:var(--brand);
+    --up:#1E8449; --down:#C0392B;
   }
   * { box-sizing:border-box; }
   body {
@@ -42,12 +53,15 @@
   /* ---- top bar ---- */
   .topbar {
     display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
-    border-bottom:2px solid var(--accent); padding:14px 0 9px; margin-bottom:2px;
+    border-bottom:3px solid var(--lime); padding:14px 0 9px; margin-bottom:2px;
   }
   .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:inherit; }
   .brand img { height:26px; width:auto; display:none; }        /* shown once it loads */
-  .brand .wordmark { font-size:16px; font-weight:700; letter-spacing:.18em;
-                     text-transform:uppercase; color:var(--brand); }
+  .brand .wordmark { font-size:23px; font-weight:700; letter-spacing:-.02em;
+                     text-transform:lowercase; color:var(--ink); line-height:1; }
+  .brand .wordmark::after {           /* the lime mark, as a dot rather than a drawing */
+    content:"•"; color:var(--lime); margin-left:2px; font-size:23px;
+  }
   .brand .rule { width:1px; height:20px; background:var(--line); }
   .title { font-size:14px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; }
   /* Two files so the mark reads correctly on either background. If the brand pack
@@ -90,7 +104,7 @@
     padding:4px 10px; cursor:pointer; text-transform:uppercase;
   }
   .seg button:last-child { border-right:0; }
-  .seg button[aria-pressed="true"] { background:var(--accent); color:#0b0c0e; font-weight:600; }
+  .seg button[aria-pressed="true"] { background:var(--accent); color:var(--on-brand); font-weight:600; }
   [hidden] { display:none !important; }
 
   /* ---- chart ---- */
@@ -149,7 +163,7 @@
            onload="this.style.display='inline';document.getElementById('wordmark').style.display='none'">
       <img class="logo-dark" src="assets/olleco-logo.png" alt="Olleco"
            onload="this.style.display='inline';document.getElementById('wordmark').style.display='none'">
-      <span class="wordmark" id="wordmark">Olleco</span>
+      <span class="wordmark" id="wordmark">olleco</span>
     </a>
     <span class="rule"></span>
     <div class="title">UK Cooking Oil Index</div>

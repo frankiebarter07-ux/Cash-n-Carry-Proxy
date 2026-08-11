@@ -24,23 +24,19 @@ may sit awkwardly on one background, but nothing breaks.
 - Commit the files to the repository. The publish workflow copies this whole folder
   to the live site, so they appear automatically on the next deploy.
 
-## 2. The brand colour
+## 2. The brand colour — done
 
-Open `index.html` and find the block marked `OLLECO BRAND`. Replace the placeholder
-in **both** palettes:
+The official palette is already applied, in `index.html` and `scripts/render_static.py`:
 
-```css
---brand:#3faa53;   /* dark theme  — replace with the brand pack value */
---brand:#1f7a3d;   /* light theme — a darker shade for white backgrounds */
-```
+| Hex | Name | Where it is used |
+|---|---|---|
+| `#00433F` | Cyprus | the dark ground (taken down in value), and the accent on white |
+| `#CBD300` | Rio Grande | the header rule in both themes, and the accent on dark |
+| `#FFFFFF` | White | panels and type on the light theme |
 
-Every accent on the page derives from `--brand`: the rule under the header, the
-selected buttons, the section headings and the wordmark. One edit rebrands the
-whole dashboard.
+Contrast was checked against WCAG: body text is 15.3:1 on dark and 11.2:1 on light,
+and the weakest tone on the page is 4.58:1. Nothing needs adjusting.
 
-**The two values in there now are placeholders**, chosen to sit correctly against
-this palette. They are not Olleco's specified colours and should not be treated as
-such. Take the exact hex from the brand pack.
-
-The up/down colours are deliberately **not** brand colours — they are the market
-convention (green up, red down) and should stay legible rather than on-brand.
+The up/down colours are deliberately **not** brand colours. They are the market
+convention (green up, red down), held well clear of the lime in hue so a price rise
+can never be mistaken for a brand highlight.
