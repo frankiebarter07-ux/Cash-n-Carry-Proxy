@@ -1,6 +1,6 @@
 # UK Cooking Oil Index
 
-Collection prices, 20 L packs, five UK cash-and-carry sellers. Updated 12 Aug 2026.
+Collection prices, 20 L packs, five UK cash-and-carry sellers. Updated 13 Aug 2026.
 
 ## Index level
 
@@ -9,11 +9,11 @@ Collection prices, 20 L packs, five UK cash-and-carry sellers. Updated 12 Aug 20
 | Rapeseed | 20 L | £34.35 | £1,877 | 5 |
 | Soybean (pure veg) | 20 L | £30.70 | £1,674 | 5 |
 
-## Movements — 12 Aug 2026
+## Movements — 13 Aug 2026
 
 No movements.
 
-## Week to 12 Aug 2026
+## Week to 13 Aug 2026
 
 No movements.
 
