@@ -46,6 +46,7 @@ class Quote:
     method: str                 # "json-ld" | "json-api" | "selector:<sel>"
     source_url: str
     fetched_at: str
+    sku_code: str = ""          # the seller's own product code, "" if not published
 
     def dict(self):
         return asdict(self)
@@ -66,6 +67,75 @@ def money(value) -> float | None:
         return round(float(m.group(0)), 2)
     except ValueError:
         return None
+
+
+def sku_from_jsonld(html: str) -> str:
+    """The seller's own product code from a JSON-LD Product block, or "".
+
+    Metadata, not a price -- so unlike price parsing this is allowed to come back
+    empty and must never raise. A missing code costs a lookup later; a wrong price
+    corrupts the index, which is why the two are held to different standards.
+    """
+    blocks = re.findall(
+        r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        html, re.DOTALL | re.IGNORECASE)
+    for raw in blocks:
+        try:
+            data = json.loads(raw.strip())
+        except Exception:
+            continue
+
+        def walk(node):
+            if isinstance(node, list):
+                for n in node:
+                    if (r := walk(n)):
+                        return r
+                return None
+            if not isinstance(node, dict):
+                return None
+            # schema.org order of preference: sku is the seller's code, mpn the
+            # manufacturer's, productID a catch-all.
+            for key in ("sku", "mpn", "productID"):
+                v = node.get(key)
+                if isinstance(v, (str, int)) and str(v).strip():
+                    return str(v).strip()[:40]
+            for v in node.values():
+                if isinstance(v, (dict, list)) and (r := walk(v)):
+                    return r
+            return None
+
+        if (found := walk(data)):
+            return found
+    return ""
+
+
+# Sellers that put the code in the URL. Cheapest possible source: no extra fetch,
+# and it keeps working even when the page markup changes.
+_SKU_URL_PATTERNS = [
+    r"[?&]Code=(\d+)",                              # Booker
+    r"/product/[^/]+/([A-Z]{2,}\d+)/?",             # JJ Foodservice: /product/<branch>/OIL011/
+]
+
+
+def sku_from_url(url: str) -> str:
+    for pat in _SKU_URL_PATTERNS:
+        m = re.search(pat, url)
+        if m:
+            return m.group(1)
+    return ""
+
+
+# Magento and most storefronts render the code beside the word "SKU".
+_SKU_TEXT_RE = re.compile(r"\bSKU[:\s#]*([A-Za-z0-9][A-Za-z0-9._/-]{1,24})", re.I)
+
+
+def sku_from_text(html: str) -> str:
+    """Last resort: a 'SKU 84' style label in the page text."""
+    if not html:
+        return ""
+    text = re.sub(r"<[^>]+>", " ", html)
+    m = _SKU_TEXT_RE.search(text)
+    return m.group(1) if m else ""
 
 
 def price_from_jsonld(html: str) -> float | None:
@@ -182,6 +252,25 @@ class BaseAdapter:
     # is only a hint: if none match, the search falls back to the block around the
     # page's <h1>, which is the main product on any ordinary product page.
     label_scope: list[str] = []
+
+    def capture_sku(self, url: str) -> str:
+        """The seller's product code, best effort. Never raises, never blocks a price.
+
+        Tried cheapest first: the URL often carries it (JJ, Booker) and costs no
+        request at all; only if that fails is the page fetched for JSON-LD or a
+        'SKU 1234' label. Kept separate from the price path on purpose -- this is
+        provenance metadata, and no failure here should be able to lose a price
+        that was read correctly.
+        """
+        try:
+            if code := sku_from_url(url):
+                return code
+            if not self._fetch_html:
+                return ""
+            html = self._fetch_html(url)
+            return sku_from_jsonld(html) or sku_from_text(html)
+        except Exception:
+            return ""
 
     def from_label(self, url) -> Quote | None:
         if not self.price_label or not self._fetch_labelled:
@@ -367,7 +456,7 @@ ADAPTERS = {
 
 OBS = os.path.join(ROOT, "data", "observations.csv")
 OBS_FIELDS = ["date", "oil", "brand", "format", "channel", "source", "product",
-              "url", "pack_value", "pack_unit", "price_gbp", "notes"]
+              "url", "sku", "pack_value", "pack_unit", "price_gbp", "notes"]
 _BRAND_RULES = [(r"chef'?s larder", "Chef's Larder"), (r"sysco classic", "Sysco Classic"),
                 (r"chef'?s choice", "KTC Chef's Choice"),
                 (r"extended life rapeseed|ktc extended life", "KTC Extended Life"),
@@ -397,7 +486,8 @@ def _write_observations(results):
         rows.append({
             "date": today, "oil": r["oil"], "brand": _brand(r["product"]),
             "format": r["format"], "channel": "cash_carry", "source": r["seller"],
-            "product": r["product"], "url": r["url"], "pack_value": pack_value,
+            "product": r["product"], "url": r["url"],
+            "sku": r.get("sku_code", ""), "pack_value": pack_value,
             "pack_unit": pack_unit, "price_gbp": f"{r['price_gbp']:.2f}",
             "notes": f"auto ({r['method']})",
         })
@@ -550,6 +640,26 @@ def cmd_selftest():
     check("default band would have rejected it", validate(13.0) != "")
     check("per-oil pack is read from config", _pack_for(_oils, "palm") == (12.5, "kg"))
     check("unknown oil falls back to the 20L pack", _pack_for(_oils, "nope") == (20, "L"))
+
+    print("seller SKU codes (metadata: may be empty, must never raise)")
+    check("JJ's code comes free from the URL",
+          sku_from_url("https://www.jjfoodservice.com/product/London-Enfield/OIL011/") == "OIL011")
+    check("Booker's comes from the query string",
+          sku_from_url("https://www.booker.co.uk/products/product?Code=141775&x=y") == "141775")
+    check("a slug URL yields nothing rather than guessing",
+          sku_from_url("https://marfast.co.uk/prep-palm-oil-12-5kg-box.html") == "")
+    check("JSON-LD sku is preferred over mpn",
+          sku_from_jsonld('<script type="application/ld+json">'
+                          '{"@type":"Product","mpn":"M-9","sku":"ABC123"}</script>') == "ABC123")
+    check("falls back to mpn when there is no sku",
+          sku_from_jsonld('<script type="application/ld+json">'
+                          '{"@type":"Product","mpn":"M-9"}</script>') == "M-9")
+    check("malformed JSON-LD returns empty, does not raise",
+          sku_from_jsonld('<script type="application/ld+json">{not json</script>') == "")
+    check("reads a Magento-style 'SKU 84' label",
+          sku_from_text("<div>Availability: In stock <b>SKU</b> 84</div>") == "84")
+    check("no SKU label anywhere returns empty",
+          sku_from_text("<div>Delivered: £34.29</div>") == "")
 
     print("\nSELFTEST PASSED" if ok else "\nSELFTEST FAILED")
     return 0 if ok else 1
@@ -741,10 +851,13 @@ def cmd_run(only=None, exclude=None, write=False):
                 note = "  (SKU time budget spent)" if took > SKU_BUDGET else ""
                 print(f"  ✗ {sku['oil']}/{sku['format']}: {e}{note}")
                 continue
+            if not q.sku_code:
+                q.sku_code = ad.capture_sku(sku["url"])
             why = validate(q.price_gbp, band=_band_for(oils_cfg, sku["oil"]))
             flag = "" if not why else f"  [HELD: {why}]"
             results.append({"seller": seller, **sku, **q.dict(), "held": why})
-            print(f"  ✓ {sku['oil']}/{sku['format']}: £{q.price_gbp:.2f}  via {q.method}{flag}")
+            code = f"  sku={q.sku_code}" if q.sku_code else ""
+            print(f"  ✓ {sku['oil']}/{sku['format']}: £{q.price_gbp:.2f}  via {q.method}{code}{flag}")
         print()
 
     print(f"{len(results)} quote(s), {len(failures)} failure(s)")

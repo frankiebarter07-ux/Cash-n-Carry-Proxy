@@ -31,8 +31,26 @@ from datetime import date
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGETS = os.path.join(ROOT, "config", "targets.json")
 OBS = os.path.join(ROOT, "data", "observations.csv")
+OILS = os.path.join(ROOT, "config", "oils.json")
 FIELDS = ["date", "oil", "brand", "format", "channel", "source", "product", "url",
-          "pack_value", "pack_unit", "price_gbp", "notes"]
+          "sku", "pack_value", "pack_unit", "price_gbp", "notes"]
+
+def pack_for(oil):
+    """The oil's pack, from config -- not every oil is a 20 L drum any more."""
+    with open(OILS, encoding="utf-8") as fh:
+        cfg = json.load(fh)["oils"]
+    p = (cfg.get(oil) or {}).get("standard_pack") or {"value": 20, "unit": "L"}
+    return p["value"], p["unit"]
+
+
+def sku_from_url(url):
+    """Booker and JJ put the seller's product code in the URL."""
+    for pat in (r"[?&]Code=(\d+)", r"/product/[^/]+/([A-Z]{2,}\d+)/?"):
+        m = re.search(pat, url)
+        if m:
+            return m.group(1)
+    return ""
+
 
 BRAND_RULES = [
     (r"chef'?s larder", "Chef's Larder"),
@@ -104,11 +122,15 @@ def main():
             print(f"  ! {key}: £{price} is outside a sane range")
             return 1
         sku = skus[key]
+        pack = pack_for(sku["oil"])
         rows.append({
             "date": a.date, "oil": sku["oil"], "brand": brand_of(sku["product"]),
             "format": sku["format"], "channel": "cash_carry", "source": seller,
             "product": sku["product"], "url": sku["url"],
-            "pack_value": 20, "pack_unit": "L",
+            # Pack and SKU come from the same places the automatic collector uses,
+            # so a hand-entered row is indistinguishable from a fetched one.
+            "sku": sku_from_url(sku["url"]),
+            "pack_value": pack[0], "pack_unit": pack[1],
             "price_gbp": f"{price:.2f}", "notes": a.note,
         })
 
