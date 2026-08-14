@@ -6,10 +6,13 @@
 > `config/targets.json`. Do not update this file — its value is that it records what
 > was true on the day.
 
-**UK prices only. All 15 SKUs verified in-browser on 2026-08-10 — every seller shows
-prices publicly, no trade login required anywhere.** Collection prices throughout.
+**UK prices only. The original 15 SKUs were verified in-browser on 2026-08-10 — every
+seller shows prices publicly, no trade login required anywhere.** Collection prices
+throughout. The five palm SKUs were added later from a catalogue search and have not
+had the same in-browser verification — see the note at the foot of this file.
 
-Two oils, one pack size (20 L), two formats (bag-in-box / drum), five sellers.
+Three oils. Rapeseed and soybean in 20 L (bag-in-box / drum); palm in a 12.5 kg box.
+Five sellers.
 
 **Aggregation:** a seller's SKUs are averaged into one seller-price, then averaged
 across sellers with a 2-standard-deviation outlier filter. A non-reporting seller's
@@ -59,3 +62,22 @@ number from a gated page as a real price.
 CK Fast Foods — its page is login-walled, and the values the old regex scraper
 recorded (£25.39 / £25.49) could not be verified. Dropped from the index.
 Earlier data is archived in `data/observations_legacy.csv`.
+
+## Palm (added 2026-08-14) — not yet in-browser verified
+
+Five 12.5 kg palm SKUs were added from a `scripts/discover.py` catalogue search:
+two at Marfast, three at Magna. They are recorded here as **unverified** because
+the search reads a results grid, not a labelled price on the product page — the
+adapters do that on the next run, and only a labelled price is ever written.
+
+Two things still want a human eye on the actual product pages:
+
+- **Composition.** The index tracks pure single-source oils. *Palmax Fat Oil*,
+  *Caterfry* and *Eden Harvest OptiPalm* are brand names that do not state
+  composition, so any of them could be a blend and would then have to be dropped.
+- **Pack.** All five are listed as 12.5 kg boxes. Confirm that is the pack the
+  price refers to, not a case of smaller units.
+
+JJ Foodservice, Brakes and Booker returned no palm. For Booker that is the usual
+datacenter-IP block; for the other two the catalogue search simply found nothing,
+which is not the same as proof they do not stock it.

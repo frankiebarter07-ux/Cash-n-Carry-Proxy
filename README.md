@@ -56,9 +56,10 @@ Exact products and URLs: [`config/targets.json`](config/targets.json).
 ## Method
 
 1. **Collect** — one row per SKU per seller per day, at the **collection price** for a
-   single 20 L pack.
-2. **Standardise** — every price expressed per 20 L *and* per **metric tonne** (using
-   published densities), so the two oils are comparable.
+   single pack (20 L for rapeseed and soybean, a 12.5 kg box for palm).
+2. **Standardise** — every price expressed per pack *and* per **metric tonne**. Volume
+   packs convert via published densities; palm is already sold by weight, so it scales
+   straight to per-tonne. Per tonne is the view in which all three are comparable.
 3. **Average within a seller** — a seller's SKUs collapse to one *seller price*, so a
    shop listing four SKUs doesn't outvote one listing a single SKU.
 4. **Average across sellers** — dropping any seller more than **2 standard deviations**
@@ -109,7 +110,7 @@ periodically — `HANDOVER.md` §7.
 HANDOVER.md               runbook: ownership, security, setup, failure triage
 ARCHITECTURE.md           design: rules, data model, fetch tiers, anti-bot, gaps
 docs/                     step-by-step guides for the four handover jobs
-config/targets.json       the 15 SKUs: seller, oil, format, product, URL
+config/targets.json       the 20 SKUs: seller, oil, format, product, URL
 config/oils.json          oil registry: pack size, density, colour
 data/observations.csv     raw record, one row per SKU per day
 data/series.json|.js      computed series + per-SKU breakdown + price changes

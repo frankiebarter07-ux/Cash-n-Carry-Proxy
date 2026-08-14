@@ -26,7 +26,7 @@ arrive that way. Without it the system collects perfectly and tells nobody.
 ## 1. What this is
 
 A daily price index for **rapeseed** and **vegetable (soybean)** oil across five UK
-cash-and-carry sellers — 15 SKUs, all 20 L, split by bag-in-box vs drum. It answers
+cash-and-carry sellers — 20 SKUs, split by bag-in-box, drum and box. It answers
 *"are wholesale oil prices moving, and who moved first?"*
 
 | Seller | SKUs | Collected by |

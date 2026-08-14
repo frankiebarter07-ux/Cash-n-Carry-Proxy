@@ -46,7 +46,7 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium
 
-      - name: Live fetch all 15 SKUs
+      - name: Live fetch every SKU
         timeout-minutes: 15
         run: python3 scripts/adapters.py --run || true
 

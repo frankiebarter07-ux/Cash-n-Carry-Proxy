@@ -10,7 +10,8 @@ A daily price index for **rapeseed** and **soybean ("vegetable")** oil at UK B2B
 cash-and-carry sellers, used as a **movement proxy** — the question it answers is
 *"are wholesale oil prices moving, and who moved first?"*, not *"what will I pay?"*.
 
-Scope today: **15 SKUs × 5 sellers**, all 20 L, split by pack format (bag-in-box /
+Scope today: **20 SKUs × 5 sellers** — rapeseed and soybean in 20 L, palm in a
+12.5 kg box — split by pack format (bag-in-box /
 drum). All prices are **publicly visible — no login is used anywhere**.
 
 ## 2. The two rules that keep the data honest
