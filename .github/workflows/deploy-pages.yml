@@ -22,7 +22,7 @@ on:
     workflows: ["Daily oil prices"]
     types: [completed]
   push:
-    branches: [main, master, claude/cooking-oil-price-tracker-2iipfw]
+    branches: [main, master]
     paths:
       - "index.html"
       - "dashboard_static.html"

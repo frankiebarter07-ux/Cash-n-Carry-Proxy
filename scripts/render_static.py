@@ -2,8 +2,8 @@
 """
 Render a fully static (NO JavaScript) dashboard from data/series.json.
 
-Why: some embedded HTML viewers (e.g. the Claude mobile app's preview) strip
-<script> tags, so the interactive index.html shows blank. This writes
+Why: some embedded HTML viewers and email clients strip <script> tags, so the
+interactive index.html shows blank in them. This writes
 dashboard_static.html — an inline-SVG chart + table that renders anywhere,
 including those viewers. It's theme-aware via CSS only (no JS).
 
