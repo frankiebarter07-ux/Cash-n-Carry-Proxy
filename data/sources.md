@@ -81,3 +81,19 @@ Two things still want a human eye on the actual product pages:
 JJ Foodservice, Brakes and Booker returned no palm. For Booker that is the usual
 datacenter-IP block; for the other two the catalogue search simply found nothing,
 which is not the same as proof they do not stock it.
+
+### Brakes palm — listed, deliberately excluded (2026-08-14)
+
+Brakes stocks palm but at roughly twice JJ's price for a nominally similar
+product, and it was excluded on that basis.
+
+**This exclusion should be re-checked, because "expensive" alone is not a valid
+reason to drop a seller from a price index** — dropping the dear ones biases the
+index downward, and the 2-SD filter exists precisely to handle genuine outliers
+on the record rather than by omission. The exclusion is sound only if the Brakes
+product is *not comparable*: a 2×12.5kg case, a 25kg unit, or per-case pricing
+would each explain a doubling and would each justify leaving it out.
+
+If it turns out to be a like-for-like 12.5kg box, add it back and let the outlier
+filter decide — that is what it is for, and the exclusion will be visible in
+`n_excluded` rather than invisible in this file.
