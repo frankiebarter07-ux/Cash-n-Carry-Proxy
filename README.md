@@ -117,6 +117,7 @@ scripts/render_summary.py build SUMMARY.md + the report (markdown + HTML)
 scripts/send_report.py     email the report via SMTP to non-GitHub recipients
 scripts/manual_prices.py  record a blocked seller's prices by hand
 scripts/booker_probe.py   check whether any Booker endpoint is reachable from here
+scripts/discover.py       search every seller's catalogue for a term (adding a new oil)
 tools/setup-windows-runner.ps1  one-shot install of the self-hosted runner (Booker)
 tools/check_protection.sh probe each site for bot-protection / price visibility
 .github/workflows/        daily collection, Pages publish, adapter tests, manual entry
