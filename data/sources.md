@@ -80,7 +80,7 @@ composition and the index tracks **pure single-source oils only**:
 | Magna | Eden Harvest OptiPalm | £21.49 | not yet checked |
 | Marfast | Prep Palm Oil | £29.49 | not yet checked |
 | Marfast | Olympic Eco Fry Palm Oil | £23.79 | not yet checked |
-| JJ | Palmax Palm Oil (OIL011) | £21.79 | not yet checked |
+| JJ | Palmax Palm Oil (OIL011) | £21.79 | **confirmed 2026-08-14** |
 
 Anything found to be a blend, or priced per case rather than per 12.5 kg box,
 should be deleted from `config/targets.json`; the index recalculates on the next
@@ -95,16 +95,30 @@ stock any.
 
 ### Brakes palm — listed, deliberately excluded (2026-08-14)
 
-Brakes stocks palm but at roughly twice JJ's price for a nominally similar
-product, and it was excluded on that basis.
+Brakes lists palm at roughly £20 above the other three sellers (~£45 against a
+£21.79-£26.64 range) and is deliberately not in `config/targets.json`.
 
-**This exclusion should be re-checked, because "expensive" alone is not a valid
-reason to drop a seller from a price index** — dropping the dear ones biases the
-index downward, and the 2-SD filter exists precisely to handle genuine outliers
-on the record rather than by omission. The exclusion is sound only if the Brakes
-product is *not comparable*: a 2×12.5kg case, a 25kg unit, or per-case pricing
-would each explain a doubling and would each justify leaving it out.
+**The 2-SD outlier filter would NOT have caught it**, which is why this exclusion
+is by hand rather than left to the maths. Tested against the live seller prices:
 
-If it turns out to be a like-for-like 12.5kg box, add it back and let the outlier
-filter decide — that is what it is for, and the exclusion will be visible in
-`n_excluded` rather than invisible in this file.
+| Brakes at | Cross-seller mean | 2-SD threshold | Its deviation | Excluded? |
+|---|---|---|---|---|
+| £44 | £29.19 | £20.14 | £14.81 | no |
+| £45 | £29.44 | £21.12 | £15.56 | no |
+| £48 | £30.19 | £24.08 | £17.81 | no |
+
+One extreme value among four inflates the standard deviation faster than it
+inflates its own deviation from the mean, so it masks itself. Including it would
+have moved the palm index from £24.25 to about £29.19 -- a 20% shift -- while
+reporting `n_excluded: 0`, i.e. "all sellers agree".
+
+**The general lesson, which applies to every oil here: the 2-SD filter is a guard
+against mild dispersion, not against a badly mismatched product.** It needs at
+least three sellers to run at all, and at three or four it cannot see a single
+gross outlier. Screening on whether a SKU is genuinely like-for-like has to
+happen when it is added to `config/targets.json`, not afterwards in the maths.
+
+A £20 gap on a nominally identical commodity in a nominally identical pack almost
+certainly means the Brakes listing is not like-for-like -- a 2x12.5kg case, a 25kg
+unit, or per-case pricing. If anyone re-opens this, that is the thing to check,
+and it should be settled on the product page rather than by re-running the filter.

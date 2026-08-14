@@ -46,6 +46,19 @@ Aggregation is deliberately two-stage, then smoothed:
    listing four SKUs doesn't outvote a shop listing one.
 2. **Across sellers** — drop any seller more than **2 standard deviations** from the
    cross-seller mean (only when ≥ 3 sellers), then average the rest.
+
+   **Know what this does not do.** It guards against mild dispersion, not against a
+   badly mismatched product. At the three-to-five sellers this index actually has, a
+   single gross outlier inflates the standard deviation faster than it inflates its
+   own deviation from the mean, so it *masks itself* and passes. Measured on the live
+   palm series: a fourth seller £20 above the other three survives the filter at £44,
+   £45 and £48 alike, moving the index ~20% while reporting `n_excluded: 0` — that is,
+   while claiming every seller agreed. `data/sources.md` records the working.
+
+   The consequence for whoever maintains this: **screening for like-for-like happens
+   when a SKU is added to `config/targets.json`, not afterwards in the maths.** A price
+   far outside the others usually means the product is not comparable — a case rather
+   than a unit, a different pack size — and that has to be settled on the product page.
 3. **Carry-forward (LOCF), bounded** — a seller that didn't report today keeps its
    last known price, so the index moves only on *real* price changes, never on missing
    data. But only for `MAX_CARRY_DAYS` (7): after that the seller **lapses** — dropped
