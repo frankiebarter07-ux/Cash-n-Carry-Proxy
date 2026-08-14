@@ -12,7 +12,7 @@ Run after process.py:  python3 scripts/render_static.py
 
 import json
 import os
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SERIES = os.path.join(ROOT, "data", "series.json")

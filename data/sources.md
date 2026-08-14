@@ -1,4 +1,10 @@
-# Price sources
+# Price sources — verification record, 2026-08-10
+
+> **A dated snapshot, not a living document.** This is the hand-verification the
+> index was built against: every SKU opened in a browser and its collection price
+> read off the page. Live prices are in `data/observations.csv`; the SKU list is
+> `config/targets.json`. Do not update this file — its value is that it records what
+> was true on the day.
 
 **UK prices only. All 15 SKUs verified in-browser on 2026-08-10 — every seller shows
 prices publicly, no trade login required anywhere.** Collection prices throughout.
@@ -7,7 +13,8 @@ Two oils, one pack size (20 L), two formats (bag-in-box / drum), five sellers.
 
 **Aggregation:** a seller's SKUs are averaged into one seller-price, then averaged
 across sellers with a 2-standard-deviation outlier filter. A non-reporting seller's
-last price is carried forward so the index moves only on real price changes.
+last price is carried forward for up to 7 days so the index moves only on real price
+changes, after which that seller drops out of the average.
 
 **VAT:** UK cooking oils are zero-rated, so inc-VAT = ex-VAT; prices used as listed.
 

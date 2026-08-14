@@ -334,40 +334,15 @@ class BrakesAdapter(BaseAdapter):
 
 
 class JJAdapter(BaseAdapter):
-    """React SPA; 403s plain fetchers.
-
-    Highest-value work is finding the internal JSON API (DevTools > Network >
-    Fetch/XHR on a product page) and filling in `api_url_for`. Until then the
-    browser tier carries it.
-    """
+    """React SPA that 403s plain fetchers, yet serves JSON-LD to a browser -- so
+    the static tier reads it and no API hunt was ever needed. See ARCHITECTURE 4."""
     name = "JJ Foodservice"
     price_label = "Collection"
     selectors = ["[class*='collection'] [class*='price']", "[class*='product-price']",
                  "[itemprop='price']"]
 
-    # Fill this in once the endpoint is known, e.g.
-    #   return f"https://www.jjfoodservice.com/api/product/{code}?branch=London-Enfield"
-    def api_url_for(self, url: str) -> str | None:
-        return None
-
-    def from_api(self, url: str) -> Quote | None:
-        api = self.api_url_for(url)
-        if not api or not self._fetch_html:
-            return None
-        raw = self._fetch_html(api)
-        try:
-            data = json.loads(raw)
-        except Exception:
-            return None
-        for key in ("collectionPrice", "price", "unitPrice", "sellPrice"):
-            p = money(data.get(key) if isinstance(data, dict) else None)
-            if p is not None:
-                return Quote(p, f"json-api:{key}", api,
-                             datetime.now(timezone.utc).isoformat())
-        return None
-
     def fetch(self, sku: dict) -> Quote:
-        for step in (self.from_api, self.from_static, self.from_rendered):
+        for step in (self.from_static, self.from_rendered):
             q = step(sku["url"])
             if q:
                 return q

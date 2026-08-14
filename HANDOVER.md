@@ -7,53 +7,19 @@ person who built it**. Read this first.
 
 ## 0. Do these before anything else
 
-Three items are blockers. The system works without them, but the company cannot
-*keep* it.
+Four tasks, each with its own step-by-step guide in [`docs/`](docs/). The first two
+are blockers: the system works without them, but Olleco cannot *keep* it.
 
-### 0.1 Transfer the repository to the company — CRITICAL
-The repo currently sits on an individual's personal GitHub account
-(`frankiebarter07-ux`). When that person's access ends, the company loses the data,
-the schedule and the ability to fix anything.
+| # | Task | Guide | Why |
+|---|---|---|---|
+| 1 | **Transfer ownership to Olleco** | [`docs/01-transfer-ownership.md`](docs/01-transfer-ownership.md) | The repo is on a personal account. When that access ends, Olleco loses the data, the schedule and the dashboard. |
+| 2 | **Move email off a personal account** | [`docs/02-email-sender.md`](docs/02-email-sender.md) | Reports currently send via a private individual's mailbox, using their app password. |
+| 3 | Decide how Booker is collected | [`docs/03-booker-collection.md`](docs/03-booker-collection.md) | Four of fifteen SKUs. Manual entry works today; automation needs a security decision. |
+| 4 | Understand the hosting | [`docs/04-hosting.md`](docs/04-hosting.md) | Nothing to do — but know what it is and when to change it. |
 
-*Settings → General → Danger Zone → Transfer ownership* → a company organisation.
-
-### 0.2 Public dashboard **or** automated Booker — you cannot have both
-This is a real fork in the road, so decide it deliberately.
-
-To serve the dashboard at a URL, GitHub Pages needs the repository to be **public**
-(Pages cannot publish from a private repo on the Free plan). But GitHub's own
-guidance is explicit:
-
-> Only use self-hosted runners with private repositories. Forks of a public
-> repository can run dangerous code on your self-hosted runner machine.
-
-That runner would sit **inside the company network**. So:
-
-| If you want… | Then… |
-|---|---|
-| A public dashboard URL | Repo public, Pages on. **Do not attach the self-hosted runner.** Collect Booker by hand (§4), or let it lapse and run a four-seller index. |
-| Automated Booker collection | Repo stays private, runner attached (§3). View the index via `SUMMARY.md` and the committed dashboards instead of a URL. |
-
-**The chosen path is the public dashboard** (§4a). Booker therefore stays on manual
-entry. If the company later prefers automated Booker over a public URL, make the repo
-private again *before* registering any runner.
-
-Before publishing, know what becomes public: every price observation, the config, the
-docs and the full history. There are **no credentials in the repository** — SMTP
-details live in Actions secrets, which are never exposed to forks — so publishing
-leaks no secret, only the data itself.
-
-### 0.3 Point alerts *and reports* at a company address
-Two things now arrive by GitHub notification, so this step is what makes the whole
-system reach a human:
-
-- **Failures** — an issue labelled `collection-failure`, on any broken run.
-- **Price reports** — a comment on the *📈 Cooking oil price reports* thread,
-  whenever a seller moves a price, plus a Monday digest (§5).
-
-Have a **monitored company account** watch this repository (*Watch → All Activity*).
-Without it, both go unread and the index dies quietly — collecting perfectly, telling
-nobody.
+**And the step people forget:** a monitored company account must
+**Watch → All Activity** on the repository. Failure alerts and price reports both
+arrive that way. Without it the system collects perfectly and tells nobody.
 
 ---
 
@@ -97,74 +63,14 @@ never do. Change the window via `MAX_CARRY_DAYS` in `scripts/process.py`.
 
 ---
 
-## 3. Installing the self-hosted runner (for Booker)
+## 3. Booker
 
-> ⚠️ **Only do this if the repository is PRIVATE.** See §0.2 — a self-hosted runner
-> on a public repo can be made to run a stranger's code on that machine. If you have
-> published the dashboard, skip this section entirely and use §4 instead.
+Not collected automatically: Booker blocks GitHub's datacenter IPs at its CDN edge.
+Its last price carries forward for 7 days, then it lapses out of the average and the
+dashboard says so.
 
-Needed only for Booker. Budget 15 minutes, once.
-
-**Why:** Booker returns *403 Access Denied* to GitHub's cloud runners because they use
-datacenter IP addresses. The prices are public — the problem is only *where the
-request comes from*. Running that one step from an ordinary office connection fixes
-it. Nothing else about the system changes: same repo, same workflows, same logs.
-
-**Machine:** any always-on Windows PC on the normal office connection. It wakes for a
-minute or two each morning and is otherwise idle. It must **not** sit behind a VPN
-that exits via a datacenter, or Booker will block it again for the same reason.
-
-```powershell
-# 1. On GitHub: Settings -> Actions -> Runners -> New self-hosted runner -> Windows
-#    Copy the registration token (it expires after one hour).
-
-# 2. Start -> "PowerShell" -> right-click -> Run as administrator, then:
-cd path\to\Cash-n-Carry-Proxy
-.\tools\setup-windows-runner.ps1 -Token AXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
-
-**3. Switch the Booker job on.** *Settings → Secrets and variables → Actions →
-Variables → New repository variable*, named `BOOKER_RUNNER`, value `true`.
-
-Until that variable is set, the Booker job is **skipped** and the index publishes the
-other four sellers. This is deliberate and it is not a nicety: a job whose runner
-label matches nothing does not fail, it *queues* — for up to 24 hours — and because
-the publishing job waits on it, the whole index would stop updating every day. A
-skipped job satisfies that wait instantly. So never point the Booker job at
-`self-hosted` without a runner actually registered.
-
-The script installs Git and Python if missing, downloads the current runner,
-registers it, and installs it as a Windows service set to start on boot — so it
-survives power cuts and Windows Update reboots. Read its header before running: it
-also explains how to remove it later.
-
-**Verify without waiting for the morning:** *Actions → Test adapters → Run workflow*,
-set `runner` to `self-hosted`. The four Booker SKUs should return prices via
-`embedded-json:collectOE` instead of *Access Denied*.
-
-**If Booker still 403s from that PC**, its connection is being filtered too. Confirm
-by trying a different network (a phone hotspot is the quickest test). This is
-unlikely on an ordinary office line.
-
-**Security — worth understanding before you attach it.** A self-hosted runner
-executes whatever code the repository's workflows contain. That is safe here because
-the repository is private and only your team can change it. Two rules follow:
-
-- **Do not make the repository public** while the runner is attached.
-- **Do not attach this runner to a repository that accepts outside pull requests** —
-  a stranger's pull request could otherwise run code on that machine.
-
-**Maintenance:** the runner updates itself. If the PC is replaced, run the script
-again on the new one. If it goes offline, the daily job still publishes the other
-four sellers, and Booker drops out of the index after 7 days (§2) rather than
-sitting frozen.
-
-**On another operating system?** The same applies with `./config.sh` and
-`sudo ./svc.sh install && sudo ./svc.sh start` instead of the PowerShell script, and
-`runs-on: self-hosted` already matches any platform. One change is required: in
-`.github/workflows/daily-prices.yml`, the Booker step calls `python` rather than
-`python3` because Windows has no `python3`; both work on macOS and Linux after
-`setup-python`, so it needs no edit.
+Two routes, and the choice is a security decision because this repository is public:
+**[`docs/03-booker-collection.md`](docs/03-booker-collection.md)**.
 
 ---
 
@@ -180,80 +86,15 @@ The other four sellers keep collecting automatically regardless.
 
 ---
 
-## 4a. Publishing the dashboard, and emailing the report
+## 4a. The dashboard and the reports
 
-### Publish the dashboard to a URL (once, ~5 minutes)
+- **Where it is hosted, and when to change that:**
+  [`docs/04-hosting.md`](docs/04-hosting.md)
+- **Changing the sending mailbox:** [`docs/02-email-sender.md`](docs/02-email-sender.md)
 
-1. **Make the repository public** — *Settings → General → Danger Zone → Change
-   visibility*. Read §0.2 first; this rules out the self-hosted runner.
-2. *Settings → Pages → Build and deployment → **Source: GitHub Actions***.
-3. *Actions → **Publish dashboard** → Run workflow*.
-
-The URL appears in the run summary and under *Settings → Pages*, and looks like
-`https://<owner>.github.io/Cash-n-Carry-Proxy/`. It republishes automatically after
-every daily collection, so it is never stale.
-
-What is published is a fixed list — `index.html`, `dashboard_static.html`, and the
-series plus observations data. Nothing else, so adding a file to the repo can never
-accidentally put it on the site.
-
-> Anyone with the link can read it. Pages sites cannot be password-protected on any
-> plan below Enterprise Cloud. If that becomes unacceptable, host the same `site/`
-> folder on Cloudflare Pages behind Cloudflare Access instead — free for up to 50
-> named users — and make the repository private again.
-
-### Email the report to people without GitHub (once, ~10 minutes)
-
-Watchers already get GitHub notifications. For anyone else — a buyer, a procurement
-manager — add these as **repository secrets** (*Settings → Secrets and variables →
-Actions → Secrets*):
-
-| Secret | What it is |
-|---|---|
-| `SMTP_HOST` | e.g. `smtp.office365.com`, `smtp.gmail.com`, `smtp.resend.com` |
-| `SMTP_PORT` | `587` for STARTTLS (default), `465` for implicit TLS |
-| `SMTP_USER` | the mailbox or API username |
-| `SMTP_PASSWORD` | an **app password** or API key — never someone's login password |
-| `REPORT_FROM` | address to send from (defaults to `SMTP_USER`) |
-| `REPORT_TO` | comma-separated recipients |
-
-**Use a shared company mailbox, not a personal account.** A personal mailbox stops
-working the day that person leaves, which is exactly the failure this handover exists
-to prevent.
-
-> ⚠️ **Currently sending from a personal Gmail account** (verified working
-> 2026-08-10 — both samples delivered). This was set up to prove the pipeline and is
-> **not a permanent arrangement**: the reports stop the moment that app password is
-> revoked or the account goes. Replace `SMTP_HOST` / `SMTP_USER` / `SMTP_PASSWORD` /
-> `REPORT_FROM` with a company mailbox, then re-run *Test email* to confirm.
->
-> Mail from a consumer address to a company domain also tends to land in Junk on
-> first contact, which a company mailbox largely avoids.
-
-Until these are set, the email step prints "not configured" and the run stays green —
-so nothing breaks if the company never wants email. Once set, a *failed* send fails
-the run loudly, because a report that quietly never arrives is worse than none.
-
-**Testing it:** *Actions → **Test email** → Run workflow*. Put your own address in
-`to` so a trial cannot surprise the distribution list. It fails with a named list if
-any required secret is missing, so "green" always means a message really went out.
-
-`REPORT_TO` on its own is **not enough** — that is only the recipient list. Sending
-also needs a mailbox to send *through*: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`.
-
-On Microsoft 365 (`smtp.office365.com`, port 587) note that basic authentication is
-usually disabled: you need an app password, and IT may have to enable SMTP AUTH on
-that mailbox.
-
-Or from a terminal:
-
-```bash
-python3 scripts/render_summary.py --report-out r.md --report-html r.html --force-report
-SMTP_HOST=… SMTP_USER=… SMTP_PASSWORD=… REPORT_TO=you@company.com \
-  python3 scripts/send_report.py --html r.html --text r.md --dry-run
-```
-
-Drop `--dry-run` to actually send one to yourself.
+**Testing email at any time:** *Actions → Test email → Run workflow*, with your own
+address in `to`. It fails with a named list if a setting is missing, so a green run
+always means a message really went out.
 
 ---
 

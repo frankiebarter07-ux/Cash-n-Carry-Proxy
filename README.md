@@ -2,8 +2,12 @@
 
 > **Taking this over or running it in production? Start with
 > [`HANDOVER.md`](HANDOVER.md)** — ownership, security, the daily schedule and what
-> to do when something breaks. Design rationale is in
-> [`ARCHITECTURE.md`](ARCHITECTURE.md).
+> to do when something breaks. The four jobs that need doing are written up
+> step-by-step in [`docs/`](docs/): [transfer
+> ownership](docs/01-transfer-ownership.md), [move the sending
+> mailbox](docs/02-email-sender.md), [collect
+> Booker](docs/03-booker-collection.md), [hosting](docs/04-hosting.md). Design
+> rationale is in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 A daily index of **rapeseed** and **vegetable (soybean)** oil prices across five UK
 **cash-and-carry / B2B** sellers. It's a *movement proxy* — it answers *"are wholesale
@@ -98,12 +102,14 @@ periodically — `HANDOVER.md` §7.
 ```
 HANDOVER.md               runbook: ownership, security, setup, failure triage
 ARCHITECTURE.md           design: rules, data model, fetch tiers, anti-bot, gaps
+docs/                     step-by-step guides for the four handover jobs
 config/targets.json       the 15 SKUs: seller, oil, format, product, URL
 config/oils.json          oil registry: pack size, density, colour
 data/observations.csv     raw record, one row per SKU per day
 data/series.json|.js      computed series + per-SKU breakdown + price changes
 dashboard_static.html     the no-JavaScript view (built by render_static.py)
 index.html                the interactive view (reads data/series.js)
+assets/                   Olleco logo and favicon used by both dashboards
 scripts/adapters.py       per-seller price adapters (+ selftest, diagnose)
 scripts/process.py        standardise, aggregate, carry forward, compute changes
 scripts/render_static.py  build the no-JavaScript dashboard

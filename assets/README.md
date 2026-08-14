@@ -21,16 +21,17 @@ Applied in `index.html` and `scripts/render_static.py`:
 
 | Hex | Name | Where it is used |
 |---|---|---|
-| `#00433F` | Cyprus | the dark ground (taken down in value), and the accent on white |
-| `#CBD300` | Rio Grande | the header rule in both themes, and the accent on dark |
+| `#00433F` | Cyprus | headings, the quote tiles, active controls, tooltips |
+| `#CBD300` | Rio Grande | the masthead and footer rules, the tile edge, the button |
 | `#FFFFFF` | White | panels and type on the light theme, and the logo lockup |
 
-Contrast checked against WCAG: body text 15.3:1 on dark, 11.2:1 on light, weakest
-tone 4.58:1.
+Contrast checked against WCAG: body text 11.2:1, white on the Cyprus tiles 11.2:1,
+Rio Grande on Cyprus 6.9:1, weakest tone 4.58:1.
 
 Up/down are deliberately **not** brand colours. They are the market convention
 (green up, red down), held clear of the lime in hue so a price rise cannot read as a
-brand highlight.
+brand highlight. The tiles use lighter steps of the same pair, since the darker
+green and red fail against Cyprus.
 
 ## 3. The typeface — Arial
 

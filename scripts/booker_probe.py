@@ -16,7 +16,6 @@ attempt to defeat or evade any protection -- if Booker declines, that is the ans
 Reads nothing, writes nothing; it just reports what each endpoint returns.
 """
 
-import json
 import re
 import sys
 import urllib.error
