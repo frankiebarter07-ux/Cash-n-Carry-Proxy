@@ -124,7 +124,8 @@ def summary_doc(data):
     ch = data.get("changes", {}) or {}
     day = when(ch.get("latest_date") or data.get("generated"))
     return ([("h", 1, "UK Cooking Oil Index"),
-             ("p", f"Collection prices, 20 L packs, five UK cash-and-carry sellers. "
+             ("p", f"Collection prices, standard unit sizes \u2014 20 L drums or bibs, "
+                   f"12.5 kg blocks. Five UK cash-and-carry sellers. "
                    f"Updated {day}."),
              ("h", 2, "Index level")]
             + current_blocks(data) + lapsed_blocks(data)
@@ -155,7 +156,8 @@ def report_doc(data, is_digest):
         blocks += summary_bullets(ch.get("week_summary")) + moves_blocks(week, limit=10)
 
     blocks += [("rule",),
-               ("p", "Collection prices, 20 L packs, five UK cash-and-carry sellers.")]
+               ("p", "Collection prices, standard unit sizes \u2014 20 L drums or bibs, "
+                     "12.5 kg blocks. Five UK cash-and-carry sellers.")]
     return blocks
 
 

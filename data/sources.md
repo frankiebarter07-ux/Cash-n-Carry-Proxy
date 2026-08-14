@@ -63,24 +63,35 @@ CK Fast Foods — its page is login-walled, and the values the old regex scraper
 recorded (£25.39 / £25.49) could not be verified. Dropped from the index.
 Earlier data is archived in `data/observations_legacy.csv`.
 
-## Palm (added 2026-08-14) — not yet in-browser verified
+## Palm (added 2026-08-14)
 
-Five 12.5 kg palm SKUs were added from a `scripts/discover.py` catalogue search:
-two at Marfast, three at Magna. They are recorded here as **unverified** because
-the search reads a results grid, not a labelled price on the product page — the
-adapters do that on the next run, and only a labelled price is ever written.
+Six 12.5 kg palm SKUs: three at Magna, two at Marfast, one at JJ. The five Magna
+and Marfast ones were found by a `scripts/discover.py` catalogue search; the JJ
+one was supplied directly. Prices are read by the adapters from a labelled
+Collection field like every other SKU — the search only ever supplied URLs.
 
-Two things still want a human eye on the actual product pages:
+Verification status of each, since three are brand names that do not state
+composition and the index tracks **pure single-source oils only**:
 
-- **Composition.** The index tracks pure single-source oils. *Palmax Fat Oil*,
-  *Caterfry* and *Eden Harvest OptiPalm* are brand names that do not state
-  composition, so any of them could be a blend and would then have to be dropped.
-- **Pack.** All five are listed as 12.5 kg boxes. Confirm that is the pack the
-  price refers to, not a case of smaller units.
+| Seller | Product | Price | Pure palm, 12.5 kg? |
+|---|---|---|---|
+| Magna | Palmax Fat Oil | £23.49 | **verified 2026-08-14** |
+| Magna | Caterfry Palm Oil | £27.99 | not yet checked |
+| Magna | Eden Harvest OptiPalm | £21.49 | not yet checked |
+| Marfast | Prep Palm Oil | £29.49 | not yet checked |
+| Marfast | Olympic Eco Fry Palm Oil | £23.79 | not yet checked |
+| JJ | Palmax Palm Oil (OIL011) | £21.79 | not yet checked |
 
-JJ Foodservice, Brakes and Booker returned no palm. For Booker that is the usual
-datacenter-IP block; for the other two the catalogue search simply found nothing,
-which is not the same as proof they do not stock it.
+Anything found to be a blend, or priced per case rather than per 12.5 kg box,
+should be deleted from `config/targets.json`; the index recalculates on the next
+run with no code change.
+
+Note that Palmax appears at both JJ (£21.79) and Magna (£23.49) — the same brand,
+£1.70 apart. That is a genuine cross-seller spread on an identical product, and
+is the kind of thing this index exists to show.
+
+Booker returned no palm — the usual datacenter-IP block, not evidence it does not
+stock any.
 
 ### Brakes palm — listed, deliberately excluded (2026-08-14)
 

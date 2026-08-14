@@ -158,7 +158,7 @@ def build():
             f'{esc(o["label"])} &mdash; full price list ({esc(p["date"])}) &middot; '
             f'aggregate {esc(money(p["price_per_unit"]))}/unit</div>'
             f'{lapsed_note}'
-            f'<table><tr><th>Website</th><th>Brand</th><th>Pack</th><th>Product (SKU)</th><th>£/20L</th><th>£/tonne</th></tr>'
+            f'<table><tr><th>Website</th><th>Brand</th><th>Pack</th><th>Product (SKU)</th><th>£/pack</th><th>£/tonne</th></tr>'
             f'{rows_b}</table></div>')
 
     # ---- price changes: today, and across the trailing week -------------------

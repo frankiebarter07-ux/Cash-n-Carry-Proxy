@@ -1,6 +1,6 @@
 # UK Cooking Oil Index
 
-Collection prices, 20 L packs, five UK cash-and-carry sellers. Updated 14 Aug 2026.
+Collection prices, standard unit sizes — 20 L drums or bibs, 12.5 kg blocks. Five UK cash-and-carry sellers. Updated 14 Aug 2026.
 
 ## Index level
 
