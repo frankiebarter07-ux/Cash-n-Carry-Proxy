@@ -324,8 +324,11 @@
           key: oil + "|" + ch, oil, ch, color: o.color,
           label: o.label + (state.channel === "both" ? " · " + CHANNEL_LABEL[ch] : ""),
           // An oil sold in a different pack does not share the others' price
-          // range, so config/oils.json can put it on its own axis.
-          secondary: chart.axis === "secondary",
+          // range, so config/oils.json can put it on its own axis -- but only in
+          // the per-pack view. Per tonne every oil is already in the same unit and
+          // the values sit close together, so a second scale would add a division
+          // that is not there and invite reading a gap that does not exist.
+          secondary: chart.axis === "secondary" && state.unit !== "price_per_tonne",
           pack: o.standard_pack,
           dashed: chart.dashed || (ch === "retail" && state.channel === "both"),
           points: pts.map(p => ({
