@@ -52,21 +52,12 @@ def sku_from_url(url):
     return ""
 
 
-BRAND_RULES = [
-    (r"chef'?s larder", "Chef's Larder"),
-    (r"sysco classic", "Sysco Classic"),
-    (r"chef'?s choice", "KTC Chef's Choice"),
-    (r"extended life rapeseed|ktc extended life", "KTC Extended Life"),
-    (r"\bktc\b", "KTC"),
-]
-
-
-def brand_of(product):
-    low = product.lower()
-    for pat, b in BRAND_RULES:
-        if re.search(pat, low):
-            return b
-    return "Other"
+# Brand rules are NOT duplicated here. Two copies drifted apart is exactly how a
+# hand-entered row ends up classified differently from a fetched one, so this
+# imports the collector's. adapters.py is stdlib-only at import time (Playwright
+# is loaded lazily inside the fetch functions), so this costs nothing.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from adapters import brand_for as brand_of  # noqa: E402
 
 
 def main():

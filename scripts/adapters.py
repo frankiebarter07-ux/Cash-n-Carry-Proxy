@@ -457,15 +457,22 @@ ADAPTERS = {
 OBS = os.path.join(ROOT, "data", "observations.csv")
 OBS_FIELDS = ["date", "oil", "brand", "format", "channel", "source", "product",
               "url", "sku", "pack_value", "pack_unit", "price_gbp", "notes"]
-_BRAND_RULES = [(r"chef'?s larder", "Chef's Larder"), (r"sysco classic", "Sysco Classic"),
-                (r"chef'?s choice", "KTC Chef's Choice"),
-                (r"extended life rapeseed|ktc extended life", "KTC Extended Life"),
-                (r"\bktc\b", "KTC")]
+# Tried in order, first match wins -- so the specific KTC lines must precede the
+# bare \bktc\b catch-all. Palmax is a KTC brand and does not carry the KTC name on
+# the listing, which is why it needs a rule of its own rather than falling through
+# to "Other". This is the single source of truth: manual_prices.py imports it, so
+# a hand-entered row and a fetched one can never classify differently.
+BRAND_RULES = [(r"chef'?s larder", "Chef's Larder"), (r"sysco classic", "Sysco Classic"),
+               (r"chef'?s choice", "KTC Chef's Choice"),
+               (r"extended life rapeseed|ktc extended life", "KTC Extended Life"),
+               (r"\bpalmax\b", "KTC"),
+               (r"\bolympic\b", "Olympic"),
+               (r"\bktc\b", "KTC")]
 
 
-def _brand(product):
+def brand_for(product):
     low = product.lower()
-    for pat, b in _BRAND_RULES:
+    for pat, b in BRAND_RULES:
         if re.search(pat, low):
             return b
     return "Other"
@@ -484,7 +491,7 @@ def _write_observations(results):
             continue
         pack_value, pack_unit = _pack_for(oils_cfg, r["oil"])
         rows.append({
-            "date": today, "oil": r["oil"], "brand": _brand(r["product"]),
+            "date": today, "oil": r["oil"], "brand": brand_for(r["product"]),
             "format": r["format"], "channel": "cash_carry", "source": r["seller"],
             "product": r["product"], "url": r["url"],
             "sku": r.get("sku_code", ""), "pack_value": pack_value,
@@ -660,6 +667,16 @@ def cmd_selftest():
           sku_from_text("<div>Availability: In stock <b>SKU</b> 84</div>") == "84")
     check("no SKU label anywhere returns empty",
           sku_from_text("<div>Delivered: £34.29</div>") == "")
+
+    print("brand classification")
+    check("Palmax is a KTC brand despite not saying KTC",
+          brand_for("Palmax Fat Oil 12.5kg") == "KTC")
+    check("Olympic is its own brand", brand_for("Olympic Eco Fry Palm Oil 12.5kg Box") == "Olympic")
+    check("the specific KTC lines still beat the bare KTC rule",
+          brand_for("KTC Chef's Choice Rapeseed Oil Drum 1x20L") == "KTC Chef's Choice")
+    check("unrecognised brands stay Other", brand_for("Caterfry Palm Oil 12.5kg") == "Other")
+    check("manual entry classifies identically to the collector",
+          __import__("manual_prices").brand_of("Palmax Fat Oil 12.5kg") == "KTC")
 
     print("\nSELFTEST PASSED" if ok else "\nSELFTEST FAILED")
     return 0 if ok else 1
