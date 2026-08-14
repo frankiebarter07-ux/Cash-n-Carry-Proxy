@@ -34,6 +34,9 @@ JSON_OUT = os.path.join(ROOT, "data", "series.json")
 JS_OUT = os.path.join(ROOT, "data", "series.js")
 
 STD_DEV_THRESHOLD = 2.0  # exclude observations beyond this many SDs from the mean
+# Warn (never exclude) when a seller sits this far from the median, in %. The 2-SD
+# filter goes blind to a single gross outlier at small n -- see flag_suspect().
+MEDIAN_WARN_PCT = 40.0
 
 # How long a seller's last known price may be carried forward before that seller
 # stops counting towards the index.
@@ -115,6 +118,36 @@ def filter_anomalies(points):
         else:
             kept.append(p)
     return kept, excluded
+
+
+def flag_suspect(points):
+    """Mark sellers sitting absurdly far from the median. Returns the flagged ones.
+
+    This does NOT change the aggregate -- it only raises a hand. The 2-SD filter
+    above cannot be relied on to catch a badly mismatched product at the three-to-
+    five sellers this index has: one extreme value inflates the standard deviation
+    faster than it inflates its own deviation from the mean, so it masks itself and
+    passes. Measured on the palm series, a seller £20 clear of the other three
+    survived the filter and would have moved the index ~20% while reporting nothing
+    excluded (ARCHITECTURE.md section 3).
+
+    The median is used precisely because it does not move when one value is wild,
+    so the comparison stays stable however bad the outlier is. A price this far out
+    almost always means the SKU is not like-for-like -- a case rather than a single
+    unit, or a different pack -- which is a config question, not a maths one.
+    """
+    if len(points) < 3:
+        return []
+    med = statistics.median(p["price_per_tonne"] for p in points)
+    if med <= 0:
+        return []
+    flagged = []
+    for p in points:
+        dev = abs(p["price_per_tonne"] - med) / med * 100
+        if dev > MEDIAN_WARN_PCT:
+            p["suspect_pct"] = round(dev, 1)
+            flagged.append(p)
+    return flagged
 
 
 def compute_changes(rows):
@@ -245,6 +278,7 @@ def build():
             "channels": defaultdict(list),
         }
 
+    warnings = []
     print(f"Processing {len(rows)} observations (last price carried forward per seller)\n")
     for (oil, channel), sources in sorted(panel.items()):
         # stage 1: one price per seller per date (average that seller's products)
@@ -289,6 +323,18 @@ def build():
             agg_unit = statistics.fmean(s["price_per_unit"] for s in kept)
             agg_tonne = statistics.fmean(s["price_per_tonne"] for s in kept)
             n_fresh = sum(1 for s in kept if not s["stale"])
+            # Raise a hand at anything wildly off the median. Advisory only: it does
+            # not touch the aggregate, because whether such a SKU belongs in the
+            # index at all is a question about the product, not about the numbers.
+            suspects = flag_suspect(reporting)
+            for s in suspects:
+                warnings.append(
+                    f"{date}  {oil}/{channel}: {s['source']} is {s['suspect_pct']:.0f}% "
+                    f"from the median (£{s['price_per_tonne']:.0f}/t vs the group). "
+                    f"Check the SKU is like-for-like -- a case price or a different "
+                    f"pack looks exactly like this."
+                )
+            suspect_sources = {s["source"] for s in suspects}
             # full per-SKU-per-website breakdown behind the aggregate (sorted cheapest first)
             excluded_sources = {s["source"] for s in excluded}
             breakdown = sorted(
@@ -304,6 +350,7 @@ def build():
                     "age_days": s["age_days"],
                     "lapsed": s["lapsed"],
                     "excluded": s["source"] in excluded_sources,
+                    "suspect": s["source"] in suspect_sources,
                 } for s in sellers for pr in s["products"]),
                 key=lambda x: (x["source"], x["format"], x["brand"]),
             )
@@ -355,6 +402,60 @@ def build():
     print(f"\nWrote {JSON_OUT}")
     print(f"Wrote {JS_OUT}")
 
+    # Last, and unmissable. A warning printed halfway up a 200-line log is a
+    # warning nobody reads.
+    if warnings:
+        print("\n" + "!" * 78)
+        print(f"{len(warnings)} PRICE(S) FAR FROM THE GROUP -- CHECK THE PRODUCT, NOT THE MATHS")
+        print("!" * 78)
+        for w in warnings:
+            print(f"  {w}")
+        print("\n  These are still IN the index. The 2-SD filter does not catch a")
+        print("  single gross outlier at this many sellers, so this is the only")
+        print("  notice you get. If a SKU is not like-for-like, remove it from")
+        print("  config/targets.json -- see ARCHITECTURE.md section 3.")
+
+
+def selftest():
+    """Offline checks for the two cross-seller guards. No network, no files.
+
+    These exist because both guards are silent when working. If flag_suspect()
+    quietly stopped firing, nothing in a green daily run would reveal it, and the
+    thing it protects against -- a mismatched SKU dragging the index -- is exactly
+    the kind of error that goes unnoticed for months.
+    """
+    def pts(**kw):
+        return [{"source": s, "price_per_tonne": v} for s, v in kw.items()]
+
+    ok = True
+
+    def check(name, cond):
+        nonlocal ok
+        print(f"  {'PASS' if cond else 'FAIL'}  {name}")
+        ok = ok and cond
+
+    print("cross-seller guards")
+    # The case this was built for: 2-SD misses it, the median warning does not.
+    brakes = pts(JJ=1743, Marfast=2131, Magna=1946, Brakes=3600)
+    _, excl = filter_anomalies([dict(p) for p in brakes])
+    flagged = flag_suspect([dict(p) for p in brakes])
+    check("2-SD filter misses a lone gross outlier (the reason this exists)", not excl)
+    check("median warning catches it", [f["source"] for f in flagged] == ["Brakes"])
+    check("and reports how far out it is", flagged[0]["suspect_pct"] > 40)
+
+    check("quiet on a normal spread",
+          not flag_suspect(pts(A=1850, B=1950, C=2100, D=2200)))
+    check("quiet on today's live palm figures",
+          not flag_suspect(pts(JJ=1743, Marfast=2131, Magna=1946)))
+    check("off below 3 sellers, like the 2-SD filter",
+          not flag_suspect(pts(A=1900, B=3900)))
+    check("survives a zero median without dividing by it",
+          flag_suspect(pts(A=0, B=0, C=0)) == [])
+
+    print("\nSELFTEST PASSED" if ok else "\nSELFTEST FAILED")
+    return 0 if ok else 1
+
 
 if __name__ == "__main__":
-    build()
+    import sys
+    sys.exit(selftest() if "--selftest" in sys.argv else (build() or 0))

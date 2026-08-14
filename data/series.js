@@ -54,7 +54,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -67,7 +68,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -80,7 +82,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -93,7 +96,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -106,7 +110,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -119,7 +124,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -152,7 +158,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 1,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -165,7 +172,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 1,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -178,7 +186,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -191,7 +200,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -204,7 +214,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -217,7 +228,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -250,7 +262,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 2,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -263,7 +276,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 2,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -276,7 +290,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -289,7 +304,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -302,7 +318,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -315,7 +332,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -348,7 +366,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 3,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -361,7 +380,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 3,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -374,7 +394,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -387,7 +408,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -400,7 +422,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -413,7 +436,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -446,7 +470,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 4,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -459,7 +484,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 4,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -472,7 +498,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -485,7 +512,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -498,7 +526,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -511,7 +540,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           }
@@ -559,7 +589,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -572,7 +603,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -585,7 +617,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -598,7 +631,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -611,7 +645,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -624,7 +659,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -637,7 +673,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -650,7 +687,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -663,7 +701,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -696,7 +735,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 1,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -709,7 +749,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 1,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -722,7 +763,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -735,7 +777,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -748,7 +791,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -761,7 +805,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -774,7 +819,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -787,7 +833,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -800,7 +847,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -833,7 +881,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 2,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -846,7 +895,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 2,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -859,7 +909,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -872,7 +923,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -885,7 +937,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -898,7 +951,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -911,7 +965,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -924,7 +979,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -937,7 +993,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -970,7 +1027,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 3,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -983,7 +1041,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 3,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -996,7 +1055,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -1009,7 +1069,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -1022,7 +1083,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1035,7 +1097,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1048,7 +1111,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -1061,7 +1125,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -1074,7 +1139,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           },
@@ -1107,7 +1173,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 4,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Booker",
@@ -1120,7 +1187,8 @@ window.OIL_SERIES = {
                 "stale": true,
                 "age_days": 4,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Brakes (Sysco)",
@@ -1133,7 +1201,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -1146,7 +1215,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "JJ Foodservice",
@@ -1159,7 +1229,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1172,7 +1243,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1185,7 +1257,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -1198,7 +1271,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -1211,7 +1285,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           }
@@ -1260,7 +1335,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1273,7 +1349,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1286,7 +1363,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Magna Foodservice",
@@ -1299,7 +1377,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -1312,7 +1391,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               },
               {
                 "source": "Marfast",
@@ -1325,7 +1405,8 @@ window.OIL_SERIES = {
                 "stale": false,
                 "age_days": 0,
                 "lapsed": false,
-                "excluded": false
+                "excluded": false,
+                "suspect": false
               }
             ]
           }
