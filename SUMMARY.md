@@ -8,7 +8,7 @@ Collection prices, 20 L packs, five UK cash-and-carry sellers. Updated 14 Aug 20
 |---|---|---|---|---|
 | Rapeseed | 20 L | £34.35 | £1,877 | 5 |
 | Soybean (pure veg) | 20 L | £30.70 | £1,674 | 5 |
-| Palm | 12.5 kg | £25.48 | £2,039 | 2 |
+| Palm | 12.5 kg | £24.25 | £1,940 | 3 |
 
 ## Movements — 14 Aug 2026
 

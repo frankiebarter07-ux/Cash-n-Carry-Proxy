@@ -3,7 +3,7 @@ window.OIL_SERIES = {
   "generated": "2026-08-14",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 64,
+  "raw_count": 65,
   "changes": {
     "latest_date": "2026-08-14",
     "week_from": "2026-08-07",
@@ -1235,19 +1235,33 @@ window.OIL_SERIES = {
         "cash_carry": [
           {
             "date": "2026-08-14",
-            "price_per_unit": 25.48,
-            "price_per_tonne": 2038.53,
-            "n_obs": 2,
-            "n_used": 2,
+            "price_per_unit": 24.25,
+            "price_per_tonne": 1940.09,
+            "n_obs": 3,
+            "n_used": 3,
             "n_excluded": 0,
-            "n_fresh": 2,
+            "n_fresh": 3,
             "sources": [
+              "JJ Foodservice",
               "Magna Foodservice",
               "Marfast"
             ],
             "lapsed": [],
             "excluded": [],
             "breakdown": [
+              {
+                "source": "JJ Foodservice",
+                "product": "Palmax Palm Oil 12.5kg",
+                "brand": "Other",
+                "format": "box",
+                "price_per_unit": 21.79,
+                "price_per_tonne": 1743.2,
+                "as_of": "2026-08-14",
+                "stale": false,
+                "age_days": 0,
+                "lapsed": false,
+                "excluded": false
+              },
               {
                 "source": "Magna Foodservice",
                 "product": "Caterfry Palm Oil 12.5kg",

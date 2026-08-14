@@ -47,6 +47,7 @@ date,oil,brand,format,channel,source,product,url,pack_value,pack_unit,price_gbp,
 2026-08-13,soybean,KTC,drum,cash_carry,Magna Foodservice,KTC Vegetable Oil Tin 20ltr,https://www.magnafoodservice.co.uk/product/ktc-vegetable-oil-tin-20ltr/,20,L,27.99,auto (label:Collection@scope)
 2026-08-13,soybean,KTC,bib,cash_carry,Marfast,KTC (Bottle In Box) 20ltr Vegetable Oil,https://marfast.co.uk/ktc-bottle-in-box-20ltr-vegetable-oil-box.html,20,L,29.99,auto (label:Collection@scope)
 2026-08-13,soybean,KTC,drum,cash_carry,Marfast,KTC Vegetable Oil 20ltr (Drum),https://marfast.co.uk/ktc-vegetable-oil-20ltr-drum.html,20,L,30.49,auto (label:Collection@scope)
+2026-08-14,palm,Other,box,cash_carry,JJ Foodservice,Palmax Palm Oil 12.5kg,https://www.jjfoodservice.com/product/London-Enfield/OIL011/,12.5,kg,21.79,auto (json-ld)
 2026-08-14,palm,Other,box,cash_carry,Magna Foodservice,Caterfry Palm Oil 12.5kg,https://www.magnafoodservice.co.uk/product/caterfry-palm-oil-12-5kg/,12.5,kg,27.99,auto (label:Collection@scope)
 2026-08-14,palm,Other,box,cash_carry,Magna Foodservice,Eden Harvest OptiPalm 12.5kg,https://www.magnafoodservice.co.uk/product/eden-harvest-optipalm-12-5kg/,12.5,kg,21.49,auto (label:Collection@scope)
 2026-08-14,palm,Other,box,cash_carry,Magna Foodservice,Palmax Fat Oil 12.5kg,https://www.magnafoodservice.co.uk/product/palmax-fat-oil-12-5kg/,12.5,kg,23.49,auto (label:Collection@scope)
