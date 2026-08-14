@@ -3,7 +3,7 @@ window.OIL_SERIES = {
   "generated": "2026-08-14",
   "metric_tonne_kg": 1000,
   "std_dev_threshold": 2.0,
-  "raw_count": 59,
+  "raw_count": 64,
   "changes": {
     "latest_date": "2026-08-14",
     "week_from": "2026-08-07",
@@ -1231,7 +1231,92 @@ window.OIL_SERIES = {
         "dashed": true
       },
       "notes": "Solid palm frying fat, sold by weight in a 12.5kg box -- not a 20L liquid pack, so it is standardised on mass and needs no density. Comparable to the other two only in the per-tonne view; the per-pack view compares a 12.5kg box against a 20L drum, which is why it carries its own axis.",
-      "channels": {}
+      "channels": {
+        "cash_carry": [
+          {
+            "date": "2026-08-14",
+            "price_per_unit": 25.48,
+            "price_per_tonne": 2038.53,
+            "n_obs": 2,
+            "n_used": 2,
+            "n_excluded": 0,
+            "n_fresh": 2,
+            "sources": [
+              "Magna Foodservice",
+              "Marfast"
+            ],
+            "lapsed": [],
+            "excluded": [],
+            "breakdown": [
+              {
+                "source": "Magna Foodservice",
+                "product": "Caterfry Palm Oil 12.5kg",
+                "brand": "Other",
+                "format": "box",
+                "price_per_unit": 27.99,
+                "price_per_tonne": 2239.2,
+                "as_of": "2026-08-14",
+                "stale": false,
+                "age_days": 0,
+                "lapsed": false,
+                "excluded": false
+              },
+              {
+                "source": "Magna Foodservice",
+                "product": "Eden Harvest OptiPalm 12.5kg",
+                "brand": "Other",
+                "format": "box",
+                "price_per_unit": 21.49,
+                "price_per_tonne": 1719.2,
+                "as_of": "2026-08-14",
+                "stale": false,
+                "age_days": 0,
+                "lapsed": false,
+                "excluded": false
+              },
+              {
+                "source": "Magna Foodservice",
+                "product": "Palmax Fat Oil 12.5kg",
+                "brand": "Other",
+                "format": "box",
+                "price_per_unit": 23.49,
+                "price_per_tonne": 1879.2,
+                "as_of": "2026-08-14",
+                "stale": false,
+                "age_days": 0,
+                "lapsed": false,
+                "excluded": false
+              },
+              {
+                "source": "Marfast",
+                "product": "Prep Palm Oil 12.5kg Box",
+                "brand": "Other",
+                "format": "box",
+                "price_per_unit": 29.49,
+                "price_per_tonne": 2359.2,
+                "as_of": "2026-08-14",
+                "stale": false,
+                "age_days": 0,
+                "lapsed": false,
+                "excluded": false
+              },
+              {
+                "source": "Marfast",
+                "product": "Olympic Eco Fry Palm Oil 12.5kg Box",
+                "brand": "Other",
+                "format": "box",
+                "price_per_unit": 23.79,
+                "price_per_tonne": 1903.2,
+                "as_of": "2026-08-14",
+                "stale": false,
+                "age_days": 0,
+                "lapsed": false,
+                "excluded": false
+              }
+            ]
+          }
+        ]
+      }
     }
   }
 };
