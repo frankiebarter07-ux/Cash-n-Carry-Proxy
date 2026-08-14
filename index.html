@@ -424,8 +424,13 @@
 
   // ---- chart (inline SVG from a fixed viewBox -- no canvas sizing) ---------
   const host = $("chartHost"), tip = $("tip");
-  const VW = 1000, VH = 380, PAD = { l: 78, r: 22, t: 16, b: 40 };
-  const AXIS_W = 66;            // width of the second axis column, on the right
+  const VW = 1000, VH = 380, PAD = { l: 78, r: 22, t: 34, b: 40 };
+  // t leaves a band above the plot for the axis captions. At t:16 the caption sat
+  // on top of the highest tick label, which is drawn exactly at pad.t.
+  const AXIS_W = 88;            // width reserved on the right: gap + axis + labels
+  const AXIS_GAP = 16;          // clear space between the plot and the second axis,
+                                // so the last marker does not sit on the axis line
+  const CAP_DY = 15;            // caption height above the plot
   const DAY = 86400000;
 
   function draw() {
@@ -487,19 +492,19 @@
       svg += `<line x1="${pad.l}" y1="${y}" x2="${VW - pad.r}" y2="${y}" stroke="${grid}" stroke-width="1"/>`;
       svg += `<text x="${pad.l - 9}" y="${y}" fill="${muted}" font-size="11.5" text-anchor="end" dominant-baseline="middle">${esc(money(v))}</text>`;
     }
-    svg += `<text x="${pad.l - 9}" y="${pad.t - 4}" fill="${muted}" font-size="10.5" text-anchor="end">${esc(unitOf(primary[0]))}</text>`;
+    svg += `<text x="${pad.l - 9}" y="${pad.t - CAP_DY}" fill="${muted}" font-size="10.5" text-anchor="end">${esc(unitOf(primary[0]))}</text>`;
 
     if (secondary.length && domS) {
       // On the right, tinted to its series and with its own ticks. No gridlines:
       // two sets of horizontal rules would be unreadable.
-      const sx = VW - pad.r, tint = secondary[0].color;
+      const sx = VW - pad.r + AXIS_GAP, tint = secondary[0].color;
       svg += `<line x1="${sx}" y1="${pad.t}" x2="${sx}" y2="${pad.t + plotH}" stroke="${tint}" stroke-width="1" opacity="0.45"/>`;
       for (let i = 0; i <= 5; i++) {
         const v = domS[0] + (domS[1] - domS[0]) * i / 5, y = yOn(domS, v).toFixed(1);
         svg += `<line x1="${sx - 5}" y1="${y}" x2="${sx}" y2="${y}" stroke="${tint}" stroke-width="1" opacity="0.7"/>`;
         svg += `<text x="${sx + 7}" y="${y}" fill="${tint}" font-size="11.5" text-anchor="start" dominant-baseline="middle">${esc(money(v))}</text>`;
       }
-      svg += `<text x="${sx + 7}" y="${pad.t - 4}" fill="${tint}" font-size="10.5" text-anchor="start">${esc(unitOf(secondary[0]))}</text>`;
+      svg += `<text x="${sx + 7}" y="${pad.t - CAP_DY}" fill="${tint}" font-size="10.5" text-anchor="start">${esc(unitOf(secondary[0]))}</text>`;
     }
     [...new Set(times)].sort((a, b) => a - b).forEach(t => {
       const lab = new Date(t).toLocaleDateString("en-GB",
