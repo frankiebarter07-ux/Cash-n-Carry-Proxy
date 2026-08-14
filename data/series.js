@@ -21,6 +21,7 @@ window.OIL_SERIES = {
         "value": 20,
         "unit": "L"
       },
+      "chart": {},
       "notes": "Pure refined rapeseed (canola). Single source.",
       "channels": {
         "cash_carry": [
@@ -525,6 +526,7 @@ window.OIL_SERIES = {
         "value": 20,
         "unit": "L"
       },
+      "chart": {},
       "notes": "UK 'pure vegetable oil' that is 100% soya bean oil (KTC Vegetable). Single source, NOT a rapeseed/palm blend.",
       "channels": {
         "cash_carry": [
@@ -1215,6 +1217,21 @@ window.OIL_SERIES = {
           }
         ]
       }
+    },
+    "palm": {
+      "label": "Palm",
+      "color": "#C2185B",
+      "basis": "mass",
+      "standard_pack": {
+        "value": 12.5,
+        "unit": "kg"
+      },
+      "chart": {
+        "axis": "secondary",
+        "dashed": true
+      },
+      "notes": "Solid palm frying fat, sold by weight in a 12.5kg box -- not a 20L liquid pack, so it is standardised on mass and needs no density. Comparable to the other two only in the per-tonne view; the per-pack view compares a 12.5kg box against a 20L drum, which is why it carries its own axis.",
+      "channels": {}
     }
   }
 };

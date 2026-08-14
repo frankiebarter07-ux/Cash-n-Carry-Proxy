@@ -30,8 +30,9 @@ from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGETS = os.path.join(ROOT, "config", "targets.json")
+OILS = os.path.join(ROOT, "config", "oils.json")
 
-PRICE_MIN, PRICE_MAX = 15.0, 60.0      # plausible band for a 20L pack (ARCHITECTURE §6)
+PRICE_MIN, PRICE_MAX = 15.0, 60.0      # default plausible band, a 20L pack (ARCHITECTURE §6)
 MAX_MOVE_PCT = 20.0                    # beyond this vs last price -> hold for review
 
 
@@ -120,10 +121,16 @@ def price_from_meta(html: str) -> float | None:
     return None
 
 
-def validate(price: float, last: float | None = None) -> str:
-    """Return '' if publishable, else the reason to hold it for review."""
-    if not (PRICE_MIN <= price <= PRICE_MAX):
-        return f"outside plausible band £{PRICE_MIN:.0f}-£{PRICE_MAX:.0f}"
+def validate(price: float, last: float | None = None, band=None) -> str:
+    """Return '' if publishable, else the reason to hold it for review.
+
+    'band' lets an oil sold in a different pack carry its own plausible range --
+    a £25 box of palm is normal, but would be a red flag for a 20L drum. Oils
+    that set no band in oils.json get the 20L default.
+    """
+    lo, hi = band or (PRICE_MIN, PRICE_MAX)
+    if not (lo <= price <= hi):
+        return f"outside plausible band £{lo:.0f}-£{hi:.0f}"
     if last:
         move = abs(price - last) / last * 100
         if move > MAX_MOVE_PCT:
@@ -380,16 +387,18 @@ def _write_observations(results):
     import csv
     from datetime import date as _date
     today = _date.today().isoformat()
+    oils_cfg = load_oils()
     rows = []
     for r in results:
         if r.get("held"):
             print(f"  (held, not written: {r['seller']} {r['oil']}/{r['format']} -- {r['held']})")
             continue
+        pack_value, pack_unit = _pack_for(oils_cfg, r["oil"])
         rows.append({
             "date": today, "oil": r["oil"], "brand": _brand(r["product"]),
             "format": r["format"], "channel": "cash_carry", "source": r["seller"],
-            "product": r["product"], "url": r["url"], "pack_value": 20,
-            "pack_unit": "L", "price_gbp": f"{r['price_gbp']:.2f}",
+            "product": r["product"], "url": r["url"], "pack_value": pack_value,
+            "pack_unit": pack_unit, "price_gbp": f"{r['price_gbp']:.2f}",
             "notes": f"auto ({r['method']})",
         })
     if not rows:
@@ -412,6 +421,23 @@ def _write_observations(results):
 def load_targets():
     with open(TARGETS, encoding="utf-8") as fh:
         return json.load(fh)["sellers"]
+
+
+def load_oils():
+    with open(OILS, encoding="utf-8") as fh:
+        return json.load(fh)["oils"]
+
+
+def _band_for(oils_cfg, oil):
+    """The oil's own plausible price band, or the 20L default."""
+    b = (oils_cfg.get(oil) or {}).get("price_band")
+    return (b[0], b[1]) if b else (PRICE_MIN, PRICE_MAX)
+
+
+def _pack_for(oils_cfg, oil):
+    """The pack an observation is recorded in -- (value, unit)."""
+    p = (oils_cfg.get(oil) or {}).get("standard_pack") or {"value": 20, "unit": "L"}
+    return p["value"], p["unit"]
 
 
 # --------------------------------------------------------------------------- #
@@ -517,6 +543,13 @@ def cmd_selftest():
     check("rejects out-of-band", validate(199.0) != "")
     check("holds a >20% jump", validate(45.0, last=30.0) != "")
     check("allows a small move", validate(31.0, last=30.0) == "")
+    # An oil in its own pack carries its own band, or a cheap box reads as an error.
+    _oils = {"palm": {"price_band": [12.0, 55.0],
+                      "standard_pack": {"value": 12.5, "unit": "kg"}}}
+    check("per-oil band accepts a £13 box", validate(13.0, band=_band_for(_oils, "palm")) == "")
+    check("default band would have rejected it", validate(13.0) != "")
+    check("per-oil pack is read from config", _pack_for(_oils, "palm") == (12.5, "kg"))
+    check("unknown oil falls back to the 20L pack", _pack_for(_oils, "nope") == (20, "L"))
 
     print("\nSELFTEST PASSED" if ok else "\nSELFTEST FAILED")
     return 0 if ok else 1
@@ -679,6 +712,7 @@ def cmd_run(only=None, exclude=None, write=False):
         print("Playwright unavailable -- static tier only\n")
 
     targets = load_targets()
+    oils_cfg = load_oils()
     if only:
         targets = {k: v for k, v in targets.items() if k.lower() in
                    [o.strip().lower() for o in only.split(",")]}
@@ -707,7 +741,7 @@ def cmd_run(only=None, exclude=None, write=False):
                 note = "  (SKU time budget spent)" if took > SKU_BUDGET else ""
                 print(f"  ✗ {sku['oil']}/{sku['format']}: {e}{note}")
                 continue
-            why = validate(q.price_gbp)
+            why = validate(q.price_gbp, band=_band_for(oils_cfg, sku["oil"]))
             flag = "" if not why else f"  [HELD: {why}]"
             results.append({"seller": seller, **sku, **q.dict(), "held": why})
             print(f"  ✓ {sku['oil']}/{sku['format']}: £{q.price_gbp:.2f}  via {q.method}{flag}")

@@ -305,6 +305,8 @@
   const cls = d => d > 0 ? "up" : d < 0 ? "down" : "flat";
   // "bib"/"drum" as recorded -> "Bib"/"Drum", not shouted.
   const fmtPack = f => !f ? "" : f[0].toUpperCase() + f.slice(1).toLowerCase();
+  // {value:12.5, unit:"kg"} -> "12.5 kg"  (trailing .0 dropped: 20 L, not 20.0 L)
+  const packLabel = p => !p ? "" : `${Number(p.value)} ${p.unit}`;
   const arrow = d => d > 0 ? "▲" : d < 0 ? "▼" : "■";
 
   const activeChannels = () =>
@@ -317,10 +319,15 @@
       for (const ch of activeChannels()) {
         const pts = inRange((o.channels && o.channels[ch]) || []);
         if (!pts.length) continue;
+        const chart = o.chart || {};
         out.push({
           key: oil + "|" + ch, oil, ch, color: o.color,
           label: o.label + (state.channel === "both" ? " · " + CHANNEL_LABEL[ch] : ""),
-          dashed: ch === "retail" && state.channel === "both",
+          // An oil sold in a different pack does not share the others' price
+          // range, so config/oils.json can put it on its own axis.
+          secondary: chart.axis === "secondary",
+          pack: o.standard_pack,
+          dashed: chart.dashed || (ch === "retail" && state.channel === "both"),
           points: pts.map(p => ({
             date: p.date, t: Date.parse(p.date), v: p[state.unit],
             n_used: p.n_used, n_obs: p.n_obs, n_excluded: p.n_excluded,
@@ -417,8 +424,9 @@
 
   // ---- chart (inline SVG from a fixed viewBox -- no canvas sizing) ---------
   const host = $("chartHost"), tip = $("tip");
-  const VW = 1000, VH = 380, pad = { l: 78, r: 22, t: 16, b: 40 };
-  const plotW = VW - pad.l - pad.r, plotH = VH - pad.t - pad.b, DAY = 86400000;
+  const VW = 1000, VH = 380, PAD = { l: 78, r: 22, t: 16, b: 40 };
+  const AXIS_W = 66;            // width of the second axis column, outboard of the first
+  const DAY = 86400000;
 
   function draw() {
     const series = buildSeries();
@@ -431,27 +439,67 @@
     // is precisely the confusion this index exists to avoid.
     series.forEach(s => { s.linePts = s.points; });
 
-    const vals = [], times = [];
-    series.forEach(s => s.linePts.forEach(p => { vals.push(p.v); times.push(p.t); }));
+    // Split by axis. An oil in a different pack (palm, a 12.5kg box) does not
+    // share the 20L range, so it reads off its own scale. If nothing is left on
+    // the main axis, those series take it over -- an empty inner axis beside a
+    // full outer one helps nobody.
+    let primary = series.filter(s => !s.secondary);
+    let secondary = series.filter(s => s.secondary);
+    if (!primary.length) { primary = secondary; secondary = []; }
+
+    const pad = Object.assign({}, PAD, { l: PAD.l + (secondary.length ? AXIS_W : 0) });
+    const plotW = VW - pad.l - pad.r, plotH = VH - pad.t - pad.b;
+
+    const times = [];
+    series.forEach(s => s.linePts.forEach(p => times.push(p.t)));
     const head = `<svg viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" font-family="${mono}">`;
-    if (!vals.length) {
+    if (!times.length) {
       host.innerHTML = head + `<text x="${VW/2}" y="${VH/2}" fill="${muted}" font-size="13" text-anchor="middle">NO SERIES SELECTED</text></svg>`;
       return;
     }
 
-    let vmin = Math.min(...vals), vmax = Math.max(...vals);
-    if (vmin === vmax) { vmin *= 0.97; vmax *= 1.03; }
-    const vpad = (vmax - vmin) * 0.14; vmin -= vpad; vmax += vpad;
+    // One domain per axis, padded independently.
+    function domain(group) {
+      const vals = [];
+      group.forEach(s => s.linePts.forEach(p => vals.push(p.v)));
+      if (!vals.length) return null;
+      let lo = Math.min(...vals), hi = Math.max(...vals);
+      if (lo === hi) { lo *= 0.97; hi *= 1.03; }
+      const vpad = (hi - lo) * 0.14;
+      return [lo - vpad, hi + vpad];
+    }
+    const domP = domain(primary), domS = domain(secondary);
+
     let tmin = Math.min(...times), tmax = Math.max(...times);
     if (tmin === tmax) { tmin -= DAY; tmax += DAY; }
     const X = t => pad.l + plotW * (t - tmin) / (tmax - tmin);
-    const Y = v => pad.t + plotH * (1 - (v - vmin) / (vmax - vmin));
+    const yOn = (d, v) => pad.t + plotH * (1 - (v - d[0]) / (d[1] - d[0]));
+    const Y = s => v => yOn(s.secondary && domS ? domS : domP, v);
+
+    // Axis captions name the unit each scale is in, so it is never a guess
+    // which line reads off which -- the whole point of a second axis.
+    const unitOf = s => state.unit === "price_per_tonne" ? "£/tonne"
+      : "£/" + (s.pack ? packLabel(s.pack) : "pack");
 
     let svg = head;
     for (let i = 0; i <= 5; i++) {
-      const v = vmin + (vmax - vmin) * i / 5, y = Y(v).toFixed(1);
+      const v = domP[0] + (domP[1] - domP[0]) * i / 5, y = yOn(domP, v).toFixed(1);
       svg += `<line x1="${pad.l}" y1="${y}" x2="${VW - pad.r}" y2="${y}" stroke="${grid}" stroke-width="1"/>`;
       svg += `<text x="${pad.l - 9}" y="${y}" fill="${muted}" font-size="11.5" text-anchor="end" dominant-baseline="middle">${esc(money(v))}</text>`;
+    }
+    svg += `<text x="${pad.l - 9}" y="${pad.t - 4}" fill="${muted}" font-size="10.5" text-anchor="end">${esc(unitOf(primary[0]))}</text>`;
+
+    if (secondary.length && domS) {
+      // Outboard of the main axis, tinted to its series and with its own ticks.
+      // No gridlines: two sets of horizontal rules would be unreadable.
+      const sx = pad.l - AXIS_W, tint = secondary[0].color;
+      svg += `<line x1="${sx}" y1="${pad.t}" x2="${sx}" y2="${pad.t + plotH}" stroke="${tint}" stroke-width="1" opacity="0.45"/>`;
+      for (let i = 0; i <= 5; i++) {
+        const v = domS[0] + (domS[1] - domS[0]) * i / 5, y = yOn(domS, v).toFixed(1);
+        svg += `<line x1="${sx}" y1="${y}" x2="${sx + 5}" y2="${y}" stroke="${tint}" stroke-width="1" opacity="0.7"/>`;
+        svg += `<text x="${sx - 7}" y="${y}" fill="${tint}" font-size="11.5" text-anchor="end" dominant-baseline="middle">${esc(money(v))}</text>`;
+      }
+      svg += `<text x="${sx - 7}" y="${pad.t - 4}" fill="${tint}" font-size="10.5" text-anchor="end">${esc(unitOf(secondary[0]))}</text>`;
     }
     [...new Set(times)].sort((a, b) => a - b).forEach(t => {
       const lab = new Date(t).toLocaleDateString("en-GB",
@@ -459,9 +507,10 @@
       svg += `<text x="${X(t).toFixed(1)}" y="${VH - pad.b + 20}" fill="${muted}" font-size="11" text-anchor="middle">${esc(lab)}</text>`;
     });
     series.forEach(s => {
+      const y = Y(s);
       if (s.linePts.length > 1) {
         const line = s.linePts.slice().sort((a, b) => a.t - b.t)
-          .map(p => `${X(p.t).toFixed(1)},${Y(p.v).toFixed(1)}`).join(" ");
+          .map(p => `${X(p.t).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
         svg += `<polyline points="${line}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${s.dashed ? ' stroke-dasharray="6 4"' : ""}/>`;
       }
       s.points.forEach(p => {
@@ -470,7 +519,7 @@
         // >=8px hit target per the dataviz mark spec, and a surface-coloured ring
         // so overlapping markers stay separable.
         const r = s.points.length === 1 ? 7 : 5;
-        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${r}" fill="${s.color}" stroke="${panel}" stroke-width="2" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
+        svg += `<circle cx="${X(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="${r}" fill="${s.color}" stroke="${panel}" stroke-width="2" data-info="${esc(info)}" data-oil="${s.oil}" data-ch="${s.ch}" data-date="${p.date}"><title>${esc(info)}</title></circle>`;
       });
     });
     host.innerHTML = svg + "</svg>";

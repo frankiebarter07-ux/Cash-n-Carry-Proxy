@@ -238,6 +238,9 @@ def build():
             "color": cfg["color"],
             "basis": cfg["basis"],
             "standard_pack": cfg["standard_pack"],
+            # How the dashboards should draw it. An oil in a different pack does
+            # not share the others' price range, so it can ask for its own axis.
+            "chart": cfg.get("chart", {}),
             "notes": cfg.get("notes", ""),
             "channels": defaultdict(list),
         }

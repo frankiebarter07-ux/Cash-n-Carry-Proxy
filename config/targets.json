@@ -1,11 +1,7 @@
 {
-  "_comment": "Definitive scrape-target matrix: 15 SKUs across 5 UK cash & carry sellers, all with publicly visible pricing (no trade login). Every SKU is 20L. 'format' distinguishes bag-in-box (bib) from drum so like-for-like comparison is possible. URLs extracted from the seller list PDF's embedded link annotations. 'route' is the expected fetch strategy, to be confirmed by tools/check_protection.sh.",
+  "_comment": "Definitive scrape-target matrix across 5 UK cash & carry sellers, all with publicly visible pricing (no trade login). Rapeseed and soybean are 20L; palm is a 12.5kg box, because solid palm frying fat is not sold in 20L liquid packs -- see config/oils.json. 'format' distinguishes bag-in-box (bib), drum and box so like-for-like comparison is possible. 'route' is the expected fetch strategy, confirmed by tools/check_protection.sh.",
   "currency": "GBP",
   "country": "UK",
-  "pack": {
-    "value": 20,
-    "unit": "L"
-  },
   "sellers": {
     "JJ Foodservice": {
       "route": "json_api_or_playwright",
@@ -100,6 +96,18 @@
           "format": "drum",
           "product": "KTC Vegetable Oil 20ltr (Drum)",
           "url": "https://marfast.co.uk/ktc-vegetable-oil-20ltr-drum.html"
+        },
+        {
+          "oil": "palm",
+          "format": "box",
+          "product": "Prep Palm Oil 12.5kg Box",
+          "url": "https://marfast.co.uk/prep-palm-oil-12-5kg-box.html"
+        },
+        {
+          "oil": "palm",
+          "format": "box",
+          "product": "Olympic Eco Fry Palm Oil 12.5kg Box",
+          "url": "https://marfast.co.uk/olympic-eco-fry-palm-oil-12-5kg-box.html"
         }
       ]
     },
@@ -124,6 +132,24 @@
           "format": "drum",
           "product": "KTC Extended Life Rapeseed Oil 20ltr",
           "url": "https://www.magnafoodservice.co.uk/product/ktc-rapeseed-oil-20ltr/"
+        },
+        {
+          "oil": "palm",
+          "format": "box",
+          "product": "Caterfry Palm Oil 12.5kg",
+          "url": "https://www.magnafoodservice.co.uk/product/caterfry-palm-oil-12-5kg/"
+        },
+        {
+          "oil": "palm",
+          "format": "box",
+          "product": "Eden Harvest OptiPalm 12.5kg",
+          "url": "https://www.magnafoodservice.co.uk/product/eden-harvest-optipalm-12-5kg/"
+        },
+        {
+          "oil": "palm",
+          "format": "box",
+          "product": "Palmax Fat Oil 12.5kg",
+          "url": "https://www.magnafoodservice.co.uk/product/palmax-fat-oil-12-5kg/"
         }
       ]
     }

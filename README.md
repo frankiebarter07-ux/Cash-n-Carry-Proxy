@@ -9,23 +9,29 @@
 > Booker](docs/03-booker-collection.md), [hosting](docs/04-hosting.md). Design
 > rationale is in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
-A daily index of **rapeseed** and **vegetable (soybean)** oil prices across five UK
-**cash-and-carry / B2B** sellers. It's a *movement proxy* — it answers *"are wholesale
-oil prices moving, and who moved first?"*, not *"what will I pay?"*
+A daily index of **rapeseed**, **vegetable (soybean)** and **palm** prices across five
+UK **cash-and-carry / B2B** sellers. It's a *movement proxy* — it answers *"are
+wholesale oil prices moving, and who moved first?"*, not *"what will I pay?"*
 
 No blends, no supermarket retail, no logins: every price tracked is publicly visible.
 
 ## What's tracked
 
-15 SKUs, all **20 L**, split by pack format (**bib** = bag-in-box, **drum**):
+20 SKUs, split by pack format (**bib** = bag-in-box, **drum**, **box**):
 
-| Seller | Rapeseed | Soybean | Collected by |
-|---|---|---|---|
-| JJ Foodservice | drum | bib, drum | Cloud — JSON-LD ✅ |
-| Brakes (Sysco) | bib | bib | Cloud — selector ✅ |
-| Marfast | drum | bib, drum | Cloud — Collection label ✅ |
-| Magna Foodservice | drum | bib, drum | Cloud — Collection label ✅ |
-| **Booker** | bib, drum | bib, drum | **Self-hosted runner** (blocks datacenter IPs) |
+| Seller | Rapeseed | Soybean | Palm | Collected by |
+|---|---|---|---|---|
+| JJ Foodservice | drum | bib, drum | — | Cloud — JSON-LD ✅ |
+| Brakes (Sysco) | bib | bib | — | Cloud — selector ✅ |
+| Marfast | drum | bib, drum | box ×2 | Cloud — Collection label ✅ |
+| Magna Foodservice | drum | bib, drum | box ×3 | Cloud — Collection label ✅ |
+| **Booker** | bib, drum | bib, drum | — | **Self-hosted runner** (blocks datacenter IPs) |
+
+Rapeseed and soybean are **20 L** liquid packs. **Palm is a 12.5 kg box** — solid
+frying fat is not sold in 20 L liquid packs, so it is standardised on mass rather
+than volume and needs no density. That also means palm is only strictly comparable
+to the other two in the **£/tonne** view, which is why the chart gives it its own
+axis. JJ, Brakes and Booker returned no palm; `scripts/discover.py` re-checks.
 
 Exact products and URLs: [`config/targets.json`](config/targets.json).
 
