@@ -1,0 +1,464 @@
+<title>Higher or Lower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ink:#0E1020;
+    --panel-a:#191C36;
+    --panel-b:#141631;
+    --bone:#F3EFE4;
+    --muted:#9C99C2;
+    --gold:#F5B43C;
+    --gold-dim:#8A6A22;
+    --up:#63D2A2;
+    --down:#F2665C;
+    --line:rgba(243,239,228,.13);
+    --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;
+    --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:
+      radial-gradient(90ch 60ch at 12% -10%,rgba(245,180,60,.10),transparent 60%),
+      radial-gradient(80ch 60ch at 92% 110%,rgba(99,210,162,.09),transparent 60%),
+      var(--ink);
+    color:var(--bone);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+  }
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+
+  .stage{min-height:100dvh;display:flex;flex-direction:column}
+
+  /* ---- top bar ---- */
+  .bar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:14px clamp(14px,3vw,32px);border-bottom:1px solid var(--line);
+  }
+  .lives{display:flex;gap:7px;align-items:center}
+  .pip{width:11px;height:11px;border-radius:50%;background:var(--down);box-shadow:0 0 12px rgba(242,102,92,.5);transition:.35s}
+  .pip.gone{background:transparent;box-shadow:none;border:1px solid var(--line)}
+  .wordmark{
+    font-family:var(--display);font-weight:800;font-size:clamp(13px,2.4vw,17px);
+    letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
+  }
+  .wordmark span{color:var(--gold)}
+  .tally{display:flex;gap:clamp(12px,3vw,26px);text-align:right}
+  .tally div{display:flex;flex-direction:column;line-height:1.05}
+  .tally b{font-family:var(--mono);font-size:clamp(16px,3vw,22px);font-weight:500;font-variant-numeric:tabular-nums}
+  .tally small{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+  /* ---- board ---- */
+  .board{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-height:0}
+  .panel{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:clamp(10px,1.6vh,20px);padding:clamp(22px,4vw,44px) clamp(16px,3vw,40px);
+    text-align:center;position:relative;transition:background .3s;
+  }
+  .panel.left{background:linear-gradient(180deg,var(--panel-a),rgba(20,22,49,0))}
+  .panel.right{background:linear-gradient(0deg,var(--panel-b),rgba(20,22,49,0));border-left:1px solid var(--line)}
+  .panel.right.right-win{background:linear-gradient(0deg,rgba(99,210,162,.20),rgba(20,22,49,0))}
+  .panel.right.right-lose{background:linear-gradient(0deg,rgba(242,102,92,.20),rgba(20,22,49,0))}
+
+  .eyebrow{
+    font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    font-family:var(--mono);
+  }
+  .name{
+    font-family:var(--display);font-weight:800;line-height:1.02;text-wrap:balance;
+    font-size:clamp(26px,4.4vw,54px);max-width:14ch;margin:0;
+  }
+  .value{
+    font-family:var(--mono);font-weight:500;font-variant-numeric:tabular-nums;
+    font-size:clamp(24px,3.6vw,42px);color:var(--gold);letter-spacing:-.01em;
+  }
+  .qmark{font-family:var(--display);font-weight:800;font-size:clamp(30px,5vw,52px);color:var(--muted);letter-spacing:.06em}
+  .hint{font-size:13px;color:var(--muted);max-width:26ch;line-height:1.5}
+
+  /* ---- buttons ---- */
+  .picks{display:flex;flex-direction:column;gap:12px;width:min(320px,80vw);margin-top:4px}
+  .pick{
+    display:flex;align-items:center;gap:14px;justify-content:center;
+    padding:clamp(13px,1.8vh,19px) 20px;border:1.5px solid var(--line);border-radius:999px;
+    background:rgba(243,239,228,.03);transition:transform .12s,background .2s,border-color .2s,color .2s;
+  }
+  .pick .arrow{font-size:15px;line-height:1;transition:transform .2s}
+  .pick .txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.1}
+  .pick strong{font-family:var(--display);font-weight:800;font-size:clamp(17px,2.4vw,22px);letter-spacing:.03em;text-transform:uppercase}
+  .pick em{font-style:normal;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:3px;transition:color .2s}
+  .pick.hi:hover:not(:disabled){background:var(--up);border-color:var(--up);color:#08211A;transform:translateY(-2px)}
+  .pick.lo:hover:not(:disabled){background:var(--down);border-color:var(--down);color:#2A0906;transform:translateY(-2px)}
+  .pick:hover:not(:disabled) em{color:inherit;opacity:.7}
+  .pick.hi:hover:not(:disabled) .arrow{transform:translateY(-3px)}
+  .pick.lo:hover:not(:disabled) .arrow{transform:translateY(3px)}
+  .pick:disabled{opacity:.32;cursor:default}
+  .keys{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:var(--mono)}
+
+  /* ---- centre disc ---- */
+  .disc{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:clamp(52px,7vw,74px);aspect-ratio:1;border-radius:50%;
+    display:grid;place-items:center;background:var(--ink);border:1px solid var(--line);
+    font-family:var(--display);font-weight:800;font-size:clamp(13px,1.7vw,17px);
+    letter-spacing:.08em;color:var(--gold);z-index:3;
+  }
+  .verdict{
+    position:absolute;top:calc(50% + clamp(46px,6vw,62px));left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    white-space:nowrap;opacity:0;transition:opacity .25s;z-index:3;
+  }
+  .verdict.show{opacity:1}
+
+  /* ---- toast ---- */
+  .toast{
+    position:fixed;top:76px;left:50%;transform:translateX(-50%) translateY(-12px);
+    background:var(--gold);color:#251802;padding:9px 20px;border-radius:999px;
+    font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;
+    opacity:0;pointer-events:none;transition:.35s;z-index:20;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---- overlays ---- */
+  .sheet{
+    position:fixed;inset:0;background:rgba(14,16,32,.94);backdrop-filter:blur(6px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:20px;padding:32px;text-align:center;z-index:30;
+  }
+  .sheet[hidden]{display:none}
+  .sheet h1{
+    font-family:var(--display);font-weight:800;margin:0;line-height:.95;text-wrap:balance;
+    font-size:clamp(44px,10vw,104px);letter-spacing:-.02em;
+  }
+  .sheet h1 .or{display:block;color:var(--gold);font-size:.42em;letter-spacing:.24em;text-transform:uppercase;margin:.28em 0}
+  .sheet p{margin:0;max-width:44ch;color:var(--muted);line-height:1.65;font-size:15px}
+  .start{
+    margin-top:8px;padding:16px 44px;border-radius:999px;background:var(--gold);color:#251802;
+    font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.06em;text-transform:uppercase;
+    transition:transform .12s,box-shadow .2s;box-shadow:0 8px 30px rgba(245,180,60,.22);
+  }
+  .start:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(245,180,60,.34)}
+  .meta{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .final{display:flex;gap:44px;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .final div{display:flex;flex-direction:column;gap:6px}
+  .final b{font-size:44px;font-weight:500;color:var(--gold)}
+  .final small{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .missed{font-family:var(--mono);font-size:12.5px;color:var(--bone);line-height:1.7;max-width:42ch}
+  .missed span{color:var(--muted)}
+
+  @media (max-width:760px){
+    .board{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+    .panel.right{border-left:0;border-top:1px solid var(--line)}
+    .disc{top:50%}
+    .verdict{top:calc(50% + 44px)}
+    .keys{display:none}
+    .final{gap:30px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+  }
+</style>
+
+<div class="stage">
+  <header class="bar">
+    <div class="lives" id="lives" aria-label="Lives remaining"></div>
+    <div class="wordmark">Higher <span>or</span> Lower</div>
+    <div class="tally">
+      <div><b id="score">0</b><small>Streak</small></div>
+      <div><b id="best">0</b><small>Best</small></div>
+    </div>
+  </header>
+
+  <main class="board">
+    <section class="panel left">
+      <p class="eyebrow" id="leftMetric">Population</p>
+      <h2 class="name" id="leftName">—</h2>
+      <p class="value" id="leftValue">—</p>
+    </section>
+
+    <div class="disc">VS</div>
+    <p class="verdict" id="verdict"></p>
+
+    <section class="panel right" id="rightPanel">
+      <p class="eyebrow" id="rightMetric">Population</p>
+      <h2 class="name" id="rightName">—</h2>
+      <p class="value" id="rightValue" hidden></p>
+      <p class="qmark" id="rightMask">? ? ?</p>
+      <div class="picks">
+        <button class="pick hi" id="btnHi"><span class="arrow">&#9650;</span><span class="txt"><strong>Higher</strong><em id="hiSub">more</em></span></button>
+        <button class="pick lo" id="btnLo"><span class="arrow">&#9660;</span><span class="txt"><strong>Lower</strong><em id="loSub">less</em></span></button>
+      </div>
+      <p class="keys">&#8593; / &#8595; arrow keys work too</p>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="sheet" id="startSheet">
+  <h1>Higher<span class="or">or</span>Lower</h1>
+  <p>One fact is on the table. Guess whether the challenger's number lands above or below it. Get it right and the challenger takes the table. Three wrong answers ends the run.</p>
+  <button class="start" id="startBtn">Start playing</button>
+  <p class="meta" id="poolMeta"></p>
+</div>
+
+<div class="sheet" id="endSheet" hidden>
+  <p class="eyebrow">Run over</p>
+  <h1 id="endTitle">Nice run</h1>
+  <div class="final">
+    <div><b id="endScore">0</b><small>Streak</small></div>
+    <div><b id="endBest">0</b><small>Best ever</small></div>
+  </div>
+  <p class="missed" id="endMissed"></p>
+  <button class="start" id="againBtn">Play again</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CATS = {
+    pop: {
+      title:"Country populations", metric:"Population", hi:"more people", lo:"fewer people",
+      fmt:function(v){ return v<1 ? Math.round(v*1000)+"K people" : (v<10?v.toFixed(1):Math.round(v).toLocaleString())+"M people"; },
+      data:[["India",1441],["China",1425],["United States",341],["Indonesia",279],["Pakistan",245],["Nigeria",229],["Brazil",217],["Bangladesh",173],["Russia",144],["Mexico",129],["Ethiopia",128],["Japan",123],["Philippines",118],["Egypt",114],["DR Congo",106],["Vietnam",100],["Iran",89],["Turkey",85],["Germany",84],["Thailand",72],["United Kingdom",68],["Tanzania",67],["France",66],["South Africa",60],["Italy",59],["Kenya",55],["Myanmar",54],["South Korea",52],["Colombia",52],["Spain",48],["Sudan",48],["Argentina",46],["Algeria",46],["Iraq",45],["Afghanistan",42],["Canada",39],["Ukraine",38],["Morocco",38],["Poland",37],["Angola",36],["Uzbekistan",35],["Peru",34],["Malaysia",34],["Ghana",34],["Yemen",34],["Saudi Arabia",33],["Mozambique",33],["Nepal",30],["Madagascar",30],["Venezuela",28],["Ivory Coast",28],["Cameroon",28],["Australia",26],["North Korea",26],["Niger",26],["Sri Lanka",22],["Kazakhstan",20],["Chile",19],["Netherlands",18],["Guatemala",18],["Ecuador",18],["Cambodia",17],["Zimbabwe",16],["Belgium",12],["Cuba",11],["Sweden",11],["Greece",10],["Portugal",10],["Switzerland",9],["Israel",9],["Austria",9],["Singapore",6],["Denmark",5.9],["Finland",5.6],["Norway",5.5],["Ireland",5.3],["New Zealand",5.2],["Jamaica",2.8],["Luxembourg",0.66],["Malta",0.54],["Iceland",0.39]]
+    },
+    city: {
+      title:"City metro populations", metric:"Metro population", hi:"more people", lo:"fewer people",
+      fmt:function(v){ return v<1 ? Math.round(v*1000)+"K people" : (v<10?v.toFixed(1):Math.round(v))+"M people"; },
+      data:[["Tokyo",37],["Delhi",33],["Shanghai",29],["Dhaka",23],["São Paulo",22.6],["Cairo",22.2],["Mexico City",22.1],["Beijing",22],["Mumbai",21],["Osaka",19],["New York City",19.1],["Karachi",17.6],["Chongqing",17],["Istanbul",16],["Kinshasa",16],["Buenos Aires",15.6],["Kolkata",15.3],["Lagos",15.4],["Manila",14.7],["Guangzhou",14],["Rio de Janeiro",13.6],["Los Angeles",12.9],["Moscow",12.7],["Paris",11.2],["Bogotá",11.3],["Jakarta",11.2],["Lima",11.2],["Bangkok",11],["Seoul",10],["London",9.6],["Tehran",9.4],["Chicago",8.9],["Hong Kong",7.5],["Madrid",6.7],["Toronto",6.4],["Houston",6.3],["Singapore",6],["Barcelona",5.6],["Sydney",5.3],["Melbourne",5.2],["Rome",4.3],["Berlin",3.6],["Dubai",3.6],["Vienna",2],["Stockholm",1.7],["Dublin",1.3],["Amsterdam",1.2],["Reykjavík",0.14]]
+    },
+    height: {
+      title:"Tall structures", metric:"Height", hi:"taller", lo:"shorter",
+      fmt:function(v){ return Math.round(v).toLocaleString()+" m tall"; },
+      data:[["Burj Khalifa",828],["Merdeka 118",679],["Tokyo Skytree",634],["Shanghai Tower",632],["Canton Tower",604],["Abraj Al-Bait Clock Tower",601],["Ping An Finance Center",599],["Lotte World Tower",555],["CN Tower",553],["One World Trade Center",541],["Ostankino Tower",540],["Guangzhou CTF Finance Centre",530],["CITIC Tower",528],["Taipei 101",508],["Shanghai World Financial Center",492],["International Commerce Centre",484],["Petronas Towers",452],["Empire State Building",443],["Willis Tower",442],["Millau Viaduct",343],["Eiffel Tower",330],["Burj Al Arab",321],["Chrysler Building",319],["The Shard",310],["Golden Gate Bridge towers",227],["Hoover Dam",221],["Marina Bay Sands",200],["Gateway Arch",192],["Space Needle",184],["Sagrada Família",172],["Washington Monument",169],["Blackpool Tower",158],["Cologne Cathedral",157],["Great Pyramid of Giza",139],["London Eye",135],["St Paul's Cathedral",111],["Big Ben's tower",96],["Statue of Liberty",93],["Taj Mahal",73],["Sydney Opera House",65],["Leaning Tower of Pisa",57],["Arc de Triomphe",50],["The Colosseum",48],["Christ the Redeemer",38]]
+    },
+    movie: {
+      title:"Box office takings", metric:"Worldwide box office", hi:"made more", lo:"made less",
+      fmt:function(v){ return v>=1000 ? "$"+(v/1000).toFixed(2)+"B" : "$"+Math.round(v)+"M"; },
+      data:[["Avatar",2923],["Avengers: Endgame",2799],["Avatar: The Way of Water",2320],["Titanic",2264],["Star Wars: The Force Awakens",2071],["Avengers: Infinity War",2052],["Spider-Man: No Way Home",1922],["Inside Out 2",1698],["Jurassic World",1671],["The Lion King (2019)",1663],["The Avengers",1520],["Furious 7",1515],["Top Gun: Maverick",1496],["Frozen II",1450],["Barbie",1446],["Avengers: Age of Ultron",1405],["The Super Mario Bros. Movie",1362],["Black Panther",1349],["Harry Potter and the Deathly Hallows – Part 2",1342],["Star Wars: The Last Jedi",1334],["Jurassic World: Fallen Kingdom",1310],["Frozen",1290],["Beauty and the Beast (2017)",1266],["Incredibles 2",1243],["The Fate of the Furious",1236],["Iron Man 3",1215],["Minions",1159],["Captain America: Civil War",1155],["Aquaman",1148],["The Lord of the Rings: The Return of the King",1146],["Spider-Man: Far From Home",1132],["Captain Marvel",1131],["Transformers: Dark of the Moon",1124],["Skyfall",1109],["Jurassic Park",1109],["The Dark Knight Rises",1081],["Toy Story 4",1073],["Toy Story 3",1067],["Pirates of the Caribbean: Dead Man's Chest",1066],["Rogue One: A Star Wars Story",1058],["Aladdin (2019)",1054],["Despicable Me 3",1035],["Finding Dory",1029],["Alice in Wonderland (2010)",1025],["Harry Potter and the Philosopher's Stone",1024],["Zootopia",1023],["The Hobbit: An Unexpected Journey",1017],["The Dark Knight",1006],["Shrek 2",935],["Inception",837],["E.T. the Extra-Terrestrial",797],["Interstellar",731],["Forrest Gump",678],["Jaws",477],["The Matrix",466],["Gladiator",465],["La La Land",448],["Back to the Future",389],["Parasite",262],["Get Out",255],["The Godfather",250],["The Blair Witch Project",249],["Whiplash",49]]
+    },
+    year: {
+      title:"When did it happen?", metric:"Year", hi:"later", lo:"earlier",
+      fmt:function(v){ return v<1000 ? Math.round(v)+" AD" : String(Math.round(v)); },
+      data:[["Pompeii was buried by Vesuvius",79],["The Magna Carta was sealed",1215],["Gutenberg built his printing press",1440],["Columbus reached the Americas",1492],["The Great Fire of London",1666],["The US Declaration of Independence",1776],["The French Revolution began",1789],["The Rosetta Stone was discovered",1799],["Krakatoa erupted",1883],["The telephone was invented",1876],["Edison's light bulb",1879],["The Statue of Liberty was dedicated",1886],["The Eiffel Tower was completed",1889],["The first modern Olympics",1896],["The Wright brothers' first flight",1903],["Amundsen reached the South Pole",1911],["The Titanic sank",1912],["World War I began",1914],["Tutankhamun's tomb was opened",1922],["Penicillin was discovered",1928],["The first FIFA World Cup",1930],["The Empire State Building opened",1931],["The Golden Gate Bridge opened",1937],["The Hindenburg disaster",1937],["World War II ended",1945],["Everest was first summited",1953],["The structure of DNA was described",1953],["Sputnik 1 was launched",1957],["JFK was assassinated",1963],["The first heart transplant",1967],["The Moon landing",1969],["Woodstock",1969],["The Beatles broke up",1970],["The first email was sent",1971],["Microsoft was founded",1975],["Apple was founded",1976],["Star Wars was first released",1977],["Elvis Presley died",1977],["The Chernobyl disaster",1986],["The World Wide Web was invented",1989],["The Berlin Wall fell",1989],["Nelson Mandela was freed",1990],["The Hubble Telescope launched",1990],["The Soviet Union dissolved",1991],["The first text message",1992],["Jurassic Park was released",1993],["Amazon was founded",1994],["Toy Story was released",1995],["The first Harry Potter book",1997],["Netflix was founded",1997],["Google was founded",1998],["The first ISS module launched",1998],["Wikipedia launched",2001],["Euro notes entered circulation",2002],["Facebook launched",2004],["YouTube was founded",2005],["Twitter launched",2006],["The first iPhone",2007],["Instagram launched",2010],["TikTok went global",2017]]
+    },
+    speed: {
+      title:"Animal top speeds", metric:"Top speed", hi:"faster", lo:"slower",
+      fmt:function(v){ return (v<1 ? v.toFixed(2) : Math.round(v).toLocaleString())+" km/h"; },
+      data:[["Peregrine falcon (in a dive)",389],["Golden eagle (in a dive)",240],["Cheetah",120],["Sailfish",110],["Pronghorn antelope",89],["Springbok",88],["Quarter horse",88],["Reindeer",80],["Blue wildebeest",80],["Lion",80],["Hummingbird (dive)",79],["Greyhound",74],["Jackrabbit",72],["Red kangaroo",71],["Ostrich",70],["Zebra",65],["Giraffe",60],["Common dolphin",60],["Grizzly bear",56],["Great white shark",56],["Dragonfly",56],["House cat",48],["Rabbit",48],["Usain Bolt",45],["Wild turkey",40],["African elephant",40],["Honeybee",24],["Black mamba",20],["Grey squirrel",20],["Domestic pig",17],["Chicken",14],["Tortoise",0.5],["Three-toed sloth",0.27],["Garden snail",0.05]]
+    },
+    life: {
+      title:"Animal lifespans", metric:"Typical maximum lifespan", hi:"lives longer", lo:"lives shorter",
+      fmt:function(v){ return v<1 ? Math.round(v*365)+" days" : Math.round(v).toLocaleString()+" years"; },
+      data:[["Greenland shark",300],["Bowhead whale",200],["Galápagos tortoise",150],["Blue whale",90],["Human",80],["Nile crocodile",70],["African elephant",70],["Great white shark",70],["Scarlet macaw",60],["Chimpanzee",50],["Bottlenose dolphin",45],["Ostrich",45],["Koi carp",40],["Bactrian camel",40],["Tarantula",30],["Horse",30],["Bald eagle",25],["Grizzly bear",25],["Red kangaroo",23],["Cow",20],["Emperor penguin",20],["Giant panda",20],["Little brown bat",20],["Domestic pig",18],["House cat",16],["Lion",15],["Dog",13],["Goldfish",10],["Rabbit",9],["Chicken",8],["Grey squirrel",6],["Guinea pig",6],["Honeybee queen",5],["Rat",3],["Common octopus",2],["House mouse",2],["Housefly",0.08]]
+    },
+    river: {
+      title:"River lengths", metric:"Length", hi:"longer", lo:"shorter",
+      fmt:function(v){ return Math.round(v).toLocaleString()+" km"; },
+      data:[["The Nile",6650],["The Amazon",6400],["The Yangtze",6300],["The Yenisei",5539],["The Yellow River",5464],["The Ob",5410],["The Paraná",4880],["The Congo",4700],["The Amur",4444],["The Lena",4400],["The Mekong",4350],["The Mackenzie",4241],["The Niger",4200],["The Mississippi",3766],["The Volga",3531],["The Indus",3180],["The Rio Grande",3051],["The Danube",2850],["The Euphrates",2800],["The Zambezi",2574],["The Ganges",2525],["The Murray",2508],["The Colorado",2330],["The Columbia",2000],["The Tigris",1850],["The Rhine",1230],["The Elbe",1094],["The Loire",1006],["The Seine",777],["The Thames",346]]
+    },
+    mtn: {
+      title:"Mountain elevations", metric:"Elevation", hi:"taller", lo:"shorter",
+      fmt:function(v){ return Math.round(v).toLocaleString()+" m"; },
+      data:[["Mount Everest",8849],["K2",8611],["Kangchenjunga",8586],["Lhotse",8516],["Makalu",8485],["Cho Oyu",8188],["Annapurna I",8091],["Aconcagua",6961],["Denali",6190],["Kilimanjaro",5895],["Mount Elbrus",5642],["Popocatépetl",5426],["Mount Vinson",4892],["Puncak Jaya",4884],["Mont Blanc",4808],["Matterhorn",4478],["Mount Whitney",4421],["Mount Rainier",4392],["Mauna Kea",4207],["Mount Fuji",3776],["Aoraki / Mount Cook",3724],["Mount Etna",3357],["Mount Olympus",2917],["Half Dome",2694],["Mount St. Helens",2549],["Mount Kosciuszko",2228],["Mount Vesuvius",1281],["Ben Nevis",1345],["Table Mountain",1085],["Snowdon",1085]]
+    },
+    food: {
+      title:"Calories per 100 g", metric:"Energy per 100 g", hi:"more calories", lo:"fewer calories",
+      fmt:function(v){ return Math.round(v).toLocaleString()+" kcal"; },
+      data:[["Olive oil",884],["Butter",717],["Peanut butter",588],["Almonds",579],["Bacon",541],["Potato chips",536],["Milk chocolate",535],["Doughnut",452],["Croissant",406],["Cheddar cheese",403],["Table sugar",387],["Air-popped popcorn",387],["Dry pasta",371],["Uncooked white rice",365],["Honey",304],["French fries",312],["Pizza",266],["White bread",265],["Beef mince",250],["Bagel",250],["Vodka",231],["Salmon",208],["Ice cream",207],["Chicken breast",165],["Avocado",160],["Egg",155],["Ketchup",101],["Banana",89],["Sweet potato",86],["Red wine",85],["Potato",77],["Tofu",76],["Grapes",69],["Whole milk",61],["Greek yoghurt",59],["Apple",52],["Orange",47],["Beer",43],["Coca-Cola",42],["Broccoli",34],["Strawberries",32],["Watermelon",30],["Cucumber",15],["Lettuce",15]]
+    }
+  };
+
+  var KEYS = Object.keys(CATS);
+  var POOL = KEYS.reduce(function(n,k){ return n + CATS[k].data.length; },0);
+
+  var el = function(id){ return document.getElementById(id); };
+  var leftMetric=el("leftMetric"), leftName=el("leftName"), leftValue=el("leftValue");
+  var rightMetric=el("rightMetric"), rightName=el("rightName"), rightValue=el("rightValue"),
+      rightMask=el("rightMask"), rightPanel=el("rightPanel");
+  var btnHi=el("btnHi"), btnLo=el("btnLo"), hiSub=el("hiSub"), loSub=el("loSub");
+  var scoreEl=el("score"), bestEl=el("best"), livesEl=el("lives"), verdict=el("verdict"), toast=el("toast");
+  var startSheet=el("startSheet"), endSheet=el("endSheet");
+
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var ROUNDS_PER_CATEGORY = 4;
+
+  var state = { cat:null, used:[], left:null, right:null, score:0, lives:3, best:0, inCat:0, locked:true };
+
+  try { state.best = parseInt(localStorage.getItem("hol.best"),10) || 0; } catch(e){ state.best = 0; }
+  bestEl.textContent = state.best;
+  el("poolMeta").textContent = POOL + " facts · " + KEYS.length + " categories";
+
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function drawItem(){
+    var pool = CATS[state.cat].data, tries = 0, row;
+    do {
+      row = pick(pool);
+      tries++;
+    } while (tries < 60 && (state.used.indexOf(row[0]) !== -1 ||
+             (state.left && Math.abs(row[1] - state.left[1]) < 1e-9)));
+    state.used.push(row[0]);
+    return row;
+  }
+
+  function newCategory(announce){
+    var next = state.cat;
+    while (next === state.cat && KEYS.length > 1) next = pick(KEYS);
+    state.cat = next;
+    state.used = [];
+    state.inCat = 0;
+    state.left = drawItem();
+    state.right = drawItem();
+    if (announce) showToast(CATS[state.cat].title);
+  }
+
+  function showToast(text){
+    toast.textContent = text;
+    toast.classList.add("show");
+    clearTimeout(showToast.t);
+    showToast.t = setTimeout(function(){ toast.classList.remove("show"); }, 2000);
+  }
+
+  function renderLives(){
+    livesEl.innerHTML = "";
+    for (var i = 0; i < 3; i++){
+      var p = document.createElement("span");
+      p.className = "pip" + (i < state.lives ? "" : " gone");
+      livesEl.appendChild(p);
+    }
+  }
+
+  function render(){
+    var c = CATS[state.cat];
+    leftMetric.textContent = c.metric;
+    leftName.textContent = state.left[0];
+    leftValue.textContent = c.fmt(state.left[1]);
+    rightMetric.textContent = c.metric;
+    rightName.textContent = state.right[0];
+    rightValue.hidden = true;
+    rightValue.textContent = "";
+    rightMask.hidden = false;
+    hiSub.textContent = c.hi;
+    loSub.textContent = c.lo;
+    rightPanel.classList.remove("right-win","right-lose");
+    verdict.classList.remove("show");
+    scoreEl.textContent = state.score;
+    bestEl.textContent = state.best;
+    renderLives();
+    btnHi.disabled = false;
+    btnLo.disabled = false;
+    state.locked = false;
+  }
+
+  function countUp(target, done){
+    var c = CATS[state.cat];
+    rightMask.hidden = true;
+    rightValue.hidden = false;
+    if (REDUCED){ rightValue.textContent = c.fmt(target); done(); return; }
+    var start = performance.now(), dur = 850, from = state.left[1];
+    function frame(now){
+      var t = Math.min(1, (now - start) / dur);
+      var e = 1 - Math.pow(1 - t, 3);
+      rightValue.textContent = c.fmt(from + (target - from) * e);
+      if (t < 1) requestAnimationFrame(frame); else { rightValue.textContent = c.fmt(target); done(); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function guess(dir){
+    if (state.locked) return;
+    state.locked = true;
+    btnHi.disabled = true;
+    btnLo.disabled = true;
+
+    var a = state.left[1], b = state.right[1];
+    var correct = (b === a) || ((b > a) === (dir === "higher"));
+
+    countUp(b, function(){
+      rightPanel.classList.add(correct ? "right-win" : "right-lose");
+      verdict.textContent = correct ? "Correct" : "Wrong";
+      verdict.style.color = correct ? "var(--up)" : "var(--down)";
+      verdict.classList.add("show");
+
+      if (correct){
+        state.score++;
+        state.inCat++;
+        if (state.score > state.best){
+          state.best = state.score;
+          try { localStorage.setItem("hol.best", String(state.best)); } catch(e){}
+        }
+        scoreEl.textContent = state.score;
+        bestEl.textContent = state.best;
+      } else {
+        state.lives--;
+        renderLives();
+      }
+
+      setTimeout(function(){
+        if (!correct && state.lives === 0){ gameOver(); return; }
+        if (correct && state.inCat >= ROUNDS_PER_CATEGORY){
+          newCategory(true);
+        } else if (correct){
+          state.left = state.right;
+          state.right = drawItem();
+        } else {
+          state.right = drawItem();
+        }
+        render();
+      }, REDUCED ? 400 : 950);
+    });
+  }
+
+  function gameOver(){
+    var titles = ["Ouch.","Not bad.","Solid run.","Seriously good.","Encyclopaedic."];
+    var tier = state.score < 3 ? 0 : state.score < 8 ? 1 : state.score < 15 ? 2 : state.score < 25 ? 3 : 4;
+    el("endTitle").textContent = titles[tier];
+    el("endScore").textContent = state.score;
+    el("endBest").textContent = state.best;
+    var c = CATS[state.cat];
+    el("endMissed").innerHTML = "The one that got you: <span>" + esc(state.right[0]) + "</span> — " +
+      c.fmt(state.right[1]) + ", vs <span>" + esc(state.left[0]) + "</span> at " + c.fmt(state.left[1]) + ".";
+    endSheet.hidden = false;
+  }
+
+  function esc(s){ return String(s).replace(/[&<>]/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;"}[ch]; }); }
+
+  function newGame(){
+    state.score = 0;
+    state.lives = 3;
+    state.cat = null;
+    newCategory(true);
+    startSheet.hidden = true;
+    endSheet.hidden = true;
+    render();
+  }
+
+  btnHi.addEventListener("click", function(){ guess("higher"); });
+  btnLo.addEventListener("click", function(){ guess("lower"); });
+  el("startBtn").addEventListener("click", newGame);
+  el("againBtn").addEventListener("click", newGame);
+
+  document.addEventListener("keydown", function(ev){
+    if (!startSheet.hidden || !endSheet.hidden){
+      if (ev.key === "Enter" || ev.key === " "){ ev.preventDefault(); newGame(); }
+      return;
+    }
+    if (ev.key === "ArrowUp"){ ev.preventDefault(); guess("higher"); }
+    if (ev.key === "ArrowDown"){ ev.preventDefault(); guess("lower"); }
+  });
+
+  // Seed the board behind the start sheet so it never flashes empty.
+  state.cat = null;
+  newCategory(false);
+  render();
+  btnHi.disabled = true;
+  btnLo.disabled = true;
+  state.locked = true;
+})();
+</script>
